@@ -8,6 +8,8 @@
 
 Run `nx graph` to see a diagram of the dependencies of the projects.
 
+Install [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console&utm_source=nx-project) in VSCode to easily access nx commands.
+
 ## Remote caching
 
 Run `npx nx connect-to-nx-cloud` to enable [remote caching](https://nx.app) and make CI faster.
@@ -15,3 +17,7 @@ Run `npx nx connect-to-nx-cloud` to enable [remote caching](https://nx.app) and 
 ## Further help
 
 Visit the [Nx Documentation](https://nx.dev) to learn more.
+
+## React App
+
+Run `nx serve react-app` to run the react app.
