@@ -21,3 +21,7 @@ Visit the [Nx Documentation](https://nx.dev) to learn more.
 ## React App
 
 Run `nx serve react-app` to run the react app.
+
+## Node App
+
+Run `nx serve node-app` to run the node app.
