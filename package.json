@@ -12,7 +12,8 @@
     "setup-db": "brew update && brew tap mongodb/brew && brew install mongodb-community && brew tap homebrew/services",
     "start-db": "brew services start mongodb-community",
     "stop-db": "brew services stop mongodb-community",
-    "start-node-app": "npx nx serve node-app"
+    "start-node-app": "npx nx serve node-app",
+    "test-node-app": " npx nx test node-app"
   },  
   "private": true,
   "dependencies": {

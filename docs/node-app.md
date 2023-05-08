@@ -11,6 +11,7 @@ First let's setup our development environment by running `yarn setup-node-app`. 
 - `SERVER_PORT`: The port that the server will listen on. Locally you can set it to `3000`.
 - `WEB3_PROVIDER`: The URL for the Web3 provider that will be used to interact with the blockchain. Locally you can set it to `http://127.0.0.1:7545`, the address of your Ganache instance.
 - `DATABASE_URI`: The URI for the MongoDB database that the application will use. Locally you can set it to `mongodb://127.0.0.1:27017/web3-roulette`.
+- `TEST_DATABASE_URI`: The URI for the MongoDB database that the application will use for testing. Locally you can set it to `mongodb://127.0.0.1:27017/test-web3-roulette`. Make sure that the URI is different from the main one because this database will be dropped after completing the tests.
 - `GIVEAWAYS_CONTRACT_ADDRESS`: The address of the Giveaways contract on the blockchain. This value is required for the application to function and you can get it from the terminal once you deploy the contract to your Ganache instance (for more instructions on how to do that refer to the [Smart Contract Documentation](./truffle-app.md)).
 - `OWNER_ACCOUNT_ADDRESS`: The address of the contract owner account on the blockchain. This value is required for the application to function and will be the first address in your Ganache instance (for more instructions on how to do that refer to the [Smart Contract Documentation](./truffle-app.md)).
 

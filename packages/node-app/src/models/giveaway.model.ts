@@ -32,4 +32,4 @@ const giveawaySchema = new Schema<Giveaway>({
   requirements: { type: Object, required: false, default: {} }
 });
 
-export default mongoose.model<Giveaway>('Giveaway', giveawaySchema);
+export const Giveaway = mongoose.model<Giveaway>('Giveaway', giveawaySchema);
