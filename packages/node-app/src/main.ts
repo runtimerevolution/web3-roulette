@@ -1,17 +1,17 @@
 import express, { Request, Response } from 'express';
-// import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import { Giveaway } from './models';
 import { giveawaysContract } from './contracts';
 
 // connect to mongodb
-// mongoose.connect('mongodb://127.0.0.1:27017/web3-roulette')
-// mongoose.connection.on('error', error => console.log(error))
-// mongoose.Promise = global.Promise
+mongoose.connect(process.env.DATABASE_URI)
+mongoose.connection.on('error', error => console.log(error))
+mongoose.Promise = global.Promise
 
 // setup express app
 const host = process.env.SERVER_HOST;
 const port = Number(process.env.SERVER_PORT);
-const app = express();
+export const app = express();
 
 // define endpoints
 app.get('/', (req: Request, res: Response) => {
