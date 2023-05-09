@@ -5,7 +5,13 @@ import LoginImage from '../components/LoginImage';
 const LoginPage = () => {
   return (
     <div className="login-page-container">
-      <Stack direction="row">
+      <Stack
+        sx={{ height: '100%' }}
+        direction="row"
+        spacing={'65px'}
+        alignItems={'center'}
+        justifyContent={'center'}
+      >
         <LoginCard />
         <LoginImage />
       </Stack>

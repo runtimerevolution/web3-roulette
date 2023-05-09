@@ -19,3 +19,23 @@
   width: 70%;
   text-align: center;
 }
+
+.login-image-container {
+  position: relative;
+  width: 450px;
+  height: 420px;
+}
+
+.login-dart {
+  position: absolute;
+  height: 250px;
+  left: 0;
+  bottom: 0;
+}
+
+.login-trophy {
+  position: absolute;
+  width: 300px;
+  top: 0;
+  right: 0;
+}
