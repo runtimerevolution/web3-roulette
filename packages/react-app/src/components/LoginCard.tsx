@@ -1,5 +1,6 @@
 import { Button, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useGoogleLogin } from '@react-oauth/google';
 import google from '../assets/google.svg';
 import logo from '../assets/Logo.svg';
 
@@ -16,6 +17,11 @@ const GoogleAuthButton = styled(Button)({
 });
 
 const LoginCard = () => {
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => console.log(codeResponse),
+    onError: (error) => console.log(error),
+  });
+
   return (
     <Card className="login-card" sx={{ borderRadius: '20px' }} elevation={0}>
       <Stack alignItems="center" mt={'70px'}>
@@ -40,6 +46,9 @@ const LoginCard = () => {
         <GoogleAuthButton
           variant="outlined"
           startIcon={<img className="w-20" src={google} alt="google" />}
+          onClick={() => {
+            login();
+          }}
         >
           Sign in with Google
         </GoogleAuthButton>
