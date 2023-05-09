@@ -41,7 +41,7 @@ const LoginCard = () => {
           variant="outlined"
           startIcon={<img className="w-20" src={google} alt="google" />}
         >
-          Sign up with Google
+          Sign in with Google
         </GoogleAuthButton>
       </Stack>
     </Card>
