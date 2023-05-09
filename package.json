@@ -14,7 +14,7 @@
     "stop-db": "brew services stop mongodb-community",
     "start-node-app": "npx nx serve node-app",
     "test-node-app": " npx nx test node-app"
-  },  
+  },
   "private": true,
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.3",

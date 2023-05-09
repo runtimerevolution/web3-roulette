@@ -24,11 +24,32 @@ interface Giveaway extends mongoose.Document {
 const giveawaySchema = new Schema<Giveaway>({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  startTime: { type: Date, required: true },
-  endTime: { type: Date, required: true },
+  startTime: { 
+    type: Date, 
+    required: true, 
+    validate: {
+      validator: function (startTime: Date) {
+        return startTime < this.endTime;
+      },
+      message: 'Start time must be less than end time'
+    }
+  },
+  endTime: { 
+    type: Date, 
+    required: true, 
+    validate: {
+      validator: function (endTime: Date) {
+        return endTime > this.startTime;
+      },
+      message: 'End time must be greater than start time'
+    }
+  },
   participants: [{ type: String, required: false }],
-  winners: [{ type: String, required: true }],
-  numberOfWinners: { type: Number, required: true },
+  numberOfWinners: { 
+    type: Number, 
+    required: true, 
+    min: [1, 'Number of winners must be greater than 0']
+  },
   requirements: { type: Object, required: false, default: {} }
 });
 

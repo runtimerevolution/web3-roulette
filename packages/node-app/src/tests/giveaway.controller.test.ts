@@ -2,6 +2,13 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../app';
 import { Giveaway } from '../models/giveaway.model';
+import { giveawaysContract } from '../contracts';
+
+const createGiveawayMock = jest.fn().mockReturnValue({
+  send: () => ({}),
+});
+
+giveawaysContract.methods.createGiveaway = createGiveawayMock;
 
 beforeEach(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
@@ -32,15 +39,15 @@ describe('GET /giveaways', () => {
       new Giveaway({
         title: 'Giveaway 1',
         description: 'Description for giveaway 1',
-        startTime: new Date(),
-        endTime: new Date(),
+        startTime: Date.now(),
+        endTime: Date.now() + 60,
         numberOfWinners: 1
       }),
       new Giveaway({
         title: 'Giveaway 2',
         description: 'Description for giveaway 2',
-        startTime: new Date(),
-        endTime: new Date(),
+        startTime: Date.now(),
+        endTime: Date.now() + 120,
         numberOfWinners: 1
       }),
     ];
@@ -68,8 +75,8 @@ describe('GET /giveaways/:id', () => {
     const giveaway = new Giveaway({
       title: 'Giveaway',
       description: 'Description for giveaway',
-      startTime: new Date(),
-      endTime: new Date(),
+      startTime: Date.now(),
+      endTime: Date.now() + 60,
       numberOfWinners: 1
     });
     await giveaway.save();
@@ -82,4 +89,40 @@ describe('GET /giveaways/:id', () => {
     expect(new Date(response.body.endTime)).toEqual(giveaway.endTime);
     expect(response.body.numberOfWinners).toEqual(1);
   });
+});
+
+describe('POST /giveaways', () => {
+  it('should create a new giveaway and return it in the response', async () => {
+    const newGiveaway = {
+      title: 'Test Giveaway',
+      description: 'This is a test giveaway',
+      startTime: Date.now(),
+      endTime: Date.now() + 86400000,
+      numberOfWinners: 1,
+      requirements: []
+    };
+
+    const response = await request(app)
+      .post('/giveaways')
+      .send(newGiveaway)
+      .expect(200);
+
+    expect(response.body.title).toEqual(newGiveaway.title);
+    expect(response.body.description).toEqual(newGiveaway.description);
+    expect(new Date(response.body.startTime).getTime()).toEqual(newGiveaway.startTime);
+    expect(new Date(response.body.endTime).getTime()).toEqual(newGiveaway.endTime);
+    expect(response.body.numberOfWinners).toEqual(newGiveaway.numberOfWinners);
+    expect(response.body.requirements).toEqual(newGiveaway.requirements);
+
+    const localGiveaway = await Giveaway.findById(response.body._id);
+    expect(localGiveaway.title).toEqual(newGiveaway.title);
+    expect(localGiveaway.description).toEqual(newGiveaway.description);
+    expect(localGiveaway.startTime.getTime()).toEqual(newGiveaway.startTime);
+    expect(localGiveaway.endTime.getTime()).toEqual(newGiveaway.endTime);
+    expect(localGiveaway.numberOfWinners).toEqual(newGiveaway.numberOfWinners);
+    expect(localGiveaway.requirements).toEqual(newGiveaway.requirements);
+
+    expect(giveawaysContract.methods.createGiveaway)
+      .toHaveBeenCalledWith(response.body._id, newGiveaway.startTime, newGiveaway.endTime, newGiveaway.numberOfWinners);
+  })
 });
