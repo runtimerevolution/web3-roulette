@@ -1,4 +1,5 @@
 export type Giveaway = {
+  id: number;
   title: string;
   description: string;
   startTime: Date;
