@@ -1,9 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
-body {
-  margin: 0;
-  background-color: #D6D6D6;
+@import './foundation.scss';
+
+.logo {
+  width: 235px;
 }
 
-#root {
+.login-page-container {
+  background-color: $primary-color;
   height: 100vh;
+}
+
+.login-card {
+  width: 605px;
+  height: 420px;
+}
+
+.login-sentence {
+  margin-top: 20px;
+  width: 70%;
+  text-align: center;
 }

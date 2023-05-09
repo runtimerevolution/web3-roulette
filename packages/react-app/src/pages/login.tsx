@@ -4,7 +4,7 @@ import LoginImage from '../components/LoginImage';
 
 const LoginPage = () => {
   return (
-    <div>
+    <div className="login-page-container">
       <Stack direction="row">
         <LoginCard />
         <LoginImage />
