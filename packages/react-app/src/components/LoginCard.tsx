@@ -1,6 +1,8 @@
+import { useNavigate } from 'react-router-dom';
 import { Button, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useGoogleLogin } from '@react-oauth/google';
+import GoogleAuthClient from '../services/googleauth';
 import google from '../assets/google.svg';
 import logo from '../assets/Logo.svg';
 
@@ -17,8 +19,16 @@ const GoogleAuthButton = styled(Button)({
 });
 
 const LoginCard = () => {
+  const navigate = useNavigate();
   const login = useGoogleLogin({
-    onSuccess: (codeResponse) => console.log(codeResponse),
+    onSuccess: (res) => {
+      GoogleAuthClient.getUserInfo(res.token_type, res.access_token).then(
+        (data) => {
+          GoogleAuthClient.saveUser(data);
+          navigate('/');
+        }
+      );
+    },
     onError: (error) => console.log(error),
   });
 
