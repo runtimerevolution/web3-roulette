@@ -19,6 +19,8 @@ interface Giveaway extends mongoose.Document {
   winners: string[];
   numberOfWinners: number;
   requirements?: Requirements;
+  prize: string;
+  image: string;
 }
 
 const giveawaySchema = new Schema<Giveaway>({
@@ -50,7 +52,9 @@ const giveawaySchema = new Schema<Giveaway>({
     required: true, 
     min: [1, 'Number of winners must be greater than 0']
   },
-  requirements: { type: Object, required: false, default: {} }
+  requirements: { type: Object, required: false, default: {} },
+  prize: { type: String, required: true },
+  image: { type: String, required: true },
 });
 
 export const Giveaway = mongoose.model<Giveaway>('Giveaway', giveawaySchema);
