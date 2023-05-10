@@ -7,7 +7,7 @@ const LoginPage = () => {
     <div className="login-page-container">
       <Stack
         sx={{ height: '100%' }}
-        direction="row"
+        direction={{ xs: 'column', lg: 'row' }}
         spacing={'65px'}
         alignItems={'center'}
         justifyContent={'center'}

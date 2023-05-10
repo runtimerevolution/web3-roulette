@@ -33,36 +33,46 @@ const LoginCard = () => {
   });
 
   return (
-    <Card className="login-card" sx={{ borderRadius: '20px' }} elevation={0}>
-      <Stack alignItems="center" mt={'70px'}>
-        <img className="logo" src={logo} alt="logo" />
-      </Stack>
-      <Stack mt="80px" alignItems="center">
-        <Stack direction="row">
-          <Typography sx={{ fontWeight: 'bold', fontSize: '30px' }}>
-            WELCOME!
-          </Typography>
-          <span className="fs-30 ml-10" role="img" aria-label="wave emoji">
-            👋
-          </span>
+    <Card
+      className="login-card"
+      sx={{ borderRadius: { xs: '0px', sm: '20px' } }}
+      elevation={0}
+    >
+      <div>
+        <Stack alignItems="center">
+          <img className="logo" src={logo} alt="logo" />
         </Stack>
-        <Typography
-          className="login-sentence"
-          variant="body1"
-          sx={{ fontSize: '17px' }}
+        <Stack
+          sx={{ marginTop: { xs: '60px', sm: '80px' } }}
+          alignItems="center"
         >
-          Lorem ipsum dolor sit amet consectetur. Fermentum lacus in eget nulla
-        </Typography>
-        <GoogleAuthButton
-          variant="outlined"
-          startIcon={<img className="w-20" src={google} alt="google" />}
-          onClick={() => {
-            login();
-          }}
-        >
-          Sign in with Google
-        </GoogleAuthButton>
-      </Stack>
+          <Stack direction="row">
+            <Typography sx={{ fontWeight: 'bold', fontSize: '30px' }}>
+              WELCOME!
+            </Typography>
+            <span className="fs-30 ml-10" role="img" aria-label="wave emoji">
+              👋
+            </span>
+          </Stack>
+          <Typography
+            className="login-sentence"
+            variant="body1"
+            sx={{ fontSize: '17px' }}
+          >
+            Lorem ipsum dolor sit amet consectetur. Fermentum lacus in eget
+            nulla
+          </Typography>
+          <GoogleAuthButton
+            variant="outlined"
+            startIcon={<img className="w-20" src={google} alt="google" />}
+            onClick={() => {
+              login();
+            }}
+          >
+            Sign in with Google
+          </GoogleAuthButton>
+        </Stack>
+      </div>
     </Card>
   );
 };

@@ -12,11 +12,15 @@
 .login-card {
   width: 605px;
   height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
 }
 
 .login-sentence {
   margin-top: 20px;
-  width: 70%;
+  width: 80%;
   text-align: center;
 }
 
@@ -24,6 +28,7 @@
   position: relative;
   width: 450px;
   height: 420px;
+  max-width: 100%;
 }
 
 .login-dart {
@@ -35,7 +40,7 @@
 
 .login-trophy {
   position: absolute;
-  width: 300px;
+  height: 300px;
   top: 0;
   right: 0;
 }
