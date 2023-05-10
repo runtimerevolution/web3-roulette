@@ -4,14 +4,16 @@ body {
   margin: 0;
 }
 
-.fs-30 {
-  font-size: 30px;
+@mixin generate($prefix, $property, $values) {
+  @for $i from 1 through length($values) {
+    $value: nth($values, $i);
+
+    .#{$prefix}-#{$value} {
+      #{$property}: #{$value}px;
+    }
+  }
 }
 
-.ml-10 {
-  margin-left: 10px;
-}
-
-.w-20 {
-  width: 20px;
-}
+@include generate(ml, margin-left, (10, 20, 30, 40, 50));
+@include generate(w, width, (20, 40, 60, 80, 100));
+@include generate(fs, font-size, (14, 18, 22, 26, 30));
