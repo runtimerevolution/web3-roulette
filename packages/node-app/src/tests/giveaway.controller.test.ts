@@ -39,14 +39,14 @@ describe('GET /giveaways', () => {
       new Giveaway({
         title: 'Giveaway 1',
         description: 'Description for giveaway 1',
-        startTime: Date.now(),
-        endTime: Date.now() + 60,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 120,
         numberOfWinners: 1
       }),
       new Giveaway({
         title: 'Giveaway 2',
         description: 'Description for giveaway 2',
-        startTime: Date.now(),
+        startTime: Date.now() + 60,
         endTime: Date.now() + 120,
         numberOfWinners: 1
       }),
@@ -75,8 +75,8 @@ describe('GET /giveaways/:id', () => {
     const giveaway = new Giveaway({
       title: 'Giveaway',
       description: 'Description for giveaway',
-      startTime: Date.now(),
-      endTime: Date.now() + 60,
+      startTime: Date.now() + 60,
+      endTime: Date.now() + 120,
       numberOfWinners: 1
     });
     await giveaway.save();
@@ -96,7 +96,7 @@ describe('POST /giveaways', () => {
     const newGiveaway = {
       title: 'Test Giveaway',
       description: 'This is a test giveaway',
-      startTime: Date.now(),
+      startTime: Date.now() + 60,
       endTime: Date.now() + 86400000,
       numberOfWinners: 1,
       requirements: []

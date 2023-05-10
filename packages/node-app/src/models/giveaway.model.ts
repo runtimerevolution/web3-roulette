@@ -29,7 +29,7 @@ const giveawaySchema = new Schema<Giveaway>({
     required: true, 
     validate: {
       validator: function (startTime: Date) {
-        return startTime < this.endTime;
+        return startTime < this.endTime && startTime > new Date();
       },
       message: 'Start time must be less than end time'
     }

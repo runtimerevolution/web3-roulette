@@ -25,6 +25,18 @@ describe('Giveaway model', () => {
     expect(error.errors.endTime).toBeDefined()
   });
 
+  it('should be invalid if start time is in the past', async () => {
+    const giveaway = new Giveaway({
+      title: 'Test Giveaway',
+      description: 'This is a test giveaway',
+      startTime: new Date('2022-01-01'),
+      endTime: Date.now() + 60,
+    });
+
+    const error = giveaway.validateSync()
+    expect(error.errors.startTime).toBeDefined()
+  });
+
   it('should be invalid if startTime is greater than or equal to endTime', () => {
     const giveaway = new Giveaway({
       title: 'Test giveaway',
