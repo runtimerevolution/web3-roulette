@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin, TokenResponse } from '@react-oauth/google';
 import GoogleAuthClient from '../services/googleauth';
 import google from '../assets/google.svg';
 import logo from '../assets/Logo.svg';
@@ -18,18 +18,38 @@ const GoogleAuthButton = styled(Button)({
   borderWidth: '2px',
 });
 
-const LoginCard = () => {
+type LoginCardProps = {
+  handleAuthError: () => void;
+};
+
+const LoginCard = ({ handleAuthError }: LoginCardProps) => {
   const navigate = useNavigate();
-  const login = useGoogleLogin({
-    onSuccess: (res) => {
-      GoogleAuthClient.getUserInfo(res.token_type, res.access_token).then(
-        (data) => {
+
+  const handleSuccess = (
+    res: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'>
+  ) => {
+    GoogleAuthClient.getUserInfo(res.token_type, res.access_token).then(
+      (data) => {
+        if (data) {
           GoogleAuthClient.saveUser(data);
           navigate('/');
+        } else {
+          handleAuthError();
         }
-      );
-    },
-    onError: (error) => console.log(error),
+      }
+    );
+  };
+
+  const handleError = (
+    error: Pick<TokenResponse, 'error' | 'error_description' | 'error_uri'>
+  ) => {
+    console.log(error);
+    handleAuthError();
+  };
+
+  const login = useGoogleLogin({
+    onSuccess: handleSuccess,
+    onError: handleError,
   });
 
   return (
