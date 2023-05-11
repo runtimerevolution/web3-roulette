@@ -1,12 +1,11 @@
 import { getDistance } from 'geolib';
 
-const getLocationPermission = () => {
+const getLocationPermission = async () => {
   if (!navigator.geolocation) {
-    return new Promise((resolve, _) => resolve(false));
+    return false;
   }
-  return navigator.permissions
-    .query({ name: 'geolocation' })
-    .then((result) => result.state !== 'denied');
+  const result = await navigator.permissions.query({ name: 'geolocation' });
+  return result.state !== 'denied';
 };
 
 const getLocation = () => {
@@ -24,22 +23,21 @@ const getLocation = () => {
   });
 };
 
-const isWithinRadius = (
+const isWithinRadius = async (
   latitude: number,
   longitude: number,
   radius: number
 ) => {
-  return getLocation().then((position: GeolocationCoordinates | null) => {
-    if (!position) {
-      return false;
-    }
+  const position = await getLocation();
+  if (!position) {
+    return false;
+  }
 
-    const distance = getDistance(
-      { latitude: position.latitude, longitude: position.longitude },
-      { latitude: latitude, longitude: longitude }
-    );
-    return distance < radius;
-  });
+  const distance = getDistance(
+    { latitude: position.latitude, longitude: position.longitude },
+    { latitude: latitude, longitude: longitude }
+  );
+  return distance < radius;
 };
 
 const GeolocationService = {
