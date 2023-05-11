@@ -1,6 +1,20 @@
+import mongoose from "mongoose";
 import { Giveaway } from "../models/giveaway.model";
 
 describe('Giveaway model', () => {
+  beforeAll(async () => {
+    await mongoose.connect(process.env.TEST_DATABASE_URI);
+  });
+  
+  afterAll(async () => {
+    await mongoose.connection.dropDatabase();
+    await mongoose.connection.close();
+  });
+
+  beforeEach(async () => {
+    await Giveaway.deleteMany({});
+  });
+
   it('should be invalid if title is empty', () => {
     const giveaway = new Giveaway();
     const error = giveaway.validateSync()

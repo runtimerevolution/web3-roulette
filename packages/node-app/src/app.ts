@@ -1,5 +1,6 @@
 import express from "express";
 import { router as GiveawayRoutes } from "./routes/giveaway.route";
+import { router as LocationRoutes } from "./routes/location.routes";
 
 export const app = express();
 
@@ -10,3 +11,4 @@ app.get("/", (req, res) => {
 });
 
 app.use("/giveaways", GiveawayRoutes);
+app.use("/locations", LocationRoutes);
