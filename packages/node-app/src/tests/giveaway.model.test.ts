@@ -37,6 +37,18 @@ describe('Giveaway model', () => {
     expect(error.errors.startTime).toBeDefined()
   });
 
+  it('should be invalid if prize is empty', () => {
+    const giveaway = new Giveaway();
+    const error = giveaway.validateSync()
+    expect(error.errors.prize).toBeDefined()
+  });
+
+  it('should be invalid if image is empty', () => {
+    const giveaway = new Giveaway();
+    const error = giveaway.validateSync()
+    expect(error.errors.image).toBeDefined()
+  });
+
   it('should be invalid if startTime is greater than or equal to endTime', () => {
     const giveaway = new Giveaway({
       title: 'Test giveaway',
@@ -63,13 +75,15 @@ describe('Giveaway model', () => {
     expect(error.errors.numberOfWinners).toBeDefined()
   });
 
-  it('should be valid if all required fields are present and startTime is less than endTime and numberOfWinners is greater than 0', () => {
+  it('should be valid if all required fields are present and valid', () => {
     const giveaway = new Giveaway({
       title: 'Test giveaway',
       description: 'This is a test giveaway',
       startTime: new Date(2023, 5, 30),
       endTime: new Date(2023, 6, 1),
-      numberOfWinners: 1
+      numberOfWinners: 1,
+      prize: 'Test prize',
+      image: 'test-image-base64'
     });
 
     const error = giveaway.validateSync()

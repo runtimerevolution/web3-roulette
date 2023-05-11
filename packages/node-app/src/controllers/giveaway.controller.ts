@@ -1,13 +1,16 @@
 import { Request, Response } from 'express';
+import fs from 'fs';
+import web3 from 'web3'
 import { Giveaway } from '../models/giveaway.model';
 import { giveawaysContract } from '../contracts';
+import { fileToBase64 } from '../utils/file.util';
 
 export const getGiveaways = async (req: Request, res: Response) => {
   try {
     const giveaways = await Giveaway.find();
     res.status(200).json(giveaways);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -15,32 +18,47 @@ export const getGiveaway = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const giveaway = await Giveaway.findById(id);
-    return res.status(200).json(giveaway);
+    res.status(200).json(giveaway);
   } catch (error) {
-    return res.status(500).json(error);
+    res.status(500).json({ error: error.message });
   }
 };
   
 export const createGiveaway = async (req: Request, res: Response) => {
+  const { title, description, startTime, endTime, numberOfWinners, requirements, prize } = req.body;
+  const file = req.file as Express.Multer.File
+  let giveawayId;
+
   try {
-    const { title, description, startTime, endTime, numberOfWinners, requirements } = req.body;
+    const image = fileToBase64(file as Express.Multer.File)
     const giveaway = new Giveaway({
       title,
       description,
       startTime: new Date(startTime),
       endTime: new Date(endTime),
       numberOfWinners,
-      requirements
+      requirements,
+      prize,
+      image
     });
     await giveaway.save();
+    giveawayId = giveaway._id
 
-    const id = giveaway._id.toString();
     await giveawaysContract.methods
-      .createGiveaway(id, startTime, endTime, numberOfWinners)
-      .send({ from: process.env.OWNER_ACCOUNT_ADDRESS });
+      .createGiveaway(
+        web3.utils.asciiToHex(giveawayId.toString()),
+        new Date(startTime).getTime(),
+        new Date(endTime).getTime(),
+        numberOfWinners)
+      .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
 
     res.status(200).json(giveaway);
   } catch (error) {
-    res.status(500).json(error);
+    if (giveawayId) await Giveaway.findOneAndDelete({_id: giveawayId});
+
+    res.status(500).json({ error: error.message });
+  } finally {
+    // remove image from tmp folder
+    fs.unlink(file.path, () => { return })
   }
 };
