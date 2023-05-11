@@ -1,8 +1,5 @@
 import { getDistance } from 'geolib';
 
-const RUNTIME_LATITUDE = 38.752962;
-const RUNTIME_LONGITUDE = -9.1478609;
-
 const getLocationPermission = () => {
   if (!navigator.geolocation) {
     return new Promise((resolve, _) => resolve(false));
@@ -27,7 +24,11 @@ const getLocation = () => {
   });
 };
 
-const isAtTheOffice = () => {
+const isWithinRadius = (
+  latitude: number,
+  longitude: number,
+  radius: number
+) => {
   return getLocation().then((position: GeolocationCoordinates | null) => {
     if (!position) {
       return false;
@@ -35,15 +36,15 @@ const isAtTheOffice = () => {
 
     const distance = getDistance(
       { latitude: position.latitude, longitude: position.longitude },
-      { latitude: RUNTIME_LATITUDE, longitude: RUNTIME_LONGITUDE }
+      { latitude: latitude, longitude: longitude }
     );
-    return distance < 500;
+    return distance < radius;
   });
 };
 
 const GeolocationService = {
   getLocationPermission,
   getLocation,
-  isAtTheOffice,
+  isWithinRadius,
 };
 export default GeolocationService;
