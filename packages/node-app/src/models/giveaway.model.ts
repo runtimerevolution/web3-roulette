@@ -55,6 +55,6 @@ const giveawaySchema = new Schema<Giveaway>({
   requirements: { type: Object, required: false, default: {} },
   prize: { type: String, required: true },
   image: { type: String, required: true },
-});
+}, { timestamps: true });
 
 export const Giveaway = mongoose.model<Giveaway>('Giveaway', giveawaySchema);
