@@ -25,19 +25,20 @@ type LoginCardProps = {
 const LoginCard = ({ handleAuthError }: LoginCardProps) => {
   const navigate = useNavigate();
 
-  const handleSuccess = (
+  const handleSuccess = async (
     res: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'>
   ) => {
-    GoogleAuthClient.getUserInfo(res.token_type, res.access_token).then(
-      (data) => {
-        if (data) {
-          GoogleAuthClient.saveUser(data);
-          navigate('/');
-        } else {
-          handleAuthError();
-        }
-      }
+    const userInfo = await GoogleAuthClient.getUserInfo(
+      res.token_type,
+      res.access_token
     );
+
+    if (userInfo) {
+      GoogleAuthClient.saveUser(userInfo);
+      navigate('/');
+    } else {
+      handleAuthError();
+    }
   };
 
   const handleError = (

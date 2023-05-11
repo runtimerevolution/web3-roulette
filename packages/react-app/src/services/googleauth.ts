@@ -5,21 +5,19 @@ const googleAuthInstance: AxiosInstance = axios.create({
   baseURL: Constants.GOOGLE_OAUTH_URI,
 });
 
-const getUserInfo = (tokenType: string, accessToken: string) => {
-  return googleAuthInstance
-    .get('/userinfo', {
-      headers: {
-        Authorization: `${tokenType} ${accessToken}`,
-        Accept: 'application/json',
-      },
-    })
-    .then((res) => {
-      if (res.status === 200) {
-        return res.data;
-      }
-      throw res;
-    })
-    .catch((error) => console.log(`error getting user info: ${error.message}`));
+const getUserInfo = async (tokenType: string, accessToken: string) => {
+  const res = await googleAuthInstance.get('/userinfo', {
+    headers: {
+      Authorization: `${tokenType} ${accessToken}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (res.status === 200) {
+    return res.data;
+  }
+
+  console.log(`error fetching user info: ${res.status} ${res.data}`);
 };
 
 const saveUser = (userObj: object) => {
