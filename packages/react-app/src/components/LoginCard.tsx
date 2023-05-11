@@ -11,7 +11,6 @@ const GoogleAuthButton = styled(Button)({
   borderColor: '#000000',
   height: '35px',
   width: '60%',
-  fontFamily: 'Inter',
   textTransform: 'none',
   fontSize: '17px',
   marginTop: '30px',
