@@ -13,7 +13,7 @@ import {
 import { googleLogout } from '@react-oauth/google';
 import useUserInfo from '../hooks/useUserInfo';
 import logo from './../assets/Logo.svg';
-import GoogleAuthClient from '../services/googleauth';
+import GoogleAuthClient from '../services/googleauthclient';
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);

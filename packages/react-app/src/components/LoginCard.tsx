@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useGoogleLogin, TokenResponse } from '@react-oauth/google';
-import GoogleAuthClient from '../services/googleauth';
+import GoogleAuthClient from '../services/googleauthclient';
 import google from '../assets/google.svg';
 import logo from '../assets/Logo.svg';
 
