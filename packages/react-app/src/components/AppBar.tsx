@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
   Box,
@@ -9,11 +10,14 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { googleLogout } from '@react-oauth/google';
 import useUserInfo from '../hooks/useUserInfo';
 import logo from './../assets/Logo.svg';
+import GoogleAuthClient from '../services/googleauth';
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
   const userInfo = useUserInfo();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -22,6 +26,13 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const logout = () => {
+    handleCloseUserMenu();
+    googleLogout();
+    GoogleAuthClient.removeUser();
+    navigate('/login');
   };
 
   return (
@@ -65,7 +76,7 @@ function ResponsiveAppBar() {
           open={Boolean(anchorElUser)}
           onClose={handleCloseUserMenu}
         >
-          <MenuItem key="Logout" onClick={handleCloseUserMenu}>
+          <MenuItem key="Logout" onClick={logout}>
             <Typography textAlign="center">Logout</Typography>
           </MenuItem>
         </Menu>
