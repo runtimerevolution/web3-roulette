@@ -8,22 +8,11 @@ import { useCallback, useState } from "react";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-
-type Giveaway = {
-  name: string;
-  picture?: string;
-  startDate: Date;
-  endDate: Date;
-  prize: number;
-  numberOfWinners: number;
-  description: string;
-  rules: string;
-  conditions: string[];
-}
+import { Giveaway } from "../lib/types";
 
 const EditGiveaway = () => {
   const navigate = useNavigate();
-  const giveaway = useParams();
+  const { id } = useParams();
 
   const [binFile, setBinFile] = useState<any>();
 
@@ -58,12 +47,12 @@ const EditGiveaway = () => {
                 Name
               </Typography>
               <TextField
-                id="name"
+                id="title"
                 variant="outlined"
                 required
                 fullWidth
                 margin="none"
-                {...register('name', { required: "Required" })}
+                {...register('title', { required: "Required" })}
                 sx={{
                   backgroundColor: 'white',
                   borderRadius: '8px',
@@ -163,7 +152,7 @@ const EditGiveaway = () => {
               margin="normal"
               {...register('description', { required: "Required" })}
             />
-            <TextField
+            {/* <TextField
               id="rules"
               label="Rules"
               variant="standard"
@@ -171,7 +160,7 @@ const EditGiveaway = () => {
               fullWidth
               margin="normal"
               {...register('rules', { required: "Required" })}
-            />
+            /> */}
           </Grid>
         </Grid>
       </Box>
