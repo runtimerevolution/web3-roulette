@@ -55,7 +55,12 @@ function ResponsiveAppBar() {
             />
           </IconButton>
           <Typography
-            sx={{ fontFamily: 'Mulish', fontSize: '16px', color: '#303136' }}
+            sx={{
+              fontFamily: 'Mulish',
+              fontSize: '16px',
+              color: '#303136',
+              display: { xs: 'none', sm: 'initial' },
+            }}
           >
             {userInfo.name}
           </Typography>
