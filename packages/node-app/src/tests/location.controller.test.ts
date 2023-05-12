@@ -3,18 +3,20 @@ import mongoose from "mongoose";
 import { app } from '../app';
 import { Location } from '../models/location.model';
 
-describe('Location Endpoints', () => {
-  let locationId: string;
+beforeAll(async () => {
+  await mongoose.connect(process.env.TEST_DATABASE_URI);
+});
 
-  beforeAll(async () => {
-    await mongoose.connect(process.env.TEST_DATABASE_URI);
-  });
-  
-  afterAll(async () => {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-  });
+afterAll(async () => {
+  await mongoose.connection.dropDatabase();
+  await mongoose.connection.close();
+});
 
+afterEach(async () => {
+  await Location.deleteMany({});
+});
+
+describe('POST /locations', () => {
   it('should create a new location', async () => {
     const newLocation = {
       name: 'Test Location',
@@ -32,11 +34,17 @@ describe('Location Endpoints', () => {
     expect(response.body.latitude).toEqual(newLocation.latitude);
     expect(response.body.longitude).toEqual(newLocation.longitude);
     expect(response.body.radius).toEqual(newLocation.radius);
-
-    locationId = response.body._id;
   });
+})
 
+describe('POST /locations/:id', () => {
   it('should update an existing location', async () => {
+    const location = await Location.create({
+      name: 'Location',
+      latitude: 1.234,
+      longitude: 2.345,
+      radius: 100
+    })
     const updatedLocation = {
       name: 'Updated Location',
       latitude: 41.878113,
@@ -45,7 +53,7 @@ describe('Location Endpoints', () => {
     };
 
     const response = await request(app)
-      .put(`/locations/${locationId}`)
+      .put(`/locations/${location._id}`)
       .send(updatedLocation)
       .expect(200);
 
@@ -54,14 +62,24 @@ describe('Location Endpoints', () => {
     expect(response.body.longitude).toEqual(updatedLocation.longitude);
     expect(response.body.radius).toEqual(updatedLocation.radius);
   });
+})
 
+describe('DELETE /locations/:id', () => {
   it('should delete an existing location', async () => {
-    await request(app).delete(`/locations/${locationId}`).expect(204);
+    const location = await Location.create({
+      name: 'Location',
+      latitude: 1.234,
+      longitude: 2.345,
+      radius: 100
+    })
+    await request(app).delete(`/locations/${location._id}`).expect(204);
 
-    const deletedLocation = await Location.findById(locationId);
+    const deletedLocation = await Location.findById(location._id);
     expect(deletedLocation).toBeNull();
   });
+})
 
+describe('GET /locations', () => {
   it('should return a list of locations', async () => {
     const location1 = await Location.create({
       name: 'Location 1',
@@ -84,4 +102,4 @@ describe('Location Endpoints', () => {
     expect(response.body[0].name).toEqual(location1.name);
     expect(response.body[1].name).toEqual(location2.name);
   });
-});
+})

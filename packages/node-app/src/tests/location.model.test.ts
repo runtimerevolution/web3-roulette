@@ -18,8 +18,8 @@ describe('Location Model', () => {
   it('should create and save a new location', async () => {
     const locationData = {
       name: 'Test Location',
-      latitude: 123.456,
-      longitude: 789.012,
+      latitude: 23.456,
+      longitude: 89.012,
       radius: 1000,
     };
 
@@ -36,8 +36,8 @@ describe('Location Model', () => {
   it('should require the name field', async () => {
     try {
       const locationData = {
-        latitude: 123.456,
-        longitude: 789.012,
+        latitude: 23.456,
+        longitude: 89.012,
         radius: 1000,
       };
 
@@ -53,7 +53,7 @@ describe('Location Model', () => {
     try {
       const locationData = {
         name: 'Test Location',
-        longitude: 789.012,
+        longitude: 89.012,
         radius: 1000,
       };
 
@@ -69,7 +69,7 @@ describe('Location Model', () => {
     try {
       const locationData = {
         name: 'Test Location',
-        latitude: 123.456,
+        latitude: 23.456,
         radius: 1000,
       };
 
@@ -85,7 +85,7 @@ describe('Location Model', () => {
     try {
       const locationData = {
         name: 'Test Location',
-        latitude: 123.456,
+        latitude: 23.456,
         longitude: 789.012,
       };
 
