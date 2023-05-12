@@ -6,12 +6,15 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Stack,
   Typography,
 } from '@mui/material';
+import useUserInfo from '../hooks/useUserInfo';
 import logo from './../assets/Logo.svg';
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const userInfo = useUserInfo();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -33,9 +36,19 @@ function ResponsiveAppBar() {
         <img src={logo} alt="Logo" />
       </Box>
       <Box className="profile-menu-container">
-        <IconButton onClick={handleOpenUserMenu}>
-          <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-        </IconButton>
+        <Stack direction="row" alignItems="center" spacing="8px">
+          <IconButton onClick={handleOpenUserMenu}>
+            <Avatar
+              src={userInfo.picture ? userInfo.picture : ''}
+              alt={userInfo.name}
+            />
+          </IconButton>
+          <Typography
+            sx={{ fontFamily: 'Mulish', fontSize: '16px', color: '#303136' }}
+          >
+            {userInfo.name}
+          </Typography>
+        </Stack>
         <Menu
           id="menu-appbar"
           className="mt-40"
