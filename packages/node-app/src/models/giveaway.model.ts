@@ -8,6 +8,7 @@ enum Unit {
 
 export interface Requirements {
   unit?: Unit;
+  location?: mongoose.Types.ObjectId; // reference to Location model
 }
 
 interface Giveaway extends mongoose.Document {
@@ -21,6 +22,7 @@ interface Giveaway extends mongoose.Document {
   requirements?: Requirements;
   prize: string;
   image: string;
+  rules?: string;
 }
 
 const giveawaySchema = new Schema<Giveaway>({
@@ -33,7 +35,7 @@ const giveawaySchema = new Schema<Giveaway>({
       validator: function (startTime: Date) {
         return startTime < this.endTime && startTime > new Date();
       },
-      message: 'Start time must be less than end time'
+      message: 'Start time must be less than end time and in the future'
     }
   },
   endTime: { 
@@ -52,9 +54,13 @@ const giveawaySchema = new Schema<Giveaway>({
     required: true, 
     min: [1, 'Number of winners must be greater than 0']
   },
-  requirements: { type: Object, required: false, default: {} },
+  requirements: {
+    unit: { type: String, enum: Object.values(Unit), required: false },
+    location: { type: Schema.Types.ObjectId, ref: 'Location', required: false },
+  },
   prize: { type: String, required: true },
   image: { type: String, required: true },
+  rules: { type: String, required: false },
 }, { timestamps: true });
 
 export const Giveaway = mongoose.model<Giveaway>('Giveaway', giveawaySchema);
