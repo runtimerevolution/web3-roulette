@@ -73,7 +73,7 @@
 
 .nav-logo {
   width: 180px;
-  margin-left: 120px;
+  margin-left: 60px;
 
   @include mobile {
     margin-left: 20px;
@@ -82,7 +82,7 @@
 
 .profile-menu-container {
   flex-grow: 0;
-  margin-right: 120px;
+  margin-right: 60px;
 
   @include mobile {
     margin-right: 20px;

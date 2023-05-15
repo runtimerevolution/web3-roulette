@@ -27,7 +27,7 @@ const GiveawayDetailsPage = () => {
   return (
     <GiveawayContext.Provider value={giveaway}>
       <SubHeader />
-      <Stack direction="row" justifyContent="center" spacing="120px" mt="26px">
+      <Stack direction="row" justifyContent="center" spacing="90px">
         <GiveawayMainContent />
         <GiveawayAsideContent />
       </Stack>

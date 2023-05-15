@@ -15,7 +15,8 @@ const SubHeader = () => {
       direction="row"
       spacing="10px"
       alignItems="center"
-      ml="60px"
+      ml="75px"
+      mt="30px"
       onClick={goBack}
     >
       <ChevronLeftIcon sx={{ fontSize: '1.5rem' }} />

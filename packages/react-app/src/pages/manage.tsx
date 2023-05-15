@@ -20,7 +20,7 @@ const Manage = () => {
   const { isLoading, data } = GetActiveGiveaways();
 
   return (
-    <Container maxWidth={false} sx={{ backgroundColor: '#F5F5F5' }}>
+    <Container maxWidth={false}>
       <Box sx={{ px: '5rem', py: '1rem' }}>
         <Box
           sx={{
