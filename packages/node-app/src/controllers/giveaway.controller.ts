@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
-import web3 from 'web3'
 import { Giveaway } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
 import { giveawaysContract } from '../contracts';
-import { fileToBase64 } from '../utils/file.util';
+import { fileToBase64, getDefinedFields } from '../utils/model.util';
+import { getParticipantAddress, isValidParticipant } from '../utils/inside.util';
+import { objectIdToBytes24 } from '../utils/web3.util';
 
-export const getGiveaways = async (req: Request, res: Response) => {
+export const listGiveaways = async (req: Request, res: Response) => {
   try {
     const giveaways = await Giveaway.find();
     res.status(200).json(giveaways);
@@ -38,26 +39,25 @@ export const createGiveaway = async (req: Request, res: Response) => {
     }
 
     const image = fileToBase64(file as Express.Multer.File)
-    const giveaway = new Giveaway({
+    const giveaway = await Giveaway.create({
       title,
       description,
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
-      numberOfWinners,
+      startTime: new Date(Number(startTime)),
+      endTime: new Date(Number(endTime)),
+      numberOfWinners: Number(numberOfWinners),
       requirements,
       prize,
       image,
       rules
     });
-    await giveaway.save();
     giveawayId = giveaway._id
 
     await giveawaysContract.methods
       .createGiveaway(
-        web3.utils.asciiToHex(giveawayId.toString()),
-        new Date(startTime).getTime(),
-        new Date(endTime).getTime(),
-        numberOfWinners)
+        objectIdToBytes24(giveawayId),
+        new Date(Number(startTime)).getTime(),
+        new Date(Number(endTime)).getTime(),
+        Number(numberOfWinners))
       .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
 
     res.status(201).json(giveaway);
@@ -67,6 +67,78 @@ export const createGiveaway = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   } finally {
     // remove image from tmp folder
-    fs.unlink(file.path, () => { return })
+    fs.unlink(file.path, () => { return });
+  }
+};
+
+export const updateGiveaway = async (req: Request, res: Response) => {
+  const file = req.file as Express.Multer.File
+  try {
+    const { id } = req.params;
+    const { title, description, prize, rules } = req.body;
+    const image = file ? fileToBase64(file as Express.Multer.File) : undefined
+    const updateFields = getDefinedFields({ title, description, prize, rules, image });
+    const giveaway = await Giveaway.findByIdAndUpdate(id, updateFields, { new: true });
+
+    res.status(200).json(giveaway);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  } finally {
+    if (file) fs.unlink(file.path, () => { return });
+  }
+};
+
+export const addParticipant = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { participant } = req.body;
+    const giveaway = await Giveaway.findById(id);
+
+    if (!giveaway)
+      return res.status(404).json({ error: 'Giveaway not found' });
+
+    if (!isValidParticipant(participant, giveaway.requirements))
+      return res.status(400).json({ error: "Participant is not whitelisted" });
+
+    const address = getParticipantAddress(participant);
+    giveaway.participants.push(address);
+    await giveaway.save();
+
+    await giveawaysContract.methods
+      .addParticipant(
+        objectIdToBytes24(giveaway._id),
+        address)
+      .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+
+    res.status(200).json(giveaway);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const generateWinners = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const giveaway = await Giveaway.findById(id);
+
+    if (!giveaway)
+      return res.status(404).json({ error: 'Giveaway not found' });
+    
+    if (new Date() < giveaway.endTime)
+      return res.status(400).json({ error: 'Giveaway has not ended yet' });
+
+    await giveawaysContract.methods
+      .generateWinners(objectIdToBytes24(giveaway._id))
+      .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+    
+    const winners = await giveawaysContract.methods
+      .getWinners(objectIdToBytes24(giveaway._id)).call();
+
+    giveaway.winners = winners;
+    await giveaway.save();
+
+    res.status(200).json({ winners });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
