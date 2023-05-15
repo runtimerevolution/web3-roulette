@@ -1,11 +1,13 @@
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
+import { isAfter, isBefore } from 'date-fns';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import AddIcon from '@mui/icons-material/Add';
 import { Box, Container, Grid, Typography } from '@mui/material';
-import { GetActiveGiveaways } from '../lib/queryClient';
+import Button from '@mui/material/Button';
+
 import GiveawayCard, { GiveawayCardSkeleton } from '../components/GiveawayCard';
-import { isAfter, isBefore } from 'date-fns';
+import { GetGiveaways } from '../lib/queryClient';
 
 const Tabs = {
   Active: 0,
@@ -14,10 +16,8 @@ const Tabs = {
 
 const Manage = () => {
   const navigate = useNavigate();
-
   const [activeTab, setActiveTab] = useState(Tabs.Active);
-
-  const { isLoading, data } = GetActiveGiveaways();
+  const { isLoading, data } = GetGiveaways();
 
   return (
     <Container maxWidth={false}>
