@@ -14,17 +14,28 @@ import { Giveaway } from '../lib/types';
 const GiveawayCard = (props: Giveaway) => {
   const navigate = useNavigate();
 
+  const navigateDetails = () => {
+    navigate(`/giveaways/${props.id}`);
+  };
+
   return (
     <Card sx={{ borderRadius: '1.2rem' }}>
       <CardMedia
+        className="clickable"
         component="img"
         height="120"
         image={
           props.image ? props.image : '/static/images/placeholder-image.jpg'
         }
+        onClick={navigateDetails}
       />
       <CardContent>
-        <Typography gutterBottom variant="h5">
+        <Typography
+          className="clickable"
+          gutterBottom
+          variant="h5"
+          onClick={navigateDetails}
+        >
           {props.title}
         </Typography>
         <Typography gutterBottom>{props.description}</Typography>

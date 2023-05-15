@@ -4,6 +4,10 @@ body {
   margin: 0;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 @mixin generate($prefix, $property, $values) {
   @for $i from 1 through length($values) {
     $value: nth($values, $i);
