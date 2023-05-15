@@ -5,35 +5,13 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/esbuild:esbuild",
+      "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
       "options": {
-        "platform": "node",
         "outputPath": "dist/packages/node-app",
-        "format": ["cjs"],
-        "bundle": false,
         "main": "packages/node-app/src/main.ts",
         "tsConfig": "packages/node-app/tsconfig.app.json",
-        "assets": ["packages/node-app/src/assets"],
-        "generatePackageJson": true,
-        "esbuildOptions": {
-          "sourcemap": true,
-          "outExtension": {
-            ".js": ".js"
-          }
-        }
-      },
-      "configurations": {
-        "development": {},
-        "production": {
-          "esbuildOptions": {
-            "sourcemap": false,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        }
+        "assets": ["packages/node-app/src/assets"]
       }
     },
     "serve": {
