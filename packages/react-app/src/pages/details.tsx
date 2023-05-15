@@ -21,31 +21,81 @@ const GiveawayDetailsPage = () => {
   const giveaway = useLoaderData() as Giveaway;
 
   return (
-    <>
-      <Stack direction="row">
-        <ChevronLeftIcon />
-        <Typography>Back</Typography>
-      </Stack>
-      <Stack direction="row">
-        <div>
-          <Typography>{giveaway.title}</Typography>
-          <img src={giveaway.image} alt={giveaway.title} />
-          <Typography>{giveaway.description}</Typography>
-          <Typography>
-            <>🏆 {giveaway.prize}</>
+    <Stack direction="row" justifyContent="center" spacing="120px" mt="26px">
+      <div>
+        <Stack direction="row" spacing="10px" alignItems="center">
+          <ChevronLeftIcon sx={{ fontSize: '1.5rem' }} />
+          <Typography sx={{ fontSize: '18px' }}>Back</Typography>
+        </Stack>
+        <Typography
+          sx={{
+            fontSize: '35px',
+            fontWeight: 'bold',
+            color: '#303136',
+            marginTop: '13px',
+          }}
+        >
+          {giveaway.title}
+        </Typography>
+        <img
+          className="giveaway-img"
+          src={giveaway.image}
+          alt={giveaway.title}
+        />
+        <Typography
+          sx={{
+            fontSize: '16px',
+            color: '#303136',
+            width: '580px',
+            marginTop: '20px',
+          }}
+        >
+          {giveaway.description}
+        </Typography>
+        <Stack mt="14px" spacing="12px">
+          <Typography sx={{ fontSize: '18px', color: '#303136' }}>
+            <>
+              <span
+                className="giveaway-info-icon"
+                role="img"
+                aria-label="trophy"
+              >
+                🏆
+              </span>{' '}
+              {giveaway.prize}
+            </>
           </Typography>
-          <Typography>
-            <>🗓️ {format(giveaway.endTime, 'MMMM d, yyyy')}</>
+          <Typography sx={{ fontSize: '18px', color: '#303136' }}>
+            <>
+              <span
+                className="giveaway-info-icon"
+                role="img"
+                aria-label="calendar"
+              >
+                🗓️
+              </span>{' '}
+              {format(giveaway.endTime, 'MMMM d, yyyy')}
+            </>
+          </Typography>
+        </Stack>
+      </div>
+      {giveaway.rules && (
+        <div className="giveaway-aside-info">
+          <Typography
+            sx={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#282655',
+            }}
+          >
+            Rules
+          </Typography>
+          <Typography sx={{ fontSize: '16px', marginTop: '5px' }}>
+            {giveaway.rules}
           </Typography>
         </div>
-        {giveaway.rules && (
-          <div>
-            <Typography>Rules</Typography>
-            <Typography>{giveaway.rules}</Typography>
-          </div>
-        )}
-      </Stack>
-    </>
+      )}
+    </Stack>
   );
 };
 
