@@ -62,3 +62,29 @@
   width: 605px;
   padding-top: 100px;
 }
+
+.app-bar-container {
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  height: 60px;
+}
+
+.nav-logo {
+  width: 180px;
+  margin-left: 120px;
+
+  @include mobile {
+    margin-left: 20px;
+  }
+}
+
+.profile-menu-container {
+  flex-grow: 0;
+  margin-right: 120px;
+
+  @include mobile {
+    margin-right: 20px;
+  }
+}

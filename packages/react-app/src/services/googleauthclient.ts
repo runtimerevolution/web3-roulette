@@ -31,5 +31,9 @@ const getUser = () => {
   }
 };
 
-const GoogleAuthClient = { getUserInfo, saveUser, getUser };
+const removeUser = () => {
+  localStorage.removeItem('user');
+};
+
+const GoogleAuthClient = { getUserInfo, saveUser, getUser, removeUser };
 export default GoogleAuthClient;

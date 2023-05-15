@@ -1,4 +1,4 @@
-import GoogleAuthClient from '../services/googleauth';
+import GoogleAuthClient from '../services/googleauthclient';
 
 const useUserInfo = () => {
   return GoogleAuthClient.getUser();

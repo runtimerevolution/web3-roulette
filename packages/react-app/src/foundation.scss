@@ -8,6 +8,12 @@ body {
   cursor: pointer;
 }
 
+@mixin mobile {
+  @media (max-width: 599px) {
+    @content;
+  }
+}
+
 @mixin generate($prefix, $property, $values) {
   @for $i from 1 through length($values) {
     $value: nth($values, $i);
@@ -19,5 +25,6 @@ body {
 }
 
 @include generate(ml, margin-left, (10, 20, 30, 40, 50));
+@include generate(mt, margin-top, (10, 20, 30, 40, 50));
 @include generate(w, width, (20, 40, 60, 80, 100));
 @include generate(fs, font-size, (14, 18, 22, 26, 30));
