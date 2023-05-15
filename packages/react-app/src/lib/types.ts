@@ -4,9 +4,10 @@ export type Giveaway = {
   description: string;
   startTime: Date;
   endTime: Date;
-  participants?: string[]
   winners: string[];
   numberOfWinners: number;
+  rules?: string;
+  participants?: string[];
   requirements?: object;
   image?: string;
   prize?: string;
