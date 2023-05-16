@@ -1,0 +1,42 @@
+@import '../foundation.scss';
+
+.login-page-container {
+  background-color: $primary-color;
+  height: 100vh;
+}
+
+.login-card {
+  width: 605px;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.login-sentence {
+  margin-top: 20px;
+  width: 80%;
+  text-align: center;
+}
+
+.login-image-container {
+  position: relative;
+  width: 450px;
+  height: 420px;
+  max-width: 100%;
+}
+
+.login-dart {
+  position: absolute;
+  height: 250px;
+  left: 0;
+  bottom: 0;
+}
+
+.login-trophy {
+  position: absolute;
+  height: 300px;
+  top: 0;
+  right: 0;
+}

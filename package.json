@@ -13,6 +13,7 @@
     "start-db": "brew services start mongodb-community",
     "stop-db": "brew services stop mongodb-community",
     "start-node-app": "npx nx serve node-app",
+    "start-react-app": "npx nx serve react-app",
     "test-node-app": " npx nx test node-app"
   },
   "private": true,
@@ -27,6 +28,7 @@
     "@types/express": "~4.17.13",
     "@types/multer": "^1.4.7",
     "axios": "^1.0.0",
+    "cors": "^2.8.5",
     "date-fns": "^2.30.0",
     "express": "~4.18.1",
     "geolib": "^3.3.3",

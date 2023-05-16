@@ -4,45 +4,14 @@
   width: 235px;
 }
 
-.login-page-container {
-  background-color: $primary-color;
-  height: 100vh;
-}
+.back-btn {
+  margin-left: 75px;
+  margin-top: 30px;
 
-.login-card {
-  width: 605px;
-  height: 420px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 100%;
-}
-
-.login-sentence {
-  margin-top: 20px;
-  width: 80%;
-  text-align: center;
-}
-
-.login-image-container {
-  position: relative;
-  width: 450px;
-  height: 420px;
-  max-width: 100%;
-}
-
-.login-dart {
-  position: absolute;
-  height: 250px;
-  left: 0;
-  bottom: 0;
-}
-
-.login-trophy {
-  position: absolute;
-  height: 300px;
-  top: 0;
-  right: 0;
+  @include mobile {
+    margin-left: 10px;
+    margin-top: 10px;
+  }
 }
 
 .app-bar-container {
@@ -55,7 +24,7 @@
 
 .nav-logo {
   width: 180px;
-  margin-left: 120px;
+  margin-left: 60px;
 
   @include mobile {
     margin-left: 20px;
@@ -64,7 +33,7 @@
 
 .profile-menu-container {
   flex-grow: 0;
-  margin-right: 120px;
+  margin-right: 60px;
 
   @include mobile {
     margin-right: 20px;
