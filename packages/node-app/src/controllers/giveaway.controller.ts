@@ -126,6 +126,9 @@ export const generateWinners = async (req: Request, res: Response) => {
     
     if (new Date() < giveaway.endTime)
       return res.status(400).json({ error: 'Giveaway has not ended yet' });
+    
+    if (giveaway.winners)
+      return res.status(400).json({ error: 'Giveaway already has winners' });
 
     await giveawaysContract.methods
       .generateWinners(objectIdToBytes24(giveaway._id))
