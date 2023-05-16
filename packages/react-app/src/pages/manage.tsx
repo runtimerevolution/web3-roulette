@@ -4,12 +4,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container, Grid, Typography } from '@mui/material';
 import { GetActiveGiveaways } from '../lib/queryClient';
-import GiveawayCard from '../components/GiveawayCard';
+import GiveawayCard, { GiveawayCardSkeleton } from '../components/GiveawayCard';
+import { isAfter, isBefore } from 'date-fns';
+
+const Tabs = {
+  Active: 0,
+  Archived: 1,
+}
 
 const Manage = () => {
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('active');
+  const [activeTab, setActiveTab] = useState(Tabs.Active);
 
   const { isLoading, data } = GetActiveGiveaways();
 
@@ -54,17 +60,15 @@ const Manage = () => {
         <Button
           sx={{
             textTransform: 'capitalize',
-            backgroundColor: activeTab === 'active' ? '#45507C' : 'transparent',
-            color: activeTab === 'active' ? 'white' : '#45507C',
-            ':hover': {
-              bgcolor: activeTab === 'active' ? '#45507C' : 'transparent',
-              color: activeTab === 'active' ? 'white' : '#45507C',
-            },
+            backgroundColor: activeTab === Tabs.Active ? '#45507C' : 'transparent',
+            color: activeTab === Tabs.Active ? 'white' : '#45507C',
+            ":hover": {
+              bgcolor: activeTab === Tabs.Active ? '#45507C' : 'transparent',
+              color: activeTab === Tabs.Active ? 'white' : '#45507C',
+            }
           }}
-          variant={activeTab === 'active' ? 'contained' : 'text'}
-          onClick={() => {
-            setActiveTab('active');
-          }}
+          variant={activeTab === Tabs.Active ? "contained" : "text"}
+          onClick={() => { setActiveTab(Tabs.Active) }}
         >
           Active
         </Button>
@@ -72,29 +76,31 @@ const Manage = () => {
           sx={{
             textTransform: 'capitalize',
             ml: '1rem',
-            backgroundColor:
-              activeTab === 'archived' ? '#45507C' : 'transparent',
-            color: activeTab === 'archived' ? 'white' : '#45507C',
-            ':hover': {
-              bgcolor: activeTab === 'archived' ? '#45507C' : 'transparent',
-              color: activeTab === 'archived' ? 'white' : '#45507C',
-            },
+            backgroundColor: activeTab === Tabs.Archived ? '#45507C' : 'transparent',
+            color: activeTab === Tabs.Archived ? 'white' : '#45507C',
+            ":hover": {
+              bgcolor: activeTab === Tabs.Archived ? '#45507C' : 'transparent',
+              color: activeTab === Tabs.Archived ? 'white' : '#45507C',
+            }
           }}
-          variant={activeTab === 'archived' ? 'contained' : 'text'}
-          onClick={() => {
-            setActiveTab('archived');
-          }}
+          variant={activeTab === Tabs.Archived ? "contained" : "text"}
+          onClick={() => { setActiveTab(Tabs.Archived) }}
         >
           Archived
         </Button>
-        <Grid container spacing={2} sx={{ mt: '1rem' }}>
-          <Grid item xs={3}>
-            {data?.map((item, index) => (
-              <GiveawayCard {...item} key={index} />
-            ))}
-          </Grid>
+        <Grid container spacing={3} sx={{ mt: '0rem', mb: '2rem' }}>
+          {isLoading
+            ? <>
+              <Grid item xs={3} sx={{ minWidth: '300px' }}><GiveawayCardSkeleton /></Grid>
+              <Grid item xs={3} sx={{ minWidth: '300px' }}><GiveawayCardSkeleton /></Grid>
+              <Grid item xs={3} sx={{ minWidth: '300px' }}><GiveawayCardSkeleton /></Grid>
+              <Grid item xs={3} sx={{ minWidth: '300px' }}><GiveawayCardSkeleton /></Grid>
+            </>
+            :
+            data?.filter(x => activeTab === Tabs.Active ? isAfter(x.endTime, new Date()) : isBefore(x.endTime, new Date())).map((item, index) => <Grid item xs={3} sx={{ minWidth: '300px' }} key={index}><GiveawayCard {...item} /></Grid>)
+          }
         </Grid>
-      </Box>
+      </Box >
     </Container>
   );
 };
