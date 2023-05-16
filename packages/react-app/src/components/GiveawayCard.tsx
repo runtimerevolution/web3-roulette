@@ -1,18 +1,23 @@
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+
 import {
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
   Box,
   Button,
+  Card,
+  CardContent,
+  CardMedia,
   Skeleton,
+  Typography,
 } from '@mui/material';
-import { Giveaway } from '../lib/types';
+
+import useUserInfo from '../hooks/useUserInfo';
+import { Giveaway, UserRole } from '../lib/types';
 
 const GiveawayCard = (props: Giveaway) => {
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
+  const action = userInfo.role === UserRole.ADMIN ? 'Manage' : 'Participate';
 
   const navigateDetails = () => {
     navigate(`/giveaways/${props._id}`);
@@ -63,7 +68,7 @@ const GiveawayCard = (props: Giveaway) => {
               width: '100%',
             }}
           >
-            Manage
+            {action}
           </Button>
         </Box>
       </CardContent>
