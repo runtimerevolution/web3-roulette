@@ -29,14 +29,14 @@ contract Giveaways is Ownable {
         
     require(giveaway.id != bytes24(0), "Giveaway does not exist");
     require(block.timestamp >= giveaway.startTime && block.timestamp <= giveaway.endTime, "Giveaway is not active");
-        
+
     // Check if the participant has already participated
     for (uint i = 0; i < giveaway.participants.length; i++) {
       if (giveaway.participants[i] == participantAddress) {
         revert("Participant has already participated");
       }
     }
-        
+
     // Add the participant to the participants array
     giveaway.participants.push(participantAddress);
   }
