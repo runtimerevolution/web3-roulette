@@ -1,8 +1,12 @@
-import MuiAlert from '@mui/material/Alert';
+import './login.scss';
+
+import { useState } from 'react';
+
 import { Snackbar, Stack } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+
 import LoginCard from '../components/LoginCard';
 import LoginImage from '../components/LoginImage';
-import { useState } from 'react';
 
 const LoginPage = () => {
   const [googleAuthError, setGoogleAuthError] = useState(false);
