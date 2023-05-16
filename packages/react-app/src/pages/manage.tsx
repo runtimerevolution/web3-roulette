@@ -30,7 +30,7 @@ const Manage = () => {
 
   return (
     <Container maxWidth={false}>
-      <Box sx={{ px: '5rem', py: '1rem' }}>
+      <Box sx={{ px: '3.5rem', py: '1rem' }}>
         <Box
           sx={{
             display: 'flex',
@@ -41,11 +41,10 @@ const Manage = () => {
           }}
         >
           <Typography
-            variant="h6"
             noWrap
             sx={{
-              fontFamily: 'Mulish',
-              fontWeight: 700,
+              fontSize: '28px',
+              fontWeight: 800,
               textDecoration: 'none',
             }}
           >
