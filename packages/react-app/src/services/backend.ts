@@ -52,11 +52,22 @@ class BackendService {
   }
 
   getGiveaways = async () => {
-    return await this.makeRequest<Giveaway[]>('/giveaways/', 'GET');
+    const giveaways = await this.makeRequest<Giveaway[]>('/giveaways/', 'GET');
+    giveaways.forEach((g) => {
+      g.startTime = new Date(g.startTime);
+      g.endTime = new Date(g.endTime);
+    });
+    return giveaways;
   };
 
   getGiveaway = async (giveawayId: string) => {
-    return await this.makeRequest<Giveaway>(`/giveaways/${giveawayId}/`, 'GET');
+    const giveaway = await this.makeRequest<Giveaway>(
+      `/giveaways/${giveawayId}/`,
+      'GET'
+    );
+    giveaway.startTime = new Date(giveaway.startTime);
+    giveaway.endTime = new Date(giveaway.endTime);
+    return giveaway;
   };
 }
 

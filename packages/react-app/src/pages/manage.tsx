@@ -19,6 +19,15 @@ const Manage = () => {
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const { isLoading, data } = GetGiveaways();
 
+  const giveaways = data?.filter((g) => {
+    const now = new Date();
+    const giveawayEndDate = new Date(g.endTime);
+
+    return activeTab === Tabs.Active
+      ? isAfter(giveawayEndDate, now)
+      : isBefore(giveawayEndDate, now);
+  });
+
   return (
     <Container maxWidth={false}>
       <Box sx={{ px: '5rem', py: '1rem' }}>
@@ -111,17 +120,11 @@ const Manage = () => {
               </Grid>
             </>
           ) : (
-            data
-              ?.filter((x) =>
-                activeTab === Tabs.Active
-                  ? isAfter(x.endTime, new Date())
-                  : isBefore(x.endTime, new Date())
-              )
-              .map((item, index) => (
-                <Grid item xs={3} sx={{ minWidth: '300px' }} key={index}>
-                  <GiveawayCard {...item} />
-                </Grid>
-              ))
+            giveaways?.map((item, index) => (
+              <Grid item xs={3} sx={{ minWidth: '300px' }} key={index}>
+                <GiveawayCard {...item} />
+              </Grid>
+            ))
           )}
         </Grid>
       </Box>

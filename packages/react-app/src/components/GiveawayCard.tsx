@@ -15,7 +15,7 @@ const GiveawayCard = (props: Giveaway) => {
   const navigate = useNavigate();
 
   const navigateDetails = () => {
-    navigate(`/giveaways/${props.id}`);
+    navigate(`/giveaways/${props._id}`);
   };
 
   return (
@@ -55,7 +55,7 @@ const GiveawayCard = (props: Giveaway) => {
           }}
         >
           <Button
-            onClick={() => navigate(`/edit/${props.id}`)}
+            onClick={() => navigate(`/edit/${props._id}`)}
             sx={{
               textTransform: 'capitalize',
               color: '#6D6DF0',
