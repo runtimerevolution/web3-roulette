@@ -25,7 +25,10 @@ const GiveawayDetailsPage = () => {
   return (
     <GiveawayContext.Provider value={giveaway}>
       <SubHeader />
-      <Stack direction="row" justifyContent="center" spacing="90px">
+      <Stack
+        justifyContent="center"
+        sx={{ flexDirection: { xs: 'column', md: 'row' } }}
+      >
         <GiveawayMainContent />
         <GiveawayAsideContent />
       </Stack>

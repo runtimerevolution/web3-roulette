@@ -11,12 +11,10 @@ const SubHeader = () => {
 
   return (
     <Stack
-      className="clickable"
+      className="back-btn clickable"
       direction="row"
       spacing="10px"
       alignItems="center"
-      ml="75px"
-      mt="30px"
       onClick={goBack}
     >
       <ChevronLeftIcon sx={{ fontSize: '1.5rem' }} />

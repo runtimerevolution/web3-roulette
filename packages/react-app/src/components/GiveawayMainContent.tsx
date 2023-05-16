@@ -10,13 +10,14 @@ const GiveawayMainContent = () => {
   const giveaway = useContext(GiveawayContext) as Giveaway;
 
   return (
-    <div>
+    <Stack sx={{ paddingLeft: { sm: '80px', lg: '0px' } }}>
       <Typography
         sx={{
           fontSize: '35px',
           fontWeight: 'bold',
           color: '#303136',
           marginTop: '13px',
+          marginLeft: { xs: '10px', md: '0px' },
         }}
       >
         {giveaway.title}
@@ -28,6 +29,8 @@ const GiveawayMainContent = () => {
           color: '#303136',
           width: '580px',
           marginTop: '20px',
+          maxWidth: '95%',
+          marginLeft: { xs: '10px', md: '0px' },
         }}
       >
         {giveaway.description}
@@ -54,7 +57,7 @@ const GiveawayMainContent = () => {
           </>
         </Typography>
       </Stack>
-    </div>
+    </Stack>
   );
 };
 
