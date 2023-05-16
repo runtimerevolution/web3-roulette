@@ -121,7 +121,7 @@ const Manage = () => {
             </>
           ) : (
             giveaways?.map((item, index) => (
-              <Grid item xs={3} sx={{ minWidth: '300px' }} key={index}>
+              <Grid item xs={3} sx={{ minWidth: '300px' }} key={item._id}>
                 <GiveawayCard {...item} />
               </Grid>
             ))
