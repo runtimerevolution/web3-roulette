@@ -12,9 +12,7 @@ import DuckdartClient from '../services/backend';
 const GiveawayContext = createContext<Giveaway | null>(null);
 
 const loader = async ({ params }: any) => {
-  const giveaway = (await DuckdartClient.getActiveGiveaways()).find(
-    (giveaway: Giveaway) => giveaway.id === Number(params.giveawayId)
-  );
+  const giveaway = await DuckdartClient.getGiveaway(params.giveawayId);
   if (!giveaway) {
     throw new Response('', { status: 404, statusText: 'Giveaway not found.' });
   }
