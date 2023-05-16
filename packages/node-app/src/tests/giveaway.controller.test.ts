@@ -200,7 +200,7 @@ describe('POST /giveaways/:id/participants', () => {
     const body = { participant: 'participant@example.com' };
 
     const response = await request(app)
-      .post(`/giveaways/${giveaway._id}/participants`)
+      .put(`/giveaways/${giveaway._id}/participants`)
       .send(body)
       .expect(200);
         

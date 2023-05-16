@@ -24,6 +24,6 @@ export const router = express.Router();
 router.get("/", listGiveaways);
 router.post("/", upload.single('image'), createGiveaway);
 router.get("/:id", getGiveaway);
-router.put("/:id", updateGiveaway);
-router.post("/:id/participants", addParticipant);
+router.put("/:id", upload.single('image'), updateGiveaway);
+router.put("/:id/participants", addParticipant);
 router.get("/:id/generate-winners", generateWinners);
