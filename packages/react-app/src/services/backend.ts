@@ -34,7 +34,7 @@ class BackendService {
     const axiosRequestConfig: AxiosRequestConfig = {
       url: route,
       method,
-      baseURL: Constants.LUCKDART_URI,
+      baseURL: Constants.GIVEAWAYS_API_URI,
       timeout: 1000 * 30, // 30s
     };
 
