@@ -1,3 +1,5 @@
+import './manage.scss';
+
 import { isAfter, isBefore } from 'date-fns';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
