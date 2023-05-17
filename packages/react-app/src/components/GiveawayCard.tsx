@@ -13,15 +13,52 @@ import {
 
 import useUserInfo from '../hooks/useUserInfo';
 import { Giveaway, UserRole } from '../lib/types';
+import GeolocationService from '../services/geolocation';
 
-const GiveawayCard = (props: Giveaway) => {
+const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const isAdmin = userInfo.role === UserRole.ADMIN;
   const action = isAdmin ? 'Manage' : 'Participate';
 
   const navigateDetails = () => {
-    navigate(`/giveaways/${props._id}`);
+    navigate(`/giveaways/${giveaway._id}`);
+  };
+
+  const isParticipant = (): boolean => {
+    if (giveaway.participants) {
+      return (
+        giveaway.participants.find((g) => g === userInfo.email) !== undefined
+      );
+    }
+    return false;
+  };
+
+  const meetRequirements = async (): Promise<boolean> => {
+    if (!giveaway.requirements) return true;
+
+    const unit = giveaway.requirements.unit;
+    const location = giveaway.requirements.location;
+
+    if (unit && userInfo.unit !== unit) {
+      return false;
+    }
+
+    if (location) {
+      const accepted = await GeolocationService.getLocationPermission();
+      if (!accepted) return false;
+
+      if (
+        !(await GeolocationService.isWithinRadius(
+          location.latitude,
+          location.longitude,
+          location.radius
+        ))
+      )
+        return false;
+    }
+
+    return true;
   };
 
   return (
@@ -31,7 +68,9 @@ const GiveawayCard = (props: Giveaway) => {
         component="img"
         height="120"
         image={
-          props.image ? props.image : '/static/images/placeholder-image.jpg'
+          giveaway.image
+            ? giveaway.image
+            : '/static/images/placeholder-image.jpg'
         }
         onClick={navigateDetails}
       />
@@ -43,16 +82,16 @@ const GiveawayCard = (props: Giveaway) => {
           onClick={navigateDetails}
           mt="13px"
         >
-          {props.title}
+          {giveaway.title}
         </Typography>
         <Typography gutterBottom mt="6px">
-          {props.description}
+          {giveaway.description}
         </Typography>
         <Typography gutterBottom mt="14px">
-          <>🏆 {props.prize}</>
+          <>🏆 {giveaway.prize}</>
         </Typography>
         <Typography gutterBottom mt="12px">
-          <>🗓️ {format(props.endTime, 'MMMM d, yyyy')}</>
+          <>🗓️ {format(giveaway.endTime, 'MMMM d, yyyy')}</>
         </Typography>
         <Button
           className="card-action-btn"
@@ -65,7 +104,7 @@ const GiveawayCard = (props: Giveaway) => {
             fontWeight: '500',
             border: '2px solid #6d6df0',
           }}
-          onClick={() => navigate(`/edit/${props._id}`)}
+          onClick={() => navigate(`/edit/${giveaway._id}`)}
           disableElevation
         >
           {action}
