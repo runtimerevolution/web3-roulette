@@ -18,7 +18,7 @@ import GeolocationService from '../services/geolocation';
 const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
-  const isAdmin = userInfo.role === UserRole.ADMIN;
+  const isAdmin = userInfo?.role === UserRole.ADMIN;
   const action = isAdmin ? 'Manage' : 'Participate';
 
   const navigateDetails = () => {
@@ -28,7 +28,7 @@ const GiveawayCard = (giveaway: Giveaway) => {
   const isParticipant = (): boolean => {
     if (giveaway.participants) {
       return (
-        giveaway.participants.find((g) => g === userInfo.email) !== undefined
+        giveaway.participants.find((g) => g === userInfo?.email) !== undefined
       );
     }
     return false;
@@ -40,7 +40,7 @@ const GiveawayCard = (giveaway: Giveaway) => {
     const unit = giveaway.requirements.unit;
     const location = giveaway.requirements.location;
 
-    if (unit && userInfo.unit !== unit) {
+    if (unit && userInfo?.unit !== unit) {
       return false;
     }
 

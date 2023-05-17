@@ -30,7 +30,7 @@ const EditGiveaway = () => {
 
   const { handleSubmit, register } = useForm<Giveaway>({});
 
-  return userInfo.role === UserRole.ADMIN ? (
+  return userInfo?.role === UserRole.ADMIN ? (
     <Container maxWidth={false}>
       <Box sx={{ px: '5rem', py: '2rem' }}>
         <Button

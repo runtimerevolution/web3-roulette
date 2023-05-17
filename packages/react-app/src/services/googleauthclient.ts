@@ -1,4 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
+
+import { UserInfo } from '../lib/types';
 import Constants from '../utils/Constants';
 
 const googleAuthInstance: AxiosInstance = axios.create({
@@ -20,14 +22,14 @@ const getUserInfo = async (tokenType: string, accessToken: string) => {
   console.log(`error fetching user info: ${res.status} ${res.data}`);
 };
 
-const saveUser = (userObj: object) => {
+const saveUser = (userObj: UserInfo) => {
   localStorage.setItem('user', JSON.stringify(userObj));
 };
 
-const getUser = () => {
+const getUser = (): UserInfo | undefined => {
   const userData: string | null = localStorage.getItem('user');
   if (userData) {
-    return JSON.parse(userData);
+    return JSON.parse(userData) as UserInfo;
   }
 };
 

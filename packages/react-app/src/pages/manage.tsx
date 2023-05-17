@@ -55,7 +55,7 @@ const Manage = () => {
           >
             GIVEAWAYS
           </Typography>
-          {userInfo.role === UserRole.ADMIN && (
+          {userInfo?.role === UserRole.ADMIN && (
             <Button
               variant="contained"
               sx={{
