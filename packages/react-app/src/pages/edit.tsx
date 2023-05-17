@@ -1,41 +1,45 @@
-import { Box, Button, Container, Grid, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, Typography } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
-import { useDropzone } from "react-dropzone";
-import { useCallback, useState } from "react";
+import { useDropzone } from 'react-dropzone';
+import { useCallback, useState } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { Giveaway } from "../lib/types";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Giveaway, UserRole } from '../lib/types';
+import useUserInfo from '../hooks/useUserInfo';
 
 const EditGiveaway = () => {
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
   const { id } = useParams();
-
   const [binFile, setBinFile] = useState<any>();
 
   const onDrop = useCallback((files: any) => {
-    setBinFile(files[0])
-  }, [])
+    setBinFile(files[0]);
+  }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       'image/png': ['.png'],
     },
     maxFiles: 1,
-  })
+  });
 
   const { handleSubmit, register } = useForm<Giveaway>({});
 
-  return (
+  return userInfo.role === UserRole.ADMIN ? (
     <Container maxWidth={false}>
       <Box sx={{ px: '5rem', py: '2rem' }}>
         <Button
-          sx={{ color: 'black', px: 0, textTransform: 'capitalize', }}
+          sx={{ color: 'black', px: 0, textTransform: 'capitalize' }}
           variant="text"
-          startIcon={<ChevronLeftIcon />} onClick={() => { navigate(-1) }}
+          startIcon={<ChevronLeftIcon />}
+          onClick={() => {
+            navigate(-1);
+          }}
         >
           Back
         </Button>
@@ -43,16 +47,14 @@ const EditGiveaway = () => {
         <Grid container spacing={2}>
           <Grid item xs={5}>
             <Box sx={{ mt: '1rem' }}>
-              <Typography>
-                Name
-              </Typography>
+              <Typography>Name</Typography>
               <TextField
                 id="title"
                 variant="outlined"
                 required
                 fullWidth
                 margin="none"
-                {...register('title', { required: "Required" })}
+                {...register('title', { required: 'Required' })}
                 sx={{
                   backgroundColor: 'white',
                   borderRadius: '8px',
@@ -68,53 +70,46 @@ const EditGiveaway = () => {
               <Box
                 sx={{
                   mt: '1rem',
-                  backgroundColor: 'white'
+                  backgroundColor: 'white',
                 }}
               >
+                <Typography>Drag & drop files or Browse</Typography>
                 <Typography>
-                  Drag & drop files or Browse
-                </Typography>
-                <Typography>
-                  Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word, PPT
+                  Supported formates: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word,
+                  PPT
                 </Typography>
               </Box>
 
-              {
-                isDragActive ?
-                  <p>Drop the files here ...</p> :
-                  <p>Drag 'n' drop some files here, or click to select files</p>
-              }
+              {isDragActive ? (
+                <p>Drop the files here ...</p>
+              ) : (
+                <p>Drag 'n' drop some files here, or click to select files</p>
+              )}
             </div>
 
             <Box sx={{ mt: '1rem' }}>
-              <Typography>
-                Start date
-              </Typography>
+              <Typography>Start date</Typography>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker />
                 {/* {...register('startDate', { required: "Required" })} */}
               </LocalizationProvider>
             </Box>
             <Box sx={{ mt: '1rem' }}>
-              <Typography>
-                End date
-              </Typography>
+              <Typography>End date</Typography>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker />
                 {/* {...register('endDate', { required: "Required" })} */}
               </LocalizationProvider>
             </Box>
             <Box sx={{ mt: '1rem' }}>
-              <Typography>
-                Prize
-              </Typography>
+              <Typography>Prize</Typography>
               <TextField
                 id="prize"
                 variant="outlined"
                 required
                 fullWidth
                 margin="none"
-                {...register('prize', { required: "Required" })}
+                {...register('prize', { required: 'Required' })}
                 sx={{
                   backgroundColor: 'white',
                   borderRadius: '8px',
@@ -123,16 +118,14 @@ const EditGiveaway = () => {
               />
             </Box>
             <Box sx={{ mt: '1rem' }}>
-              <Typography>
-                Number of Winners
-              </Typography>
+              <Typography>Number of Winners</Typography>
               <TextField
                 id="numberOfWinners"
                 variant="outlined"
                 required
                 fullWidth
                 margin="none"
-                {...register('numberOfWinners', { required: "Required" })}
+                {...register('numberOfWinners', { required: 'Required' })}
                 sx={{
                   backgroundColor: 'white',
                   borderRadius: '8px',
@@ -140,7 +133,6 @@ const EditGiveaway = () => {
                 }}
               />
             </Box>
-
           </Grid>
           <Grid item xs={7}>
             <TextField
@@ -150,7 +142,7 @@ const EditGiveaway = () => {
               required
               fullWidth
               margin="normal"
-              {...register('description', { required: "Required" })}
+              {...register('description', { required: 'Required' })}
             />
             {/* <TextField
               id="rules"
@@ -165,7 +157,9 @@ const EditGiveaway = () => {
         </Grid>
       </Box>
     </Container>
+  ) : (
+    <Navigate to="/" state={{ referrer: window.location.pathname }} />
   );
-}
+};
 
 export default EditGiveaway;
