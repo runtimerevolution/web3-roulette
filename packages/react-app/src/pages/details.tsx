@@ -32,7 +32,7 @@ const GiveawayDetailsPage = () => {
         sx={{ flexDirection: { xs: 'column', md: 'row' } }}
       >
         <GiveawayMainContent />
-        <GiveawayAsideContent />
+        {giveaway.rules && <GiveawayAsideContent />}
       </Stack>
     </GiveawayContext.Provider>
   );
