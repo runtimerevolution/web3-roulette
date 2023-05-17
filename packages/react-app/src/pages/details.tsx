@@ -9,12 +9,12 @@ import GiveawayAsideContent from '../components/GiveawayAsideContent';
 import GiveawayMainContent from '../components/GiveawayMainContent';
 import SubHeader from '../components/SubHeader';
 import { Giveaway } from '../lib/types';
-import DuckdartClient from '../services/backend';
+import FrontendApiClient from '../services/backend';
 
 const GiveawayContext = createContext<Giveaway | null>(null);
 
 const loader = async ({ params }: any) => {
-  const giveaway = await DuckdartClient.getGiveaway(params.giveawayId);
+  const giveaway = await FrontendApiClient.getGiveaway(params.giveawayId);
   if (!giveaway) {
     throw new Response('', { status: 404, statusText: 'Giveaway not found.' });
   }
