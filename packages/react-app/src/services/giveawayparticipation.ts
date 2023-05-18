@@ -1,4 +1,5 @@
 import { Giveaway, ParticipationState, UserInfo } from '../lib/types';
+import FrontendApiClient from '../services/backend';
 import GeolocationService from '../services/geolocation';
 
 const getParticipationState = async (
@@ -31,17 +32,19 @@ const meetRequirements = async (
   if (!giveaway.requirements) return true;
 
   const unit = giveaway.requirements.unit;
-  const location = giveaway.requirements.location;
+  const locationId = giveaway.requirements.location;
 
   if (unit && userInfo?.unit !== unit) {
     return false;
   }
 
-  if (location) {
+  if (locationId) {
     const accepted = await GeolocationService.getLocationPermission();
     if (!accepted) return false;
 
+    const location = await FrontendApiClient.getLocation(locationId);
     if (
+      !location ||
       !(await GeolocationService.isWithinRadius(
         location.latitude,
         location.longitude,

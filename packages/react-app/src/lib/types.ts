@@ -29,10 +29,11 @@ type UserInfo = {
 
 type Requirements = {
   unit?: Unit;
-  location?: Location;
+  location?: string;
 };
 
 type Location = {
+  _id: string;
   name: string;
   latitude: number;
   longitude: number;

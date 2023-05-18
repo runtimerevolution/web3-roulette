@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, Method } from 'axios';
 
-import { Giveaway } from '../lib/types';
+import { Giveaway, Location } from '../lib/types';
 import Constants from '../utils/Constants';
 
 class BackendService {
@@ -68,6 +68,15 @@ class BackendService {
     giveaway.startTime = new Date(giveaway.startTime);
     giveaway.endTime = new Date(giveaway.endTime);
     return giveaway;
+  };
+
+  getLocations = async () => {
+    return await this.makeRequest<Location[]>('/locations/', 'GET');
+  };
+
+  getLocation = async (locationId: string) => {
+    const locations = await this.getLocations();
+    return locations.find((l) => l._id === locationId);
   };
 }
 
