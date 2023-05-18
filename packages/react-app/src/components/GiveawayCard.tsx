@@ -110,11 +110,17 @@ const GiveawayCard = (giveaway: Giveaway) => {
   };
 
   const handleActionClick = () => {
+    if (!userInfo) return;
+
     if (participationState === ParticipationState.ALLOWED) {
       const errorCallback = () => {
         setParticipationState(ParticipationState.ALLOWED);
+        giveaway.participants = giveaway.participants?.filter(
+          (g) => g !== userInfo?.email
+        );
       };
 
+      giveaway.participants?.push(userInfo?.email);
       setParticipationState(ParticipationState.PARTICIPATING);
       actionConfig.onClick?.(giveaway, userInfo, errorCallback);
       return;
