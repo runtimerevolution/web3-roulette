@@ -1,6 +1,6 @@
 import { Giveaway, ParticipationState, UserInfo } from '../lib/types';
-import FrontendApiClient from '../services/backend';
-import GeolocationService from '../services/geolocation';
+import FrontendApiClient from './backend';
+import GeolocationService from './geolocation';
 
 const getParticipationState = async (
   giveaway: Giveaway,

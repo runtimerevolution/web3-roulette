@@ -1,7 +1,9 @@
 import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {
   Box,
   Button,
@@ -13,26 +15,84 @@ import {
 } from '@mui/material';
 
 import useUserInfo from '../hooks/useUserInfo';
-import { Giveaway, ParticipationState, UserRole } from '../lib/types';
+import {
+  Giveaway,
+  ParticipationState,
+  ButtonConfig,
+  UserRole,
+} from '../lib/types';
 import ParticipationService from '../services/giveawayparticipation';
+
+const ButtonsConfig: { [K in ParticipationState]: ButtonConfig } = {
+  manage: {
+    text: 'Manage',
+    color: 'white',
+    textColor: '#6D6DF0',
+    onClick: (giveaway, userInfo) => {
+      console.log('cool!');
+    },
+  },
+  participating: {
+    text: 'Registered',
+    color: '#12BB6A',
+    textColor: 'white',
+    startIcon: <CheckCircleOutlineOutlinedIcon />,
+  },
+  pending: {
+    text: 'Approval pending',
+    color: '#E8AC0A',
+    textColor: 'white',
+    startIcon: <InfoOutlinedIcon />,
+  },
+  allowed: {
+    text: 'Participate',
+    color: '#6D6DF0',
+    textColor: 'white',
+    onClick: (giveaway, userInfo) => {
+      console.log('cool!');
+    },
+  },
+  not_allowed: {
+    text: 'Not eligible',
+    color: '#9E9E9E',
+    textColor: '#2B2929',
+  },
+};
+
+const ButtonBaseStyle = {
+  width: '100%',
+  height: '35px',
+  textTransform: 'none',
+  marginTop: '17px',
+  borderRadius: '10px',
+  fontSize: '16px',
+  fontWeight: '500',
+  borderWidth: '2px',
+};
 
 const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const isAdmin = userInfo?.role === UserRole.ADMIN;
-  const action = isAdmin ? 'Manage' : 'Participate';
 
   const [participationState, setParticipationState] = useState<
     ParticipationState | undefined
   >(undefined);
-  const actionDisable =
-    !isAdmin && participationState !== ParticipationState.ALLOWED;
+
+  const actionConfig: ButtonConfig = useMemo(() => {
+    if (participationState) {
+      return ButtonsConfig[participationState];
+    }
+    return ButtonsConfig.not_allowed;
+  }, [participationState]);
 
   useEffect(() => {
     if (!isAdmin) {
       ParticipationService.getParticipationState(giveaway, userInfo).then(
         (state) => setParticipationState(state)
       );
+    } else {
+      setParticipationState(ParticipationState.MANAGE);
     }
   }, [giveaway, userInfo, isAdmin]);
 
@@ -41,7 +101,16 @@ const GiveawayCard = (giveaway: Giveaway) => {
   };
 
   return (
-    <Card sx={{ borderRadius: '1.2rem' }}>
+    <Card
+      sx={{
+        borderRadius: '1.2rem',
+        boxShadow: 0,
+        backgroundColor:
+          participationState === ParticipationState.NOT_ALLOWED
+            ? '#D9D9D9'
+            : 'white',
+      }}
+    >
       <CardMedia
         className="clickable"
         component="img"
@@ -75,19 +144,21 @@ const GiveawayCard = (giveaway: Giveaway) => {
         <Button
           className="card-action-btn"
           variant={isAdmin ? 'outlined' : 'contained'}
+          startIcon={actionConfig.startIcon}
           sx={{
-            textTransform: 'capitalize',
-            marginTop: '17px',
-            borderRadius: '10px',
-            fontSize: '16px',
-            fontWeight: '500',
-            border: actionDisable ? 'none' : '2px solid #6d6df0',
+            ...ButtonBaseStyle,
+            backgroundColor: actionConfig.color,
+            color: actionConfig.textColor,
+
+            '&.Mui-disabled': {
+              background: actionConfig.color,
+              color: actionConfig.textColor,
+            },
           }}
-          onClick={() => navigate(`/edit/${giveaway._id}`)}
-          disabled={actionDisable}
+          disabled={actionConfig.onClick === undefined}
           disableElevation
         >
-          {action}
+          {actionConfig.text}
         </Button>
       </CardContent>
     </Card>

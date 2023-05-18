@@ -40,6 +40,14 @@ type Location = {
   radius: number;
 };
 
+type ButtonConfig = {
+  text: string;
+  color: string;
+  textColor: string;
+  startIcon?: React.ReactNode;
+  onClick?: (giveaway: Giveaway, userInfo: UserInfo) => void;
+};
+
 enum UserRole {
   USER = 'user',
   ADMIN = 'admin',
@@ -52,9 +60,11 @@ enum Unit {
 }
 
 enum ParticipationState {
+  MANAGE = 'manage',
   PARTICIPATING = 'participating',
+  PENDING = 'pending',
   ALLOWED = 'allowed',
-  NOT_ALLOWED = 'not allowed',
+  NOT_ALLOWED = 'not_allowed',
 }
 
 export {
@@ -65,4 +75,5 @@ export {
   UserRole,
   Unit,
   ParticipationState,
+  ButtonConfig,
 };
