@@ -8,7 +8,7 @@ import { GiveawayContext } from '../pages/details';
 const GiveawayAsideContent = () => {
   const giveaway = useContext(GiveawayContext) as Giveaway;
 
-  return giveaway.rules ? (
+  return (
     <div className="giveaway-aside-info">
       <Typography
         sx={{
@@ -23,8 +23,6 @@ const GiveawayAsideContent = () => {
         {giveaway.rules}
       </Typography>
     </div>
-  ) : (
-    <div></div>
   );
 };
 

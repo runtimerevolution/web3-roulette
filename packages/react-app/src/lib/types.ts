@@ -1,4 +1,4 @@
-export type Giveaway = {
+type Giveaway = {
   _id: string;
   title: string;
   description: string;
@@ -12,3 +12,10 @@ export type Giveaway = {
   image?: string;
   prize?: string;
 };
+
+enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
+export { Giveaway, UserRole };

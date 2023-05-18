@@ -1,3 +1,5 @@
+import './manage.scss';
+
 import { isAfter, isBefore } from 'date-fns';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +9,9 @@ import { Box, Container, Grid, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 
 import GiveawayCard, { GiveawayCardSkeleton } from '../components/GiveawayCard';
+import useUserInfo from '../hooks/useUserInfo';
 import { GetGiveaways } from '../lib/queryClient';
+import { UserRole } from '../lib/types';
 
 const Tabs = {
   Active: 0,
@@ -16,6 +20,7 @@ const Tabs = {
 
 const Manage = () => {
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const { isLoading, data } = GetGiveaways();
 
@@ -30,7 +35,7 @@ const Manage = () => {
 
   return (
     <Container maxWidth={false}>
-      <Box sx={{ px: '5rem', py: '1rem' }}>
+      <Box sx={{ px: '3.5rem', py: '1rem' }}>
         <Box
           sx={{
             display: 'flex',
@@ -41,29 +46,34 @@ const Manage = () => {
           }}
         >
           <Typography
-            variant="h6"
             noWrap
             sx={{
-              fontFamily: 'Mulish',
-              fontWeight: 700,
+              fontSize: '28px',
+              fontWeight: 800,
               textDecoration: 'none',
             }}
           >
             GIVEAWAYS
           </Typography>
-          <Button
-            sx={{
-              textTransform: 'capitalize',
-              backgroundColor: '#6D6DF0',
-            }}
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              navigate('/edit');
-            }}
-          >
-            Create new
-          </Button>
+          {userInfo.role === UserRole.ADMIN && (
+            <Button
+              variant="contained"
+              sx={{
+                textTransform: 'none',
+                width: '150px',
+                height: '35px',
+                borderRadius: '10px',
+                fontSize: '16px',
+              }}
+              startIcon={<AddIcon />}
+              onClick={() => {
+                navigate('/edit');
+              }}
+              disableElevation
+            >
+              Create new
+            </Button>
+          )}
         </Box>
 
         <Button

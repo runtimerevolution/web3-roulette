@@ -1,18 +1,24 @@
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+
 import {
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
   Box,
   Button,
+  Card,
+  CardContent,
+  CardMedia,
   Skeleton,
+  Typography,
 } from '@mui/material';
-import { Giveaway } from '../lib/types';
+
+import useUserInfo from '../hooks/useUserInfo';
+import { Giveaway, UserRole } from '../lib/types';
 
 const GiveawayCard = (props: Giveaway) => {
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
+  const isAdmin = userInfo.role === UserRole.ADMIN;
+  const action = isAdmin ? 'Manage' : 'Participate';
 
   const navigateDetails = () => {
     navigate(`/giveaways/${props._id}`);
@@ -35,37 +41,35 @@ const GiveawayCard = (props: Giveaway) => {
           gutterBottom
           variant="h5"
           onClick={navigateDetails}
+          mt="13px"
         >
           {props.title}
         </Typography>
-        <Typography gutterBottom>{props.description}</Typography>
-        <Typography gutterBottom>
+        <Typography gutterBottom mt="6px">
+          {props.description}
+        </Typography>
+        <Typography gutterBottom mt="14px">
           <>🏆 {props.prize}</>
         </Typography>
-        <Typography gutterBottom>
+        <Typography gutterBottom mt="12px">
           <>🗓️ {format(props.endTime, 'MMMM d, yyyy')}</>
         </Typography>
-        <Box
+        <Button
+          className="card-action-btn"
+          variant={isAdmin ? 'outlined' : 'contained'}
           sx={{
-            mt: '1.5rem',
-            borderRadius: '0.6rem',
-            borderColor: '#6D6DF0',
-            borderWidth: '3px',
-            borderStyle: 'solid',
+            textTransform: 'capitalize',
+            marginTop: '17px',
+            borderRadius: '10px',
+            fontSize: '16px',
+            fontWeight: '500',
+            border: '2px solid #6d6df0',
           }}
+          onClick={() => navigate(`/edit/${props._id}`)}
+          disableElevation
         >
-          <Button
-            onClick={() => navigate(`/edit/${props._id}`)}
-            sx={{
-              textTransform: 'capitalize',
-              color: '#6D6DF0',
-              fontWeight: 600,
-              width: '100%',
-            }}
-          >
-            Manage
-          </Button>
-        </Box>
+          {action}
+        </Button>
       </CardContent>
     </Card>
   );
