@@ -126,13 +126,15 @@ export const addParticipant = async (req: Request, res: Response) => {
     if (!isValidParticipant(participant, giveaway.requirements))
       return res.status(400).json({ error: 'Participant is not whitelisted' });
 
-    const address = getParticipantAddress(participant);
-    giveaway.participants.push(address);
-    await giveaway.save();
+    if (!giveaway.participants.includes(participant)) {
+      // const address = getParticipantAddress(participant);
+      giveaway.participants.push(participant);
+      await giveaway.save();
 
-    await giveawaysContract.methods
-      .addParticipant(objectIdToBytes24(giveaway._id), address)
-      .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+      // await giveawaysContract.methods
+      //   .addParticipant(objectIdToBytes24(giveaway._id), address)
+      //   .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+    }
 
     res.status(200).json(giveaway);
   } catch (error) {
