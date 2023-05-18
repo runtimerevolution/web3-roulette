@@ -170,26 +170,28 @@ const GiveawayCard = (giveaway: Giveaway) => {
         <Typography gutterBottom mt="12px">
           <>🗓️ {format(giveaway.endTime, 'MMMM d, yyyy')}</>
         </Typography>
-        <Button
-          className="card-action-btn"
-          variant={isAdmin ? 'outlined' : 'contained'}
-          startIcon={actionConfig.startIcon}
-          sx={{
-            ...ButtonBaseStyle,
-            backgroundColor: actionConfig.color,
-            color: actionConfig.textColor,
-
-            '&.Mui-disabled': {
-              background: actionConfig.color,
+        {giveaway.endTime > new Date() && (
+          <Button
+            className="card-action-btn"
+            variant={isAdmin ? 'outlined' : 'contained'}
+            startIcon={actionConfig.startIcon}
+            sx={{
+              ...ButtonBaseStyle,
+              backgroundColor: actionConfig.color,
               color: actionConfig.textColor,
-            },
-          }}
-          onClick={handleActionClick}
-          disabled={actionConfig.onClick === undefined}
-          disableElevation
-        >
-          {actionConfig.text}
-        </Button>
+
+              '&.Mui-disabled': {
+                background: actionConfig.color,
+                color: actionConfig.textColor,
+              },
+            }}
+            onClick={handleActionClick}
+            disabled={actionConfig.onClick === undefined}
+            disableElevation
+          >
+            {actionConfig.text}
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
