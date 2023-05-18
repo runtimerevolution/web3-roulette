@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
@@ -28,8 +28,8 @@ const ButtonsConfig: { [K in ParticipationState]: ButtonConfig } = {
     text: 'Manage',
     color: 'white',
     textColor: '#6D6DF0',
-    onClick: (giveaway, userInfo) => {
-      console.log('cool!');
+    onClick: (giveaway) => {
+      ParticipationService.manage(giveaway);
     },
   },
   participating: {
@@ -48,8 +48,14 @@ const ButtonsConfig: { [K in ParticipationState]: ButtonConfig } = {
     text: 'Participate',
     color: '#6D6DF0',
     textColor: 'white',
-    onClick: (giveaway, userInfo) => {
-      console.log('cool!');
+    onClick: (giveaway, userInfo, errorCallback) => {
+      if (userInfo) {
+        ParticipationService.submitParticipation(
+          giveaway,
+          userInfo,
+          errorCallback
+        );
+      }
     },
   },
   not_allowed: {
@@ -81,7 +87,9 @@ const GiveawayCard = (giveaway: Giveaway) => {
   const isAdmin = userInfo?.role === UserRole.ADMIN;
 
   const [participationState, setParticipationState] =
-    useState<ParticipationState>(ParticipationState.CHECKING);
+    useState<ParticipationState>(
+      isAdmin ? ParticipationState.MANAGE : ParticipationState.CHECKING
+    );
 
   const actionConfig: ButtonConfig = useMemo(() => {
     return ButtonsConfig[participationState];
@@ -99,6 +107,20 @@ const GiveawayCard = (giveaway: Giveaway) => {
 
   const navigateDetails = () => {
     navigate(`/giveaways/${giveaway._id}`);
+  };
+
+  const handleActionClick = () => {
+    if (participationState === ParticipationState.ALLOWED) {
+      const errorCallback = () => {
+        setParticipationState(ParticipationState.ALLOWED);
+      };
+
+      setParticipationState(ParticipationState.PARTICIPATING);
+      actionConfig.onClick?.(giveaway, userInfo, errorCallback);
+      return;
+    }
+
+    actionConfig.onClick?.(giveaway, userInfo);
   };
 
   return (
@@ -156,6 +178,7 @@ const GiveawayCard = (giveaway: Giveaway) => {
               color: actionConfig.textColor,
             },
           }}
+          onClick={handleActionClick}
           disabled={actionConfig.onClick === undefined}
           disableElevation
         >

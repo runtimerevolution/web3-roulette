@@ -8,7 +8,8 @@ class BackendService {
     route: string,
     method: Method,
     headers?: any,
-    params?: any
+    params?: any,
+    errorCallback?: () => void
   ): Promise<T> {
     const instance = axios.create();
 
@@ -23,7 +24,9 @@ class BackendService {
           window.location.href
         )}`;
       }
+
       console.error(error);
+      errorCallback?.();
     };
 
     instance.interceptors.response.use(
@@ -77,6 +80,21 @@ class BackendService {
   getLocation = async (locationId: string) => {
     const locations = await this.getLocations();
     return locations.find((l) => l._id === locationId);
+  };
+
+  postParticipant = async (
+    giveawayId: string,
+    participant: string,
+    errorCallback?: () => void
+  ) => {
+    const body = { participant: participant };
+    await this.makeRequest(
+      `/giveaways/${giveawayId}/participants/`,
+      'PUT',
+      undefined,
+      body,
+      errorCallback
+    );
   };
 }
 

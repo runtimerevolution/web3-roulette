@@ -45,7 +45,12 @@ type ButtonConfig = {
   color: string;
   textColor: string;
   startIcon?: React.ReactNode;
-  onClick?: (giveaway: Giveaway, userInfo: UserInfo) => void;
+
+  onClick?: (
+    giveaway: Giveaway,
+    userInfo?: UserInfo,
+    errorCallback?: () => void
+  ) => void;
 };
 
 enum UserRole {

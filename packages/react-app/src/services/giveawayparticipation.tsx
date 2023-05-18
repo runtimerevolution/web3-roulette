@@ -2,6 +2,23 @@ import { Giveaway, ParticipationState, UserInfo } from '../lib/types';
 import FrontendApiClient from './backend';
 import GeolocationService from './geolocation';
 
+const submitParticipation = (
+  giveaway: Giveaway,
+  userInfo: UserInfo,
+  errorCallback?: () => void
+) => {
+  FrontendApiClient.postParticipant(
+    giveaway._id,
+    userInfo.email,
+    errorCallback
+  );
+};
+
+const manage = (giveaway: Giveaway) => {
+  // todo: point to specific giveway
+  window.location.href = '/edit';
+};
+
 const getParticipationState = async (
   giveaway: Giveaway,
   userInfo?: UserInfo
@@ -61,5 +78,7 @@ const ParticipationService = {
   getParticipationState,
   isParticipant,
   meetRequirements,
+  submitParticipation,
+  manage,
 };
 export default ParticipationService;
