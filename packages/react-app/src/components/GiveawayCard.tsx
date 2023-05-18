@@ -57,6 +57,11 @@ const ButtonsConfig: { [K in ParticipationState]: ButtonConfig } = {
     color: '#9E9E9E',
     textColor: '#2B2929',
   },
+  checking: {
+    text: '',
+    color: 'white',
+    textColor: 'white',
+  },
 };
 
 const ButtonBaseStyle = {
@@ -75,15 +80,11 @@ const GiveawayCard = (giveaway: Giveaway) => {
   const userInfo = useUserInfo();
   const isAdmin = userInfo?.role === UserRole.ADMIN;
 
-  const [participationState, setParticipationState] = useState<
-    ParticipationState | undefined
-  >(undefined);
+  const [participationState, setParticipationState] =
+    useState<ParticipationState>(ParticipationState.CHECKING);
 
   const actionConfig: ButtonConfig = useMemo(() => {
-    if (participationState) {
-      return ButtonsConfig[participationState];
-    }
-    return ButtonsConfig.not_allowed;
+    return ButtonsConfig[participationState];
   }, [participationState]);
 
   useEffect(() => {

@@ -60,6 +60,7 @@ enum Unit {
 }
 
 enum ParticipationState {
+  CHECKING = 'checking',
   MANAGE = 'manage',
   PARTICIPATING = 'participating',
   PENDING = 'pending',
