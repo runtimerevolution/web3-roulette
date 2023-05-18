@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -12,8 +13,8 @@ import {
 } from '@mui/material';
 
 import useUserInfo from '../hooks/useUserInfo';
-import { Giveaway, UserRole } from '../lib/types';
-import GeolocationService from '../services/geolocation';
+import { Giveaway, ParticipationState, UserRole } from '../lib/types';
+import ParticipationService from '../services/giveawayparticipation';
 
 const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
@@ -21,44 +22,22 @@ const GiveawayCard = (giveaway: Giveaway) => {
   const isAdmin = userInfo?.role === UserRole.ADMIN;
   const action = isAdmin ? 'Manage' : 'Participate';
 
-  const navigateDetails = () => {
-    navigate(`/giveaways/${giveaway._id}`);
-  };
+  const [participationState, setParticipationState] = useState<
+    ParticipationState | undefined
+  >(undefined);
+  const actionDisable =
+    !isAdmin && participationState !== ParticipationState.ALLOWED;
 
-  const isParticipant = (): boolean => {
-    if (giveaway.participants) {
-      return (
-        giveaway.participants.find((g) => g === userInfo?.email) !== undefined
+  useEffect(() => {
+    if (!isAdmin) {
+      ParticipationService.getParticipationState(giveaway, userInfo).then(
+        (state) => setParticipationState(state)
       );
     }
-    return false;
-  };
+  }, [giveaway, userInfo, isAdmin]);
 
-  const meetRequirements = async (): Promise<boolean> => {
-    if (!giveaway.requirements) return true;
-
-    const unit = giveaway.requirements.unit;
-    const location = giveaway.requirements.location;
-
-    if (unit && userInfo?.unit !== unit) {
-      return false;
-    }
-
-    if (location) {
-      const accepted = await GeolocationService.getLocationPermission();
-      if (!accepted) return false;
-
-      if (
-        !(await GeolocationService.isWithinRadius(
-          location.latitude,
-          location.longitude,
-          location.radius
-        ))
-      )
-        return false;
-    }
-
-    return true;
+  const navigateDetails = () => {
+    navigate(`/giveaways/${giveaway._id}`);
   };
 
   return (
@@ -102,9 +81,10 @@ const GiveawayCard = (giveaway: Giveaway) => {
             borderRadius: '10px',
             fontSize: '16px',
             fontWeight: '500',
-            border: '2px solid #6d6df0',
+            border: actionDisable ? 'none' : '2px solid #6d6df0',
           }}
           onClick={() => navigate(`/edit/${giveaway._id}`)}
+          disabled={actionDisable}
           disableElevation
         >
           {action}
