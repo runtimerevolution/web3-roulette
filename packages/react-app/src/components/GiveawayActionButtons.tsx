@@ -23,7 +23,7 @@ type ManageProps = {
 type ParticipationProps = {
   giveaway: Giveaway;
   userInfo: UserInfo;
-  updateState: () => void;
+  successCallback: () => void;
   errorCallback: () => void;
 };
 
@@ -100,12 +100,16 @@ const ApprovalPendingButton = () => {
 const ParticipateButton = ({
   giveaway,
   userInfo,
-  updateState,
+  successCallback,
   errorCallback,
 }: ParticipationProps) => {
   const handleParticipation = () => {
-    ParticipationService.submitParticipation(giveaway, userInfo, errorCallback);
-    updateState();
+    ParticipationService.submitParticipation(
+      giveaway,
+      userInfo,
+      successCallback,
+      errorCallback
+    );
   };
 
   return (

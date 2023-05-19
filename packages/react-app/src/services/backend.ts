@@ -9,11 +9,16 @@ class BackendService {
     method: Method,
     headers?: any,
     params?: any,
+    successCallback?: () => void,
     errorCallback?: () => void
   ): Promise<T> {
     const instance = axios.create();
 
-    const successResponseInterceptor = (response: any) => response.data;
+    const successResponseInterceptor = (response: any) => {
+      successCallback?.();
+      return response.data;
+    };
+
     const errorResponseInterceptor = (error: any) => {
       if (
         error?.response?.status === 401 &&
@@ -85,6 +90,7 @@ class BackendService {
   postParticipant = async (
     giveawayId: string,
     participant: string,
+    successCallback?: () => void,
     errorCallback?: () => void
   ) => {
     const body = { participant: participant };
@@ -93,6 +99,7 @@ class BackendService {
       'PUT',
       undefined,
       body,
+      successCallback,
       errorCallback
     );
   };

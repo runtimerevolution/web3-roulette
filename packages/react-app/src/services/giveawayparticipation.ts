@@ -5,11 +5,13 @@ import GeolocationService from './geolocation';
 const submitParticipation = (
   giveaway: Giveaway,
   userInfo: UserInfo,
+  successCallback?: () => void,
   errorCallback?: () => void
 ) => {
   FrontendApiClient.postParticipant(
     giveaway._id,
     userInfo.email,
+    successCallback,
     errorCallback
   );
 };

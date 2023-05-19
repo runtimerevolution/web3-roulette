@@ -57,7 +57,7 @@ const GiveawayCard = ({
       props = {
         giveaway: giveaway,
         userInfo: userInfo,
-        updateState: () => {
+        successCallback: () => {
           if (!userInfo) return;
           giveaway.participants?.push(userInfo?.email);
           setParticipationState(ParticipationState.PARTICIPATING);
