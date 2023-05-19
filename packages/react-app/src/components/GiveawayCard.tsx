@@ -81,7 +81,15 @@ const ButtonBaseStyle = {
   borderWidth: '2px',
 };
 
-const GiveawayCard = (giveaway: Giveaway) => {
+type GiveawayCardProps = {
+  giveaway: Giveaway;
+  onParticipationError: () => void;
+};
+
+const GiveawayCard = ({
+  giveaway,
+  onParticipationError,
+}: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const isAdmin = userInfo?.role === UserRole.ADMIN;
@@ -118,6 +126,7 @@ const GiveawayCard = (giveaway: Giveaway) => {
         giveaway.participants = giveaway.participants?.filter(
           (g) => g !== userInfo?.email
         );
+        onParticipationError();
       };
 
       giveaway.participants?.push(userInfo?.email);
