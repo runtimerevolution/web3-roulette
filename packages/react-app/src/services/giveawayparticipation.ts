@@ -57,7 +57,7 @@ const meetRequirements = async (
 
   if (locationId) {
     const accepted = await GeolocationService.getLocationPermission();
-    if (!accepted) return false;
+    if (!accepted) return true;
 
     const location = await FrontendApiClient.getLocation(locationId);
     if (
