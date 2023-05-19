@@ -11,9 +11,9 @@ import {
   Typography,
 } from '@mui/material';
 
-import useUserInfo from '../hooks/useUserInfo';
-import { Giveaway, ParticipationState, UserRole } from '../lib/types';
-import ParticipationService from '../services/giveawayparticipation';
+import useUserInfo from '../../hooks/useUserInfo';
+import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
+import ParticipationService from '../../services/giveawayparticipation';
 import {
   ApprovalPendingButton,
   CheckingButton,
@@ -21,7 +21,7 @@ import {
   NotAllowedButton,
   ParticipateButton,
   ParticipatingButton,
-} from './GiveawayActionButtons';
+} from './ActionButtons';
 
 const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
   manage: ManageButton,

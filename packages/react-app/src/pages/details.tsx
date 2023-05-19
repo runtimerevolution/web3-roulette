@@ -5,8 +5,8 @@ import { useLoaderData } from 'react-router-dom';
 
 import { Stack } from '@mui/material';
 
-import GiveawayAsideContent from '../components/GiveawayAsideContent';
-import GiveawayMainContent from '../components/GiveawayMainContent';
+import GiveawayAsideContent from '../components/giveaways/AsideContent';
+import GiveawayMainContent from '../components/giveaways/MainContent';
 import SubHeader from '../components/SubHeader';
 import { Giveaway } from '../lib/types';
 import FrontendApiClient from '../services/backend';

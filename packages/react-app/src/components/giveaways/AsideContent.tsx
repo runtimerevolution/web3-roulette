@@ -2,8 +2,8 @@ import { useContext } from 'react';
 
 import { Typography } from '@mui/material';
 
-import { Giveaway } from '../lib/types';
-import { GiveawayContext } from '../pages/details';
+import { Giveaway } from '../../lib/types';
+import { GiveawayContext } from '../../pages/details';
 
 const GiveawayAsideContent = () => {
   const giveaway = useContext(GiveawayContext) as Giveaway;

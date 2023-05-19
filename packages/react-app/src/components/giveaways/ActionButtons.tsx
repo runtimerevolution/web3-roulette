@@ -2,8 +2,8 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Button } from '@mui/material';
 
-import { Giveaway, UserInfo } from '../lib/types';
-import ParticipationService from '../services/giveawayparticipation';
+import { Giveaway, UserInfo } from '../../lib/types';
+import ParticipationService from '../../services/giveawayparticipation';
 
 const ButtonBaseStyle = {
   width: '100%',

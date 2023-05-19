@@ -7,7 +7,9 @@ import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
-import GiveawayCard, { GiveawayCardSkeleton } from '../components/GiveawayCard';
+import GiveawayCard, {
+  GiveawayCardSkeleton,
+} from '../components/giveaways/Card';
 import useUserInfo from '../hooks/useUserInfo';
 import { GetGiveaways } from '../lib/queryClient';
 import { UserRole } from '../lib/types';
