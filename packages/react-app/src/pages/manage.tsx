@@ -144,6 +144,14 @@ const Manage = () => {
                 <GiveawayCardSkeleton />
               </Grid>
             </>
+          ) : giveaways?.length === 0 ? (
+            <Typography
+              variant="subtitle1"
+              margin="30px"
+              sx={{ color: '#45507C' }}
+            >
+              There are no giveaways to present.
+            </Typography>
           ) : (
             giveaways?.map((item) => (
               <Grid item xs={3} sx={{ minWidth: '300px' }} key={item._id}>
