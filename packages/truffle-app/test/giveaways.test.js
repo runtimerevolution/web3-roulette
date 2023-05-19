@@ -39,18 +39,17 @@ contract("Giveaways", (accounts) => {
     const nWinners = 1;
 
     await giveawaysInstance.createGiveaway(id, startTime, endTime, nWinners);
-    await giveawaysInstance.addParticipant(id, accounts[1]);
+    await giveawaysInstance.addParticipant(id, 'PARTICIPANT_HASH');
     const participants = await giveawaysInstance.getParticipants(id);
 
-    assert.equal(participants[0], accounts[1]);
+    assert.equal(participants[0], 'PARTICIPANT_HASH');
   });
 
   it("should not allow adding a participant to a nonexistent giveaway", async function () {
     const id = web3.utils.asciiToHex("507f191e810c19729de860ea");
-    const participantAddress = accounts[0];
 
     try {
-      await giveawaysInstance.addParticipant(id, participantAddress);
+      await giveawaysInstance.addParticipant(id, 'PARTICIPANT_HASH');
       expect.fail("Expected revert, but transaction succeeded");
     } catch (error) {
       expect(error.message).to.include("Giveaway does not exist");
@@ -64,10 +63,10 @@ contract("Giveaways", (accounts) => {
     const nWinners = 1;
     
     await giveawaysInstance.createGiveaway(id, startTime, endTime, nWinners);
-    await giveawaysInstance.addParticipant(id, accounts[1]);
+    await giveawaysInstance.addParticipant(id, 'PARTICIPANT_HASH');
 
     try {
-        await giveawaysInstance.addParticipant(id, accounts[1]);
+        await giveawaysInstance.addParticipant(id, 'PARTICIPANT_HASH');
         expect.fail("Expected revert, but transaction succeeded");
       } catch (error) {
         expect(error.message).to.include("Participant has already participated");
@@ -76,7 +75,8 @@ contract("Giveaways", (accounts) => {
 
   it("should not generate winner if giveaway has not ended", async () => {
     const id = web3.utils.asciiToHex("507f191e810c19729de860ea");
-    const participants = [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]];
+    const participants = ['PARTICIPANT1_HASH', 'PARTICIPANT2_HASH',
+      'PARTICIPANT3_HASH', 'PARTICIPANT4_HASH', 'PARTICIPANT5_HASH'];
     const startTime = Math.floor((Date.now() / 1000) - 3600);
     const endTime = Math.floor((Date.now() / 1000) + 3600);
     const nWinners = 2;
@@ -96,7 +96,8 @@ contract("Giveaways", (accounts) => {
 
   it("should generate a winner after the giveaway has ended", async function () {
     const id = web3.utils.asciiToHex("507f191e810c19729de860ea");
-    const participants = [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]];
+    const participants = ['PARTICIPANT1_HASH', 'PARTICIPANT2_HASH',
+      'PARTICIPANT3_HASH', 'PARTICIPANT4_HASH', 'PARTICIPANT5_HASH'];
     const startTime = Math.floor((Date.now() / 1000) - 3600);
     const endTime = Math.floor((Date.now() / 1000) + 3600);
     const nWinners = 2;

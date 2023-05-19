@@ -14,7 +14,8 @@
     "stop-db": "brew services stop mongodb-community",
     "start-node-app": "npx nx serve node-app",
     "start-react-app": "npx nx serve react-app",
-    "test-node-app": " npx nx test node-app"
+    "test-node-app": "npx nx test node-app",
+    "test-truffle-app": "cd packages/truffle-app && truffle test && cd ../.."
   },
   "private": true,
   "dependencies": {
