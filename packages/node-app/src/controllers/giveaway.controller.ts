@@ -102,7 +102,6 @@ export const addParticipant = async (req: Request, res: Response) => {
 
     const address = getParticipantAddress(participant);
     giveaway.participants.push(address);
-    await giveaway.save();
 
     await giveawaysContract.methods
       .addParticipant(
@@ -110,6 +109,7 @@ export const addParticipant = async (req: Request, res: Response) => {
         address)
       .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
 
+    await giveaway.save();
     res.status(200).json(giveaway);
   } catch (error) {
     res.status(500).json({ error: error.message });
