@@ -2,11 +2,11 @@ import axios, { AxiosRequestConfig, Method } from 'axios';
 
 import { Giveaway, Location, Participant } from '../lib/types';
 import Constants from '../utils/Constants';
-import GeolocationService from './geolocation';
+import GeolocationService, { Coordinates } from './geolocation';
 
 type ParticipantBody = {
   id: string;
-  location?: GeolocationCoordinates | null;
+  location?: Coordinates;
 };
 
 class BackendService {
@@ -111,7 +111,10 @@ class BackendService {
     if (giveaway.requirements?.location) {
       const location = await GeolocationService.getLocation();
       if (location) {
-        body.location = location;
+        body.location = {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        };
       }
     }
 

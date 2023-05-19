@@ -1,5 +1,7 @@
 import { getDistance } from 'geolib';
+
 import { ParticipantState, Unit } from '../models/giveaway.model';
+import { Location } from '../models/location.model';
 
 // TODO: connect to inside database and get participant data
 export const getParticipant = (data) => {
@@ -24,20 +26,27 @@ const isValidLocation = (currentLocation, requiredLocation) => {
   return distance < requiredLocation.radius;
 };
 
-const validateLocation = (participant, giveaway) => {
+const validateLocation = async (participant, giveaway) => {
   const participantLocation = participant.location;
-  const requiredLocation = giveaway.requirements.location;
+  const locationId = giveaway.requirements.location;
 
-  if (requiredLocation && !participantLocation) // location is required but no location was provided
-    return ParticipantState.PENDING; // participant pending acceptance
-  else if (
-    (requiredLocation &&
-      isValidLocation(participantLocation, requiredLocation)) ||
-    !requiredLocation
-  )
-    // location required and valid or not required
+  if (locationId) {
+    // location is required but no location was provided
+    if (!participantLocation) {
+      return ParticipantState.PENDING; // participant pending acceptance
+    }
+    // location is required and was provided
+    else {
+      const requiredLocation = await Location.findById(locationId);
+      return isValidLocation(participantLocation, requiredLocation)
+        ? ParticipantState.CONFIRMED
+        : ParticipantState.REJECTED;
+    }
+  }
+  // location not required
+  else {
     return ParticipantState.CONFIRMED;
-  return ParticipantState.REJECTED;
+  }
 };
 
 const validateUnit = (participant, giveaway) => {
@@ -50,8 +59,8 @@ const validateUnit = (participant, giveaway) => {
   return ParticipantState.REJECTED;
 };
 
-export const validateParticipant = (participant, giveaway) => {
-  const locationState = validateLocation(participant, giveaway);
+export const validateParticipant = async (participant, giveaway) => {
+  const locationState = await validateLocation(participant, giveaway);
   const unitState = validateUnit(participant, giveaway);
 
   if ([locationState, unitState].includes(ParticipantState.REJECTED))

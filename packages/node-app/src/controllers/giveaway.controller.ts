@@ -135,10 +135,11 @@ export const addParticipant = async (req: Request, res: Response) => {
       })) !== null;
 
     if (participantExists)
-      return res.status(409)
+      return res
+        .status(409)
         .json({ error: 'Participant already exists in the giveaway' });
 
-    const state = validateParticipant(participant, giveaway);
+    const state = await validateParticipant(participant, giveaway);
     giveaway.participants.push({ id: participant.id, state });
     await giveaway.save();
 
@@ -158,11 +159,13 @@ export const addParticipant = async (req: Request, res: Response) => {
         .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
     } catch (error) {
       // if contract insertion fails, remove participant from the database
-      giveaway.participants = giveaway.participants.filter((p) => p.id !== participant.id);
+      giveaway.participants = giveaway.participants.filter(
+        (p) => p.id !== participant.id
+      );
       await giveaway.save();
       throw error;
     }
-  
+
     res.status(200).json({ message: 'Participant added successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });

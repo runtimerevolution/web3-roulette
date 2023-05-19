@@ -1,5 +1,10 @@
 import { getDistance } from 'geolib';
 
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
 const getLocationPermission = async () => {
   if (!navigator.geolocation) {
     return false;
@@ -46,3 +51,4 @@ const GeolocationService = {
   isWithinRadius,
 };
 export default GeolocationService;
+export { Coordinates };
