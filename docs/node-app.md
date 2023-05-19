@@ -3,6 +3,7 @@
 The Giveaways API is a RESTful API built with Node.js and MongoDB that allows users to create and manage giveaways.
 
 ## Setup
+
 ### Environment variables
 
 First let's setup our development environment by running `yarn setup-node-app`. This command will create a `.env` file inside the `node-app` folder with the following variables:

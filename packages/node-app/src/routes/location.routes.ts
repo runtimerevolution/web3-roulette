@@ -3,7 +3,7 @@ import {
   listLocations,
   createLocation,
   updateLocation,
-  deleteLocation
+  deleteLocation,
 } from '../controllers/location.controller';
 
 export const router = express.Router();
