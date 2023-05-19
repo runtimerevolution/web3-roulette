@@ -1,12 +1,9 @@
 import { format } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardMedia,
@@ -15,70 +12,24 @@ import {
 } from '@mui/material';
 
 import useUserInfo from '../hooks/useUserInfo';
-import {
-  Giveaway,
-  ParticipationState,
-  ButtonConfig,
-  UserRole,
-} from '../lib/types';
+import { Giveaway, ParticipationState, UserRole } from '../lib/types';
 import ParticipationService from '../services/giveawayparticipation';
+import {
+  ApprovalPendingButton,
+  CheckingButton,
+  ManageButton,
+  NotAllowedButton,
+  ParticipateButton,
+  ParticipatingButton,
+} from './GiveawayActionButtons';
 
-const ButtonsConfig: { [K in ParticipationState]: ButtonConfig } = {
-  manage: {
-    text: 'Manage',
-    color: 'white',
-    textColor: '#6D6DF0',
-    onClick: (giveaway) => {
-      ParticipationService.manage(giveaway);
-    },
-  },
-  participating: {
-    text: 'Registered',
-    color: '#12BB6A',
-    textColor: 'white',
-    startIcon: <CheckCircleOutlineOutlinedIcon />,
-  },
-  pending: {
-    text: 'Approval pending',
-    color: '#E8AC0A',
-    textColor: 'white',
-    startIcon: <InfoOutlinedIcon />,
-  },
-  allowed: {
-    text: 'Participate',
-    color: '#6D6DF0',
-    textColor: 'white',
-    onClick: (giveaway, userInfo, errorCallback) => {
-      if (userInfo) {
-        ParticipationService.submitParticipation(
-          giveaway,
-          userInfo,
-          errorCallback
-        );
-      }
-    },
-  },
-  not_allowed: {
-    text: 'Not eligible',
-    color: '#9E9E9E',
-    textColor: '#2B2929',
-  },
-  checking: {
-    text: '',
-    color: 'white',
-    textColor: 'white',
-  },
-};
-
-const ButtonBaseStyle = {
-  width: '100%',
-  height: '35px',
-  textTransform: 'none',
-  marginTop: '17px',
-  borderRadius: '10px',
-  fontSize: '16px',
-  fontWeight: '500',
-  borderWidth: '2px',
+const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
+  manage: ManageButton,
+  participating: ParticipatingButton,
+  pending: ApprovalPendingButton,
+  allowed: ParticipateButton,
+  not_allowed: NotAllowedButton,
+  checking: CheckingButton,
 };
 
 type GiveawayCardProps = {
@@ -99,9 +50,35 @@ const GiveawayCard = ({
       isAdmin ? ParticipationState.MANAGE : ParticipationState.CHECKING
     );
 
-  const actionConfig: ButtonConfig = useMemo(() => {
-    return ButtonsConfig[participationState];
-  }, [participationState]);
+  const ActionButton: React.ReactNode = useMemo(() => {
+    let props = {};
+
+    if (participationState === ParticipationState.ALLOWED) {
+      props = {
+        giveaway: giveaway,
+        userInfo: userInfo,
+        updateState: () => {
+          if (!userInfo) return;
+          giveaway.participants?.push(userInfo?.email);
+          setParticipationState(ParticipationState.PARTICIPATING);
+        },
+        errorCallback: () => {
+          setParticipationState(ParticipationState.ALLOWED);
+          giveaway.participants = giveaway.participants?.filter(
+            (g) => g !== userInfo?.email
+          );
+          onParticipationError();
+        },
+      };
+    } else if (participationState === ParticipationState.MANAGE) {
+      props = { giveaway: giveaway };
+    }
+
+    return React.createElement(
+      ActionButtonComponents[participationState],
+      props
+    );
+  }, [participationState, giveaway, onParticipationError, userInfo]);
 
   useEffect(() => {
     if (!isAdmin) {
@@ -115,27 +92,6 @@ const GiveawayCard = ({
 
   const navigateDetails = () => {
     navigate(`/giveaways/${giveaway._id}`);
-  };
-
-  const handleActionClick = () => {
-    if (!userInfo) return;
-
-    if (participationState === ParticipationState.ALLOWED) {
-      const errorCallback = () => {
-        setParticipationState(ParticipationState.ALLOWED);
-        giveaway.participants = giveaway.participants?.filter(
-          (g) => g !== userInfo?.email
-        );
-        onParticipationError();
-      };
-
-      giveaway.participants?.push(userInfo?.email);
-      setParticipationState(ParticipationState.PARTICIPATING);
-      actionConfig.onClick?.(giveaway, userInfo, errorCallback);
-      return;
-    }
-
-    actionConfig.onClick?.(giveaway, userInfo);
   };
 
   return (
@@ -179,28 +135,7 @@ const GiveawayCard = ({
         <Typography gutterBottom mt="12px">
           <>🗓️ {format(giveaway.endTime, 'MMMM d, yyyy')}</>
         </Typography>
-        {giveaway.endTime > new Date() && (
-          <Button
-            className="card-action-btn"
-            variant={isAdmin ? 'outlined' : 'contained'}
-            startIcon={actionConfig.startIcon}
-            sx={{
-              ...ButtonBaseStyle,
-              backgroundColor: actionConfig.color,
-              color: actionConfig.textColor,
-
-              '&.Mui-disabled': {
-                background: actionConfig.color,
-                color: actionConfig.textColor,
-              },
-            }}
-            onClick={handleActionClick}
-            disabled={actionConfig.onClick === undefined}
-            disableElevation
-          >
-            {actionConfig.text}
-          </Button>
-        )}
+        {giveaway.endTime > new Date() && ActionButton}
       </CardContent>
     </Card>
   );

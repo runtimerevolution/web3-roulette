@@ -40,19 +40,6 @@ type Location = {
   radius: number;
 };
 
-type ButtonConfig = {
-  text: string;
-  color: string;
-  textColor: string;
-  startIcon?: React.ReactNode;
-
-  onClick?: (
-    giveaway: Giveaway,
-    userInfo?: UserInfo,
-    errorCallback?: () => void
-  ) => void;
-};
-
 enum UserRole {
   USER = 'user',
   ADMIN = 'admin',
@@ -81,5 +68,4 @@ export {
   UserRole,
   Unit,
   ParticipationState,
-  ButtonConfig,
 };
