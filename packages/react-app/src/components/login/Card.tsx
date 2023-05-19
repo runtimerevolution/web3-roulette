@@ -38,7 +38,7 @@ const LoginCard = ({ handleAuthError }: LoginCardProps) => {
     if (userInfo) {
       // todo: api login - for test purposes ONLY
       userInfo.role = UserRole.USER;
-      userInfo.unit = Unit.PYTHON;
+      userInfo.unit = Unit.NODE;
 
       GoogleAuthClient.saveUser(userInfo);
       navigate('/');

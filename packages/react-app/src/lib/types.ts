@@ -7,7 +7,6 @@ type Giveaway = {
   winners: string[];
   numberOfWinners: number;
   rules?: string;
-  participants?: string[];
   requirements?: Requirements;
   image?: string;
   prize?: string;
@@ -25,6 +24,11 @@ type UserInfo = {
   picture?: string;
   role?: UserRole;
   unit?: Unit;
+};
+
+type Participant = {
+  id: string;
+  state: string;
 };
 
 type Requirements = {
@@ -68,4 +72,5 @@ export {
   UserRole,
   Unit,
   ParticipationState,
+  Participant,
 };

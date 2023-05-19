@@ -1,7 +1,13 @@
 import axios, { AxiosRequestConfig, Method } from 'axios';
 
-import { Giveaway, Location } from '../lib/types';
+import { Giveaway, Location, Participant } from '../lib/types';
 import Constants from '../utils/Constants';
+import GeolocationService from './geolocation';
+
+type ParticipantBody = {
+  id: string;
+  location?: GeolocationCoordinates | null;
+};
 
 class BackendService {
   makeRequest<T>(
@@ -87,15 +93,30 @@ class BackendService {
     return locations.find((l) => l._id === locationId);
   };
 
+  getParticipants = async (giveawayId: string) => {
+    return await this.makeRequest<Participant[]>(
+      `/giveaways/${giveawayId}/participants/`,
+      'GET'
+    );
+  };
+
   postParticipant = async (
-    giveawayId: string,
+    giveaway: Giveaway,
     participant: string,
     successCallback?: () => void,
     errorCallback?: () => void
   ) => {
-    const body = { participant: participant };
+    const body: ParticipantBody = { id: participant };
+
+    if (giveaway.requirements?.location) {
+      const location = await GeolocationService.getLocation();
+      if (location) {
+        body.location = location;
+      }
+    }
+
     await this.makeRequest(
-      `/giveaways/${giveawayId}/participants/`,
+      `/giveaways/${giveaway._id}/participants/`,
       'PUT',
       undefined,
       body,

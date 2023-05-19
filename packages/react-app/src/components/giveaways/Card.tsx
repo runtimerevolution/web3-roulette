@@ -58,14 +58,13 @@ const GiveawayCard = ({
         giveaway: giveaway,
         userInfo: userInfo,
         successCallback: () => {
-          if (!userInfo) return;
-          giveaway.participants?.push(userInfo?.email);
-          setParticipationState(ParticipationState.PARTICIPATING);
+          ParticipationService.getParticipationState(giveaway, userInfo).then(
+            (state) => setParticipationState(state)
+          );
         },
         errorCallback: () => {
-          setParticipationState(ParticipationState.ALLOWED);
-          giveaway.participants = giveaway.participants?.filter(
-            (g) => g !== userInfo?.email
+          ParticipationService.getParticipationState(giveaway, userInfo).then(
+            (state) => setParticipationState(state)
           );
           onParticipationError();
         },

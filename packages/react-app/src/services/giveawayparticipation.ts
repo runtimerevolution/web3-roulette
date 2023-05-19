@@ -9,7 +9,7 @@ const submitParticipation = (
   errorCallback?: () => void
 ) => {
   FrontendApiClient.postParticipant(
-    giveaway._id,
+    giveaway,
     userInfo.email,
     successCallback,
     errorCallback
@@ -26,21 +26,23 @@ const getParticipationState = async (
   userInfo?: UserInfo
 ): Promise<ParticipationState> => {
   if (!userInfo) return ParticipationState.NOT_ALLOWED;
-  if (giveaway.participants?.includes(userInfo.email)) {
-    return ParticipationState.PARTICIPATING;
+
+  const participants = await FrontendApiClient.getParticipants(giveaway._id);
+  const registeredUser = participants.find((p) => p.id === userInfo.email);
+
+  if (registeredUser) {
+    switch (registeredUser.state) {
+      case 'pending':
+        return ParticipationState.PENDING;
+      case 'confirmed':
+        return ParticipationState.PARTICIPATING;
+      case 'rejected':
+        return ParticipationState.NOT_ALLOWED;
+    }
   }
+
   const ableTo = await meetRequirements(giveaway, userInfo);
   return ableTo ? ParticipationState.ALLOWED : ParticipationState.NOT_ALLOWED;
-};
-
-const isParticipant = (giveaway: Giveaway, userInfo?: UserInfo): boolean => {
-  if (!userInfo) return false;
-  if (giveaway.participants) {
-    return (
-      giveaway.participants.find((g) => g === userInfo.email) !== undefined
-    );
-  }
-  return false;
 };
 
 const meetRequirements = async (
@@ -78,7 +80,6 @@ const meetRequirements = async (
 
 const ParticipationService = {
   getParticipationState,
-  isParticipant,
   meetRequirements,
   submitParticipation,
   manage,
