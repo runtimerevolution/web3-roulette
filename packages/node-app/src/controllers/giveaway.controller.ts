@@ -127,24 +127,42 @@ export const addParticipant = async (req: Request, res: Response) => {
 
     // get participant state based on requirements and save to db
     const participant = getParticipant(req.body);
+
+    const participantExists =
+      (await Giveaway.findOne({
+        _id: giveaway._id,
+        'participants.id': participant.id,
+      })) !== null;
+
+    if (participantExists)
+      return res.status(409)
+        .json({ error: 'Participant already exists in the giveaway' });
+
     const state = validateParticipant(participant, giveaway);
     giveaway.participants.push({ id: participant.id, state });
     await giveaway.save();
 
     // send state feedback
     if (state === ParticipantState.REJECTED)
-      return res.status(500).json({ error: 'Participant rejected' });
+      return res.status(422).json({ error: 'Participant rejected' });
     else if (state === ParticipantState.PENDING)
       return res
         .status(200)
         .json({ message: 'Participant pending manual approval' });
 
-    // add approve participant to smart contract
-    const participantHash = encrypt(participant.id);
-    await giveawaysContract.methods
-      .addParticipant(objectIdToBytes24(giveaway._id), participantHash)
-      .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
-
+    try {
+      // add approved participant to smart contract
+      const participantHash = encrypt(participant.id);
+      await giveawaysContract.methods
+        .addParticipant(objectIdToBytes24(giveaway._id), participantHash)
+        .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+    } catch (error) {
+      // if contract insertion fails, remove participant from the database
+      giveaway.participants = giveaway.participants.filter((p) => p.id !== participant.id);
+      await giveaway.save();
+      throw error;
+    }
+  
     res.status(200).json({ message: 'Participant added successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
