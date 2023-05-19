@@ -1,5 +1,5 @@
 import request from 'supertest';
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import { app } from '../app';
 import { Location } from '../models/location.model';
 
@@ -35,7 +35,7 @@ describe('POST /locations', () => {
     expect(response.body.longitude).toEqual(newLocation.longitude);
     expect(response.body.radius).toEqual(newLocation.radius);
   });
-})
+});
 
 describe('POST /locations/:id', () => {
   it('should update an existing location', async () => {
@@ -43,8 +43,8 @@ describe('POST /locations/:id', () => {
       name: 'Location',
       latitude: 1.234,
       longitude: 2.345,
-      radius: 100
-    })
+      radius: 100,
+    });
     const updatedLocation = {
       name: 'Updated Location',
       latitude: 41.878113,
@@ -62,7 +62,7 @@ describe('POST /locations/:id', () => {
     expect(response.body.longitude).toEqual(updatedLocation.longitude);
     expect(response.body.radius).toEqual(updatedLocation.radius);
   });
-})
+});
 
 describe('DELETE /locations/:id', () => {
   it('should delete an existing location', async () => {
@@ -70,14 +70,14 @@ describe('DELETE /locations/:id', () => {
       name: 'Location',
       latitude: 1.234,
       longitude: 2.345,
-      radius: 100
-    })
+      radius: 100,
+    });
     await request(app).delete(`/locations/${location._id}`).expect(204);
 
     const deletedLocation = await Location.findById(location._id);
     expect(deletedLocation).toBeNull();
   });
-})
+});
 
 describe('GET /locations', () => {
   it('should return a list of locations', async () => {
@@ -85,13 +85,13 @@ describe('GET /locations', () => {
       name: 'Location 1',
       latitude: 1.234,
       longitude: 2.345,
-      radius: 100
+      radius: 100,
     });
     const location2 = await Location.create({
       name: 'Location 2',
       latitude: 3.456,
       longitude: 4.567,
-      radius: 200
+      radius: 200,
     });
 
     const response = await request(app).get('/locations');
@@ -102,4 +102,4 @@ describe('GET /locations', () => {
     expect(response.body[0].name).toEqual(location1.name);
     expect(response.body[1].name).toEqual(location2.name);
   });
-})
+});

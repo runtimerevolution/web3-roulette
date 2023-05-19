@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import { Location } from '../models/location.model';
 
 describe('Location Model', () => {
   beforeAll(async () => {
     await mongoose.connect(process.env.TEST_DATABASE_URI);
   });
-  
+
   afterAll(async () => {
     await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
@@ -61,7 +61,9 @@ describe('Location Model', () => {
       await location.validate();
     } catch (error) {
       expect(error.errors.latitude).toBeDefined();
-      expect(error.errors.latitude.message).toBe('Path `latitude` is required.');
+      expect(error.errors.latitude.message).toBe(
+        'Path `latitude` is required.'
+      );
     }
   });
 
@@ -77,7 +79,9 @@ describe('Location Model', () => {
       await location.validate();
     } catch (error) {
       expect(error.errors.longitude).toBeDefined();
-      expect(error.errors.longitude.message).toBe('Path `longitude` is required.');
+      expect(error.errors.longitude.message).toBe(
+        'Path `longitude` is required.'
+      );
     }
   });
 

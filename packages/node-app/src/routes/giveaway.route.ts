@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import multer, { diskStorage } from 'multer';
 import {
   listGiveaways,
@@ -6,24 +6,26 @@ import {
   createGiveaway,
   updateGiveaway,
   addParticipant,
-  generateWinners
-} from "../controllers/giveaway.controller";
+  generateWinners,
+  getParticipants,
+} from '../controllers/giveaway.controller';
 
 const storage = diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'tmp/uploads')
+    cb(null, 'tmp/uploads');
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname)
-  }
-})
-const upload = multer({ storage })
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage });
 
 export const router = express.Router();
 
-router.get("/", listGiveaways);
-router.post("/", upload.single('image'), createGiveaway);
-router.get("/:id", getGiveaway);
-router.put("/:id", upload.single('image'), updateGiveaway);
-router.put("/:id/participants", addParticipant);
-router.get("/:id/generate-winners", generateWinners);
+router.get('/', listGiveaways);
+router.post('/', upload.single('image'), createGiveaway);
+router.get('/:id', getGiveaway);
+router.put('/:id', upload.single('image'), updateGiveaway);
+router.put('/:id/participants', addParticipant);
+router.get('/:id/participants', getParticipants);
+router.get('/:id/generate-winners', generateWinners);
