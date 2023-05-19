@@ -127,13 +127,24 @@ export const addParticipant = async (req: Request, res: Response) => {
 
     // get participant state based on requirements and save to db
     const participant = getParticipant(req.body);
+
+    const participantExists =
+      (await Giveaway.findOne({
+        _id: giveaway._id,
+        'participants.id': participant.id,
+      })) !== null;
+
+    if (participantExists)
+      return res.status(409)
+        .json({ error: 'Participant already exists in the giveaway' });
+
     const state = validateParticipant(participant, giveaway);
     giveaway.participants.push({ id: participant.id, state });
     await giveaway.save();
 
     // send state feedback
     if (state === ParticipantState.REJECTED)
-      return res.status(500).json({ error: 'Participant rejected' });
+      return res.status(422).json({ error: 'Participant rejected' });
     else if (state === ParticipantState.PENDING)
       return res
         .status(200)
