@@ -122,7 +122,9 @@ export const updateGiveaway = async (req: Request, res: Response) => {
 export const addParticipant = async (req: Request, res: Response) => {
   try {
     // check if giveaway exists
-    const giveaway = await Giveaway.findById(req.params.id);
+    const giveaway = await Giveaway.findById(req.params.id).populate(
+      'requirements.location'
+    );
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
     // get participant state based on requirements and save to db
@@ -139,7 +141,7 @@ export const addParticipant = async (req: Request, res: Response) => {
         .status(409)
         .json({ error: 'Participant already exists in the giveaway' });
 
-    const state = await validateParticipant(participant, giveaway);
+    const state = validateParticipant(participant, giveaway);
     giveaway.participants.push({ id: participant.id, state });
     await giveaway.save();
 
