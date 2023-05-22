@@ -2,13 +2,12 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 
 import { Stack, Typography } from '@mui/material';
-import { PDFDownloadLink } from '@react-pdf/renderer';
 
 import { Giveaway } from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
 import Constants from '../../utils/Constants';
 import SvgHelper from '../../utils/svghelper';
-import GiveawayPDFDocument from './PDFDocument';
+import { DownloadButton } from './PDFDocument';
 
 const GiveawayAsideContent = () => {
   const giveaway = useContext(GiveawayContext) as Giveaway;
@@ -26,7 +25,12 @@ const GiveawayAsideContent = () => {
 
   return (
     <div className="giveaway-aside-info">
-      <div>
+      {qrDataURL && (
+        <Stack alignItems="end">
+          <DownloadButton giveaway={giveaway} qrDataURL={qrDataURL} />
+        </Stack>
+      )}
+      <Stack mt="20px">
         <Typography
           sx={{
             fontSize: '20px',
@@ -39,9 +43,8 @@ const GiveawayAsideContent = () => {
         <Typography sx={{ fontSize: '16px', marginTop: '5px' }}>
           {giveaway.rules}
         </Typography>
-      </div>
-
-      <Stack alignItems="center" mt="30px" sx={{ width: '100%' }}>
+      </Stack>
+      <Stack alignItems="center" mt="30px">
         <div ref={qrContainerRef}>
           <QRCode
             value={`${Constants.FRONTEND_URI}/giveaways/${giveaway._id}`}
@@ -49,16 +52,6 @@ const GiveawayAsideContent = () => {
         </div>
         <Typography variant="h6">Share Giveaway</Typography>
       </Stack>
-      {qrDataURL && (
-        <PDFDownloadLink
-          document={
-            <GiveawayPDFDocument giveaway={giveaway} qrDataURL={qrDataURL} />
-          }
-          fileName={`giveaway-${giveaway._id}.pdf`}
-        >
-          Download!
-        </PDFDownloadLink>
-      )}
     </div>
   );
 };

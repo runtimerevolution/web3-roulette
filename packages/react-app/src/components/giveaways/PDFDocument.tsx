@@ -1,10 +1,23 @@
 import { format } from 'date-fns';
 
-import { Document, Image, Page, Text, View } from '@react-pdf/renderer';
+import { Button } from '@mui/material';
+import {
+  Document,
+  Image,
+  Page,
+  PDFDownloadLink,
+  Text,
+  View,
+} from '@react-pdf/renderer';
 
 import { Giveaway } from '../../lib/types';
 
 type GiveawayPDFDocumentProps = {
+  giveaway: Giveaway;
+  qrDataURL: string;
+};
+
+type DownloadProps = {
   giveaway: Giveaway;
   qrDataURL: string;
 };
@@ -39,4 +52,31 @@ const GiveawayPDFDocument = ({
   );
 };
 
+const DownloadButton = ({ giveaway, qrDataURL }: DownloadProps) => {
+  return (
+    <PDFDownloadLink
+      document={
+        <GiveawayPDFDocument giveaway={giveaway} qrDataURL={qrDataURL} />
+      }
+      fileName={`giveaway-${giveaway._id}.pdf`}
+    >
+      <Button
+        variant="contained"
+        sx={{
+          textTransform: 'none',
+          marginTop: '20px',
+          borderRadius: '10px',
+          fontWeight: '500',
+          fontSize: '16px',
+          width: '235px',
+        }}
+        disableElevation
+      >
+        Download giveaway PDF
+      </Button>
+    </PDFDownloadLink>
+  );
+};
+
 export default GiveawayPDFDocument;
+export { DownloadButton };
