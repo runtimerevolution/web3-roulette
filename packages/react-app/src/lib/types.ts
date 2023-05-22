@@ -14,13 +14,13 @@ type Giveaway = {
 
 type UserInfo = {
   email: string;
-  family_name: string;
-  given_name: string;
+  familyName: string;
+  givenName: string;
   hd: string;
   id: string;
   locale: string;
   name: string;
-  verified_email: boolean;
+  verifiedEmail: boolean;
   picture?: string;
   role?: UserRole;
   unit?: Unit;
@@ -61,7 +61,7 @@ enum ParticipationState {
   PARTICIPATING = 'participating',
   PENDING = 'pending',
   ALLOWED = 'allowed',
-  NOT_ALLOWED = 'not_allowed',
+  NOT_ALLOWED = 'notAllowed',
 }
 
 export {

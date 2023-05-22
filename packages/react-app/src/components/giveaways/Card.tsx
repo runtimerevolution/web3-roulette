@@ -28,7 +28,7 @@ const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
   participating: ParticipatingButton,
   pending: ApprovalPendingButton,
   allowed: ParticipateButton,
-  not_allowed: NotAllowedButton,
+  notAllowed: NotAllowedButton,
   checking: CheckingButton,
 };
 
