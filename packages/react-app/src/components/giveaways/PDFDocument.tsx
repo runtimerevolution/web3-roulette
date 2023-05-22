@@ -4,7 +4,15 @@ import { Document, Image, Page, Text, View } from '@react-pdf/renderer';
 
 import { Giveaway } from '../../lib/types';
 
-const GiveawayPDFDocument = (giveaway: Giveaway) => {
+type GiveawayPDFDocumentProps = {
+  giveaway: Giveaway;
+  qrDataURL: string;
+};
+
+const GiveawayPDFDocument = ({
+  giveaway,
+  qrDataURL,
+}: GiveawayPDFDocumentProps) => {
   return (
     <Document>
       <Page size="A4">
@@ -23,6 +31,9 @@ const GiveawayPDFDocument = (giveaway: Giveaway) => {
             <Text>{giveaway.rules}</Text>
           </View>
         )}
+        <View>
+          <Image src={qrDataURL} />
+        </View>
       </Page>
     </Document>
   );
