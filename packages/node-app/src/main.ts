@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { app } from './app'
+import { app } from './app';
 
 const host = process.env.SERVER_HOST;
 const port = Number(process.env.SERVER_PORT);
@@ -10,4 +10,4 @@ mongoose
   .then(() =>
     app.listen(port, host,
       () => console.log(`[ ready ] http://${host}:${port}`)))
-  .catch((error) => console.log(error))
+  .catch((error) => console.log(error));

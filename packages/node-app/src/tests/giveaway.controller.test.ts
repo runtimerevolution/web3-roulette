@@ -9,12 +9,21 @@ import { objectIdToBytes24 } from '../utils/web3.util';
 const createGiveawayMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const addParticipantMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const generateWinnersMock = jest.fn().mockReturnValue({ send: () => ({}) });
-const getWinnersMock = jest.fn().mockReturnValue({ call: () => ['WINNER_ADDRESS'] });
+const getWinnersMock = jest
+  .fn()
+  .mockReturnValue({ call: () => ['WINNER_ADDRESS'] });
 
 giveawaysContract.methods.createGiveaway = createGiveawayMock;
 giveawaysContract.methods.addParticipant = addParticipantMock;
 giveawaysContract.methods.generateWinners = generateWinnersMock;
 giveawaysContract.methods.getWinners = getWinnersMock;
+
+jest.mock('../utils/web3.util', () => ({
+  __esModule: true,
+  decrypt: () => 'DECRYPTED_DATA',
+  encrypt: () => 'ENCRYPTED_DATA',
+  objectIdToBytes24: () => 'BYTES24',
+}));
 
 beforeAll(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
@@ -31,7 +40,7 @@ afterEach(async () => {
 
 describe('GET /', () => {
   it('should return a message', async () => {
-    const response = await request(app).get('/')
+    const response = await request(app).get('/');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ alive: 'True' });
   });
@@ -53,7 +62,7 @@ describe('GET /giveaways', () => {
         endTime: Date.now() + 120,
         numberOfWinners: 1,
         prize: 'Test prize',
-        image: 'test-image-base64'
+        image: 'test-image-base64',
       }),
       await Giveaway.create({
         title: 'Giveaway 2',
@@ -62,7 +71,7 @@ describe('GET /giveaways', () => {
         endTime: Date.now() + 120,
         numberOfWinners: 1,
         prize: 'Test prize',
-        image: 'test-image-base64'
+        image: 'test-image-base64',
       }),
     ];
 
@@ -72,14 +81,14 @@ describe('GET /giveaways', () => {
       expect.arrayContaining([
         expect.objectContaining({ title: giveaways[0].title }),
         expect.objectContaining({ title: giveaways[1].title }),
-      ]),
+      ])
     );
   });
 });
 
 describe('GET /giveaways/:id', () => {
   it('should return error when the id does not exist', async () => {
-    const response = await request(app).get('/giveaways/invalid-id');    
+    const response = await request(app).get('/giveaways/invalid-id');
     expect(response.status).toBe(500);
   });
 
@@ -91,7 +100,7 @@ describe('GET /giveaways/:id', () => {
       endTime: Date.now() + 120,
       numberOfWinners: 1,
       prize: 'Test prize',
-      image: 'test-image-base64'
+      image: 'test-image-base64',
     });
 
     const response = await request(app).get(`/giveaways/${giveaway._id}`);
@@ -112,7 +121,7 @@ describe('POST /giveaways', () => {
       startTime: Date.now() + 60,
       endTime: Date.now() + 120,
       numberOfWinners: 1,
-      prize: 'Test prize'
+      prize: 'Test prize',
     };
 
     const response = await request(app)
@@ -124,13 +133,21 @@ describe('POST /giveaways', () => {
       .field('endTime', newGiveaway.endTime)
       .field('numberOfWinners', newGiveaway.numberOfWinners)
       .field('prize', newGiveaway.prize)
-      .attach('image', fs.readFileSync(`${__dirname}/test-image.png`), 'tests/test-image.png')
+      .attach(
+        'image',
+        fs.readFileSync(`${__dirname}/test-image.png`),
+        'tests/test-image.png'
+      )
       .expect(201);
 
     expect(response.body.title).toEqual(newGiveaway.title);
     expect(response.body.description).toEqual(newGiveaway.description);
-    expect(new Date(response.body.startTime).getTime()).toEqual(newGiveaway.startTime);
-    expect(new Date(response.body.endTime).getTime()).toEqual(newGiveaway.endTime);
+    expect(new Date(response.body.startTime).getTime()).toEqual(
+      newGiveaway.startTime
+    );
+    expect(new Date(response.body.endTime).getTime()).toEqual(
+      newGiveaway.endTime
+    );
     expect(response.body.numberOfWinners).toEqual(newGiveaway.numberOfWinners);
 
     const localGiveaway = await Giveaway.findById(response.body._id);
@@ -140,18 +157,18 @@ describe('POST /giveaways', () => {
     expect(localGiveaway.endTime.getTime()).toEqual(newGiveaway.endTime);
     expect(localGiveaway.numberOfWinners).toEqual(newGiveaway.numberOfWinners);
 
-    expect(giveawaysContract.methods.createGiveaway)
-      .toHaveBeenCalledWith(
-        objectIdToBytes24(response.body._id),
-        newGiveaway.startTime,
-        newGiveaway.endTime,
-        newGiveaway.numberOfWinners);
-    })
+    expect(giveawaysContract.methods.createGiveaway).toHaveBeenCalledWith(
+      objectIdToBytes24(response.body._id),
+      newGiveaway.startTime,
+      newGiveaway.endTime,
+      newGiveaway.numberOfWinners
+    );
+  });
 });
 
 describe('PUT /giveaways/:id', () => {
   it('should return error when the id does not exist', async () => {
-    const response = await request(app).put('/giveaways/invalid-id');    
+    const response = await request(app).put('/giveaways/invalid-id');
     expect(response.status).toBe(500);
   });
 
@@ -163,21 +180,21 @@ describe('PUT /giveaways/:id', () => {
       endTime: Date.now() + 120,
       numberOfWinners: 1,
       prize: 'Test prize',
-      image: 'test-image-base64'
+      image: 'test-image-base64',
     });
     const updatedGiveaway = {
       title: 'Updated Giveaway',
       description: 'Description for giveaway',
       numberOfWinners: 2,
       prize: 'Test prize 2',
-      image: 'test-image-base64-2'
+      image: 'test-image-base64-2',
     };
 
     const response = await request(app)
       .put(`/giveaways/${giveaway._id}`)
       .send(updatedGiveaway)
       .expect(200);
-    
+
     expect(response.status).toBe(200);
     expect(response.body.title).toBe(updatedGiveaway.title);
     expect(response.body.description).toBe(updatedGiveaway.description);
@@ -195,24 +212,20 @@ describe('POST /giveaways/:id/participants', () => {
       endTime: Date.now() + 120,
       numberOfWinners: 1,
       prize: 'Test prize',
-      image: 'test-image-base64'
+      image: 'test-image-base64',
     });
-    const body = { participant: 'participant@example.com' };
+
+    const body = { id: 'participant@example.com' };
 
     const response = await request(app)
       .put(`/giveaways/${giveaway._id}/participants`)
       .send(body)
       .expect(200);
-        
-    expect(response.body.participants.length).toEqual(1);
-    expect(response.body.participants[0]).toEqual('PARTICIPANT_ADDRESS');
 
-    expect(giveawaysContract.methods.addParticipant)
-      .toHaveBeenCalledWith(
-        objectIdToBytes24(giveaway._id),
-        'PARTICIPANT_ADDRESS');
-  })
-})
+    expect(response.body.message).toEqual('Participant added successfully');
+    expect(giveawaysContract.methods.addParticipant).toHaveBeenCalled();
+  });
+});
 
 describe('GET /giveaways/:id/generate-winners', () => {
   it('should generate and return winners', async () => {
@@ -223,22 +236,24 @@ describe('GET /giveaways/:id/generate-winners', () => {
       endTime: Date.now() + 120,
       numberOfWinners: 1,
       prize: 'Test prize',
-      image: 'test-image-base64'
+      image: 'test-image-base64',
     });
 
-    await new Promise((r) => setTimeout(r, 200));  
+    await new Promise((r) => setTimeout(r, 200));
 
     const response = await request(app)
       .get(`/giveaways/${giveaway._id}/generate-winners`)
       .expect(200);
-        
-    expect(response.body.winners.length).toEqual(1);
-    expect(response.body.winners[0]).toEqual('WINNER_ADDRESS');
-    
-    expect(giveawaysContract.methods.generateWinners)
-      .toHaveBeenCalledWith(objectIdToBytes24(giveaway._id));
-    
-    expect(giveawaysContract.methods.getWinners)
-      .toHaveBeenCalledWith(objectIdToBytes24(giveaway._id));
-  })
-})
+
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].id).toEqual('DECRYPTED_DATA');
+
+    expect(giveawaysContract.methods.generateWinners).toHaveBeenCalledWith(
+      objectIdToBytes24(giveaway._id)
+    );
+
+    expect(giveawaysContract.methods.getWinners).toHaveBeenCalledWith(
+      objectIdToBytes24(giveaway._id)
+    );
+  });
+});

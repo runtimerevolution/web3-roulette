@@ -3,6 +3,7 @@
 The Giveaways smart contract is a Solidity contract that allows for the creation of giveaways in the Ethereum blockchain, where a winner or winners can be randomly selected from a list of eligible participants. It provides functionality to create a giveaway, add participants and generate winners, as well as some getter function to facilitate testing.
 
 ## Setup
+
 ### Install Ganache
 
 Ganache is a local development blockchain used to develop decentralized applications (DApps) on the Ethereum blockchain. It simulates the Ethereum network, and lets you check how the app will perform before releasing it to production.
@@ -18,6 +19,7 @@ Before continuing you can copy the address of the first account and add it to yo
 ### Install Truffle and deploy contract
 
 #### If this is your first time
+
 Truffle is a development environment, testing framework and asset pipeline for Ethereum, aiming to make life as an Ethereum developer easier. To install it in your development environment and deploy the current contract for the first time just run the following command:
 
 ```
