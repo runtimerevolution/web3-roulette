@@ -3,18 +3,23 @@ import QRCode from 'react-qr-code';
 
 import { Stack, Typography } from '@mui/material';
 
-import { Giveaway } from '../../lib/types';
+import useUserInfo from '../../hooks/useUserInfo';
+import { Giveaway, UserRole } from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
 import Constants from '../../utils/Constants';
 import SvgHelper from '../../utils/SvgHelper';
 import { DownloadButton } from './PDFDocument';
 
 const GiveawayAsideContent = () => {
+  const userInfo = useUserInfo();
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const qrContainerRef = useRef<HTMLDivElement>(null);
   const [qrDataURL, setQrDataURL] = useState<string>();
+  const isAdmin = userInfo?.role === UserRole.ADMIN;
 
   useEffect(() => {
+    if (!isAdmin) return;
+
     const qrContainer = qrContainerRef.current;
     if (qrContainerRef) {
       const qrSvg = qrContainer?.children[0] as SVGElement;
@@ -25,37 +30,41 @@ const GiveawayAsideContent = () => {
         (url) => setQrDataURL(url)
       );
     }
-  }, [qrDataURL]);
+  }, [isAdmin, qrDataURL]);
 
   return (
     <div className="giveaway-aside-info">
-      {qrDataURL && (
+      {isAdmin && (
         <Stack alignItems="end">
           <DownloadButton giveaway={giveaway} qrDataURL={qrDataURL} />
         </Stack>
       )}
-      <Stack mt="20px">
-        <Typography
-          sx={{
-            fontSize: '20px',
-            fontWeight: 'bold',
-            color: '#282655',
-          }}
-        >
-          Rules
-        </Typography>
-        <Typography sx={{ fontSize: '16px', marginTop: '5px' }}>
-          {giveaway.rules}
-        </Typography>
-      </Stack>
-      <Stack alignItems="center" mt="30px">
-        <div ref={qrContainerRef}>
-          <QRCode
-            value={`${Constants.FRONTEND_URI}/giveaways/${giveaway._id}`}
-          />
-        </div>
-        <Typography variant="h6">Share Giveaway</Typography>
-      </Stack>
+      {giveaway.rules && (
+        <Stack mt={isAdmin ? '20px' : '80px'}>
+          <Typography
+            sx={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#282655',
+            }}
+          >
+            Rules
+          </Typography>
+          <Typography sx={{ fontSize: '16px', marginTop: '5px' }}>
+            {giveaway.rules}
+          </Typography>
+        </Stack>
+      )}
+      {isAdmin && (
+        <Stack alignItems="center" mt="50px">
+          <div ref={qrContainerRef}>
+            <QRCode
+              value={`${Constants.FRONTEND_URI}/giveaways/${giveaway._id}`}
+            />
+          </div>
+          <Typography variant="h6">Share Giveaway</Typography>
+        </Stack>
+      )}
     </div>
   );
 };
