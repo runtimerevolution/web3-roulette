@@ -6,11 +6,50 @@ import {
   Image,
   Page,
   PDFDownloadLink,
+  StyleSheet,
   Text,
   View,
 } from '@react-pdf/renderer';
 
 import { Giveaway } from '../../lib/types';
+
+const styles = StyleSheet.create({
+  section: {
+    margin: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  center: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: '25px',
+    color: '#303136',
+    padding: 10,
+  },
+  subtitle: {
+    fontSize: '20px',
+    color: '#303136',
+    paddingBottom: 5,
+  },
+  image: {
+    width: '350px',
+    borderRadius: '16px',
+    marginBottom: 10,
+  },
+  qr: {
+    width: '150px',
+    height: '150px',
+  },
+  description: {
+    fontSize: '16px',
+  },
+  info: {
+    fontSize: '18px',
+    paddingBottom: 5,
+  },
+});
 
 type GiveawayPDFDocumentProps = {
   giveaway: Giveaway;
@@ -29,23 +68,27 @@ const GiveawayPDFDocument = ({
   return (
     <Document>
       <Page size="A4">
-        <View>
-          <Text>{giveaway.title}</Text>
-          <Image src={giveaway.image} />
-          <Text>{giveaway.description}</Text>
+        <View style={styles.section}>
+          <Text style={styles.title}>{giveaway.title}</Text>
+          <View style={styles.center}>
+            <Image src={giveaway.image} style={styles.image} />
+          </View>
+          <Text style={styles.description}>{giveaway.description}</Text>
         </View>
-        <View>
-          <Text>{giveaway.prize}</Text>
-          <Text>{format(giveaway.endTime, 'MMMM d, yyyy')}</Text>
+        <View style={styles.section}>
+          <Text style={styles.info}>{giveaway.prize}</Text>
+          <Text style={styles.info}>
+            {format(giveaway.endTime, 'MMMM d, yyyy')}
+          </Text>
         </View>
         {giveaway.rules && (
-          <View>
-            <Text>Rules</Text>
-            <Text>{giveaway.rules}</Text>
+          <View style={styles.section}>
+            <Text style={styles.subtitle}>Rules</Text>
+            <Text style={styles.description}>{giveaway.rules}</Text>
           </View>
         )}
-        <View>
-          <Image src={qrDataURL} />
+        <View style={{ ...styles.section, ...styles.center }}>
+          <Image style={styles.qr} src={qrDataURL} />
         </View>
       </Page>
     </Document>

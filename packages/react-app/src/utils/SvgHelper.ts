@@ -4,11 +4,18 @@ const svgToBase64 = (svgElem: SVGElement) => {
   return `data:image/svg+xml;base64,${base64Str}`;
 };
 
-const svgToDataURL = (svgData: string): Promise<string> => {
+const svgToDataURL = (
+  svgData: string,
+  width: number,
+  height: number
+): Promise<string> => {
   const canvas = document.createElement('canvas');
   canvas.setAttribute('id', 'temp-canvas');
   canvas.setAttribute('style', 'display: none');
   document.body.appendChild(canvas);
+
+  canvas.width = width;
+  canvas.height = height;
 
   const ctx = canvas.getContext('2d');
   if (!ctx) {

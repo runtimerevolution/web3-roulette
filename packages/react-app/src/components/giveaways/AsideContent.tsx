@@ -6,7 +6,7 @@ import { Stack, Typography } from '@mui/material';
 import { Giveaway } from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
 import Constants from '../../utils/Constants';
-import SvgHelper from '../../utils/svghelper';
+import SvgHelper from '../../utils/SvgHelper';
 import { DownloadButton } from './PDFDocument';
 
 const GiveawayAsideContent = () => {
@@ -18,8 +18,12 @@ const GiveawayAsideContent = () => {
     const qrContainer = qrContainerRef.current;
     if (qrContainerRef) {
       const qrSvg = qrContainer?.children[0] as SVGElement;
+      const svgRect = qrSvg.getBoundingClientRect();
+
       const svgBase64 = SvgHelper.svgToBase64(qrSvg);
-      SvgHelper.svgToDataURL(svgBase64).then((url) => setQrDataURL(url));
+      SvgHelper.svgToDataURL(svgBase64, svgRect.width, svgRect.height).then(
+        (url) => setQrDataURL(url)
+      );
     }
   }, [qrDataURL]);
 
