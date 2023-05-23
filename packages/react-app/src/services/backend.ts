@@ -79,9 +79,11 @@ class BackendService {
       `/giveaways/${giveawayId}/`,
       'GET'
     );
-    giveaway.startTime = new Date(giveaway.startTime);
-    giveaway.endTime = new Date(giveaway.endTime);
-    return giveaway;
+    if (giveaway) {
+      giveaway.startTime = new Date(giveaway.startTime);
+      giveaway.endTime = new Date(giveaway.endTime);
+      return giveaway;
+    }
   };
 
   getLocations = async () => {
