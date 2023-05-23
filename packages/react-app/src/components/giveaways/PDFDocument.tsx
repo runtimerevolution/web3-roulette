@@ -70,7 +70,7 @@ type GiveawayPDFDocumentProps = {
 
 type DownloadProps = {
   giveaway: Giveaway;
-  qrDataURL: string;
+  qrDataURL?: string;
 };
 
 const GiveawayPDFDocument = ({
@@ -114,28 +114,35 @@ const GiveawayPDFDocument = ({
 };
 
 const DownloadButton = ({ giveaway, qrDataURL }: DownloadProps) => {
-  return (
+  const button = (
+    <Button
+      variant="contained"
+      sx={{
+        textTransform: 'none',
+        marginTop: '20px',
+        borderRadius: '10px',
+        fontWeight: '500',
+        fontSize: '16px',
+        width: '235px',
+      }}
+      disableElevation
+      disabled={qrDataURL === undefined}
+    >
+      Download giveaway PDF
+    </Button>
+  );
+
+  return qrDataURL ? (
     <PDFDownloadLink
       document={
         <GiveawayPDFDocument giveaway={giveaway} qrDataURL={qrDataURL} />
       }
       fileName={`giveaway-${giveaway._id}.pdf`}
     >
-      <Button
-        variant="contained"
-        sx={{
-          textTransform: 'none',
-          marginTop: '20px',
-          borderRadius: '10px',
-          fontWeight: '500',
-          fontSize: '16px',
-          width: '235px',
-        }}
-        disableElevation
-      >
-        Download giveaway PDF
-      </Button>
+      {button}
     </PDFDownloadLink>
+  ) : (
+    <div>{button}</div>
   );
 };
 
