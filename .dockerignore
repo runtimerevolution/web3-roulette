@@ -3,3 +3,8 @@ dist
 dist-ssr
 *.local
 fly.toml
+docs
+.vscode
+tmp
+packages/node-app
+packages/truffle-app
