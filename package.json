@@ -8,7 +8,7 @@
   "scripts": {
     "setup-contract": "cd packages/truffle-app && npm install -g truffle && truffle compile && truffle migrate && cd ../.. && cp packages/truffle-app/build/contracts/Giveaways.json packages/node-app/src/contracts/Giveaways.json",
     "redeploy-contract": "cd packages/truffle-app && truffle compile && truffle migrate --reset && cd ../.. && cp packages/truffle-app/build/contracts/Giveaways.json packages/node-app/src/contracts/Giveaways.json",
-    "setup-node-app": "cd packages/node-app && cp .env.example .env && cd ../.. && npm install -g npx",
+    "setup-node-app": "mkdir -p tmp/uploads && cd packages/node-app && cp .env.example .env && cd ../.. && npm install -g npx",
     "setup-db": "brew update && brew tap mongodb/brew && brew install mongodb-community && brew tap homebrew/services",
     "start-db": "brew services start mongodb-community",
     "stop-db": "brew services stop mongodb-community",

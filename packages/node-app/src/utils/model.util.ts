@@ -19,3 +19,12 @@ export const getDefinedFields = (
 
   return definedFields;
 };
+
+export const handleError = (error) => {
+  if (error.errors)
+    return Object.entries(error.errors).map(([field, error]) => ({
+      field,
+      message: (error as any).message,
+    }));
+  return error.message;
+};

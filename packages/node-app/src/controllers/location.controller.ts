@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { Location } from '../models/location.model';
+import { handleError } from '../utils/model.util';
 
 export const listLocations = async (req: Request, res: Response) => {
   try {
     const locations = await Location.find();
     res.status(200).json(locations);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };
 
@@ -22,7 +23,7 @@ export const createLocation = async (req: Request, res: Response) => {
     await location.save();
     res.status(201).json(location);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };
 
@@ -40,7 +41,7 @@ export const updateLocation = async (req: Request, res: Response) => {
 
     res.status(200).json(location);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };
 
@@ -50,6 +51,6 @@ export const deleteLocation = async (req: Request, res: Response) => {
     await Location.findByIdAndDelete(id);
     res.sendStatus(204);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };
