@@ -118,8 +118,8 @@ describe('POST /giveaways', () => {
     const newGiveaway = {
       title: 'Test Giveaway',
       description: 'This is a test giveaway',
-      startTime: Date.now() + 60,
-      endTime: Date.now() + 120,
+      startTime: new Date(Date.now() + 60).toISOString(),
+      endTime: new Date(Date.now() + 120).toISOString(),
       numberOfWinners: 1,
       prize: 'Test prize',
     };
@@ -142,25 +142,21 @@ describe('POST /giveaways', () => {
 
     expect(response.body.title).toEqual(newGiveaway.title);
     expect(response.body.description).toEqual(newGiveaway.description);
-    expect(new Date(response.body.startTime).getTime()).toEqual(
-      newGiveaway.startTime
-    );
-    expect(new Date(response.body.endTime).getTime()).toEqual(
-      newGiveaway.endTime
-    );
+    expect(response.body.startTime).toEqual(newGiveaway.startTime);
+    expect(response.body.endTime).toEqual(newGiveaway.endTime);
     expect(response.body.numberOfWinners).toEqual(newGiveaway.numberOfWinners);
 
     const localGiveaway = await Giveaway.findById(response.body._id);
     expect(localGiveaway.title).toEqual(newGiveaway.title);
     expect(localGiveaway.description).toEqual(newGiveaway.description);
-    expect(localGiveaway.startTime.getTime()).toEqual(newGiveaway.startTime);
-    expect(localGiveaway.endTime.getTime()).toEqual(newGiveaway.endTime);
+    expect(localGiveaway.startTime).toEqual(new Date(newGiveaway.startTime));
+    expect(localGiveaway.endTime).toEqual(new Date(newGiveaway.endTime));
     expect(localGiveaway.numberOfWinners).toEqual(newGiveaway.numberOfWinners);
 
     expect(giveawaysContract.methods.createGiveaway).toHaveBeenCalledWith(
       objectIdToBytes24(response.body._id),
-      newGiveaway.startTime,
-      newGiveaway.endTime,
+      new Date(newGiveaway.startTime).getTime(),
+      new Date(newGiveaway.endTime).getTime(),
       newGiveaway.numberOfWinners
     );
   });
