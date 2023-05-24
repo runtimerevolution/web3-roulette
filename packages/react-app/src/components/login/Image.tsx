@@ -1,5 +1,5 @@
-import dart from '../assets/Dart.png';
-import trophy from '../assets/Trophy.png';
+import dart from '../../assets/Dart.png';
+import trophy from '../../assets/Trophy.png';
 
 const LoginImage = () => {
   return (

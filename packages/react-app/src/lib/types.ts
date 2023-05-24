@@ -7,10 +7,41 @@ type Giveaway = {
   winners: string[];
   numberOfWinners: number;
   rules?: string;
-  participants?: string[];
-  requirements?: object;
+  requirements?: Requirements;
   image?: string;
   prize?: string;
+};
+
+type UserInfo = {
+  email: string;
+  familyName: string;
+  givenName: string;
+  hd: string;
+  id: string;
+  locale: string;
+  name: string;
+  verifiedEmail: boolean;
+  picture?: string;
+  role?: UserRole;
+  unit?: Unit;
+};
+
+type Participant = {
+  id: string;
+  state: string;
+};
+
+type Requirements = {
+  unit?: Unit;
+  location?: string;
+};
+
+type Location = {
+  _id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
 };
 
 enum UserRole {
@@ -18,4 +49,28 @@ enum UserRole {
   ADMIN = 'admin',
 }
 
-export { Giveaway, UserRole };
+enum Unit {
+  NODE = 'node',
+  RAILS = 'rails',
+  PYTHON = 'python',
+}
+
+enum ParticipationState {
+  CHECKING = 'checking',
+  MANAGE = 'manage',
+  PARTICIPATING = 'participating',
+  PENDING = 'pending',
+  ALLOWED = 'allowed',
+  NOT_ALLOWED = 'notAllowed',
+}
+
+export {
+  Giveaway,
+  UserInfo,
+  Requirements,
+  Location,
+  UserRole,
+  Unit,
+  ParticipationState,
+  Participant,
+};

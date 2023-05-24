@@ -4,10 +4,10 @@ import { Button, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
 
-import google from '../assets/google.svg';
-import logo from '../assets/Logo.svg';
-import { UserRole } from '../lib/types';
-import GoogleAuthClient from '../services/googleauthclient';
+import google from '../../assets/google.svg';
+import logo from '../../assets/Logo.svg';
+import { Unit, UserRole } from '../../lib/types';
+import GoogleAuthClient from '../../services/googleauthclient';
 
 const GoogleAuthButton = styled(Button)({
   color: '#171717',
@@ -37,7 +37,8 @@ const LoginCard = ({ handleAuthError }: LoginCardProps) => {
 
     if (userInfo) {
       // todo: api login - for test purposes ONLY
-      userInfo.role = UserRole.ADMIN;
+      userInfo.role = UserRole.USER;
+      userInfo.unit = Unit.NODE;
 
       GoogleAuthClient.saveUser(userInfo);
       navigate('/');
