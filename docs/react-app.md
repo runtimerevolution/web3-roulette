@@ -32,3 +32,29 @@ Helpful commands:
 - Stop the container: `docker stop <container-id>`
 - Start existing container: `docker start <container-id>`
 - List running containers: `docker ps`
+
+## Deploy the app
+
+1. Make sure you have the flyctl: a command line tool to work with Fly.io
+   https://fly.io/docs/hands-on/install-flyctl/
+
+2. Deploy the app \
+   `flyctl deploy`
+
+Helpful commands:
+
+- Add a secret \
+  `flyctl secrets set key=value`
+
+- Check secrets and env variables \
+  `flyctl secrets list`
+  `flyctl config env`
+
+- Check app status and vms \
+  `flyctl status`
+
+- Check app services \
+  `flyctl services list -a luckydart`
+
+Monitor the app:
+https://fly.io/apps/luckydart/monitoring
