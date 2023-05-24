@@ -10,6 +10,9 @@ import queryClient from './lib/queryClient';
 import Constants from './utils/Constants';
 
 const theme = createTheme({
+  typography: {
+    fontFamily: `"Mulish"`,
+  },
   palette: {
     primary: {
       main: '#6D6DF0',

@@ -16,6 +16,7 @@ const SubHeader = () => {
       spacing="10px"
       alignItems="center"
       onClick={goBack}
+      sx={{ width: '100px' }}
     >
       <ChevronLeftIcon sx={{ fontSize: '1.5rem' }} />
       <Typography sx={{ fontSize: '18px' }}>Back</Typography>
