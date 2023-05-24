@@ -3,7 +3,11 @@ import fs from 'fs';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
 import { giveawaysContract } from '../contracts';
-import { fileToBase64, getDefinedFields } from '../utils/model.util';
+import {
+  fileToBase64,
+  getDefinedFields,
+  handleError,
+} from '../utils/model.util';
 import { validateParticipant, getParticipant } from '../utils/inside.util';
 import { objectIdToBytes24, encrypt, decrypt } from '../utils/web3.util';
 
@@ -14,7 +18,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
     );
     res.status(200).json(giveaways);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };
 
@@ -25,7 +29,7 @@ export const getGiveaway = async (req: Request, res: Response) => {
     );
     res.status(200).json(giveaway);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };
 
@@ -57,8 +61,8 @@ export const createGiveaway = async (req: Request, res: Response) => {
     const giveaway = await Giveaway.create({
       title,
       description,
-      startTime: new Date(Number(startTime)),
-      endTime: new Date(Number(endTime)),
+      startTime,
+      endTime,
       numberOfWinners: Number(numberOfWinners),
       requirements,
       prize,
@@ -72,8 +76,8 @@ export const createGiveaway = async (req: Request, res: Response) => {
     await giveawaysContract.methods
       .createGiveaway(
         objectIdToBytes24(giveawayId),
-        new Date(Number(startTime)).getTime(),
-        new Date(Number(endTime)).getTime(),
+        new Date(startTime).getTime(),
+        new Date(endTime).getTime(),
         Number(numberOfWinners)
       )
       .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
@@ -82,7 +86,7 @@ export const createGiveaway = async (req: Request, res: Response) => {
   } catch (error) {
     if (giveawayId) await Giveaway.findByIdAndDelete(giveawayId);
 
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   } finally {
     // remove image from tmp folder
     fs.unlink(file.path, () => {
@@ -110,7 +114,7 @@ export const updateGiveaway = async (req: Request, res: Response) => {
 
     res.status(200).json(giveaway);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   } finally {
     if (file)
       fs.unlink(file.path, () => {
@@ -122,7 +126,9 @@ export const updateGiveaway = async (req: Request, res: Response) => {
 export const addParticipant = async (req: Request, res: Response) => {
   try {
     // check if giveaway exists
-    const giveaway = await Giveaway.findById(req.params.id);
+    const giveaway = await Giveaway.findById(req.params.id).populate(
+      'requirements.location'
+    );
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
     // get participant state based on requirements and save to db
@@ -135,7 +141,8 @@ export const addParticipant = async (req: Request, res: Response) => {
       })) !== null;
 
     if (participantExists)
-      return res.status(409)
+      return res
+        .status(409)
         .json({ error: 'Participant already exists in the giveaway' });
 
     const state = validateParticipant(participant, giveaway);
@@ -158,14 +165,16 @@ export const addParticipant = async (req: Request, res: Response) => {
         .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
     } catch (error) {
       // if contract insertion fails, remove participant from the database
-      giveaway.participants = giveaway.participants.filter((p) => p.id !== participant.id);
+      giveaway.participants = giveaway.participants.filter(
+        (p) => p.id !== participant.id
+      );
       await giveaway.save();
       throw error;
     }
-  
+
     res.status(200).json({ message: 'Participant added successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };
 
@@ -176,7 +185,7 @@ export const getParticipants = async (req: Request, res: Response) => {
 
     res.status(200).json(giveaway.participants);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };
 
@@ -208,6 +217,6 @@ export const generateWinners = async (req: Request, res: Response) => {
 
     res.status(200).json(decryptedWinners);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: handleError(error) });
   }
 };

@@ -50,8 +50,8 @@ function ResponsiveAppBar() {
         <Stack direction="row" alignItems="center" spacing="8px">
           <IconButton onClick={handleOpenUserMenu}>
             <Avatar
-              src={userInfo.picture ? userInfo.picture : ''}
-              alt={userInfo.name}
+              src={userInfo?.picture ? userInfo?.picture : ''}
+              alt={userInfo?.name}
             />
           </IconButton>
           <Typography
@@ -61,7 +61,7 @@ function ResponsiveAppBar() {
               display: { xs: 'none', sm: 'initial' },
             }}
           >
-            {userInfo.name}
+            {userInfo?.name}
           </Typography>
         </Stack>
         <Menu

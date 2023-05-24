@@ -1,4 +1,5 @@
 import { getDistance } from 'geolib';
+
 import { ParticipantState, Unit } from '../models/giveaway.model';
 
 // TODO: connect to inside database and get participant data
@@ -26,18 +27,24 @@ const isValidLocation = (currentLocation, requiredLocation) => {
 
 const validateLocation = (participant, giveaway) => {
   const participantLocation = participant.location;
-  const requiredLocation = giveaway.requirements.location;
+  const location = giveaway.requirements.location;
 
-  if (requiredLocation && !participantLocation) // location is required but no location was provided
-    return ParticipantState.PENDING; // participant pending acceptance
-  else if (
-    (requiredLocation &&
-      isValidLocation(participantLocation, requiredLocation)) ||
-    !requiredLocation
-  )
-    // location required and valid or not required
+  if (location) {
+    // location is required but no location was provided
+    if (!participantLocation) {
+      return ParticipantState.PENDING; // participant pending acceptance
+    }
+    // location is required and was provided
+    else {
+      return isValidLocation(participantLocation, location)
+        ? ParticipantState.CONFIRMED
+        : ParticipantState.REJECTED;
+    }
+  }
+  // location not required
+  else {
     return ParticipantState.CONFIRMED;
-  return ParticipantState.REJECTED;
+  }
 };
 
 const validateUnit = (participant, giveaway) => {

@@ -1,14 +1,15 @@
-import './manage.scss';
-
 import { isAfter, isBefore } from 'date-fns';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Container, Grid, Typography } from '@mui/material';
+import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
-import GiveawayCard, { GiveawayCardSkeleton } from '../components/GiveawayCard';
+import GiveawayCard, {
+  GiveawayCardSkeleton,
+} from '../components/giveaways/Card';
 import useUserInfo from '../hooks/useUserInfo';
 import { GetGiveaways } from '../lib/queryClient';
 import { UserRole } from '../lib/types';
@@ -22,6 +23,7 @@ const Manage = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
+  const [error, setError] = useState(false);
   const { isLoading, data } = GetGiveaways();
 
   const giveaways = data?.filter((g) => {
@@ -33,8 +35,21 @@ const Manage = () => {
       : isBefore(giveawayEndDate, now);
   });
 
+  const promptError = () => {
+    setError(true);
+  };
+
+  const closeError = () => {
+    setError(false);
+  };
+
   return (
     <Container maxWidth={false}>
+      <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
+        <MuiAlert severity="error" onClose={closeError}>
+          Oops, something went wrong! Please try again later.
+        </MuiAlert>
+      </Snackbar>
       <Box sx={{ px: '3.5rem', py: '1rem' }}>
         <Box
           sx={{
@@ -55,7 +70,7 @@ const Manage = () => {
           >
             GIVEAWAYS
           </Typography>
-          {userInfo.role === UserRole.ADMIN && (
+          {userInfo?.role === UserRole.ADMIN && (
             <Button
               variant="contained"
               sx={{
@@ -129,10 +144,21 @@ const Manage = () => {
                 <GiveawayCardSkeleton />
               </Grid>
             </>
+          ) : giveaways?.length === 0 ? (
+            <Typography
+              variant="subtitle1"
+              margin="30px"
+              sx={{ color: '#45507C' }}
+            >
+              There are no giveaways to present.
+            </Typography>
           ) : (
-            giveaways?.map((item, index) => (
+            giveaways?.map((item) => (
               <Grid item xs={3} sx={{ minWidth: '300px' }} key={item._id}>
-                <GiveawayCard {...item} />
+                <GiveawayCard
+                  giveaway={item}
+                  onParticipationError={promptError}
+                />
               </Grid>
             ))
           )}
