@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for luckydart-dev on 2023-05-24T17:38:58+01:00
+# fly.toml app configuration file generated for luckydart on 2023-05-25T11:36:49+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "luckydart-dev"
+app = "luckydart"
 primary_region = "lhr"
 
 [env]
