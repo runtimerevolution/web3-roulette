@@ -1,19 +1,39 @@
-# fly.toml app configuration file generated for luckydart on 2023-05-24T15:16:49+01:00
+# fly.toml app configuration file generated for luckydart-dev on 2023-05-24T17:38:58+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "luckydart"
-primary_region = "mad"
+app = "luckydart-dev"
+primary_region = "lhr"
 
 [env]
   VITE_FRONTEND_URI = "https://luckydart.fly.dev"
   VITE_GOOGLE_OAUTH_URI = "https://www.googleapis.com/oauth2/v1/"
   VITE_API_URI = "http://localhost:3000"
 
-[http_service]
-  internal_port = 8080
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
+[[services]]
+  internal_port = 80
+  processes = ["app"]
+  protocol = "tcp"
+  
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[services.tcp_checks]]
+    grace_period = "1s"
+    interval = "15s"
+    timeout = "2s"
+
+[[statics]]
+  guest_path = "/usr/share/nginx/html/"
+  url_prefix = "/"
