@@ -38,6 +38,7 @@ class BackendService {
 
       console.error(error);
       errorCallback?.();
+      return error
     };
 
     instance.interceptors.response.use(
@@ -75,6 +76,11 @@ class BackendService {
     }
     return giveaways;
   };
+
+
+  saveGiveaway = (data: FormData) => data.get("_id")
+    ? this.makeRequest<Giveaway>(`/giveaways/${data.get('_id')}`, "PUT", { "Content-Type": "multipart/form-data" }, data)
+    : this.makeRequest<Giveaway>('/giveaways/', "POST", { "Content-Type": "multipart/form-data" }, data);
 
   getGiveaway = async (giveawayId: string) => {
     const giveaway = await this.makeRequest<Giveaway>(

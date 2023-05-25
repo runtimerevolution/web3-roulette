@@ -18,7 +18,7 @@ const submitParticipation = (
 
 const manage = (giveaway: Giveaway) => {
   // todo: point to specific giveway
-  window.location.href = '/edit';
+  window.location.href = `giveaways/${giveaway._id}/edit`;
 };
 
 const getParticipationState = async (

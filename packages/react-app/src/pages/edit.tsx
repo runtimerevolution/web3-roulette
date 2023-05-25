@@ -1,16 +1,29 @@
-import { Box, Button, Container, Grid, Typography, TextField } from "@mui/material";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Controller, useForm } from 'react-hook-form';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
-import { useDropzone } from "react-dropzone";
-import { useCallback, useEffect, useState, useMemo } from "react";
-import { Giveaway, UserRole } from "../lib/types";
-import { GetGiveawayDetails, UpdateGiveaway } from "../lib/queryClient";
+import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Box, Button, Checkbox, Container, FormControlLabel, Grid, MenuItem, Select, Snackbar, TextField, Typography
+} from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import uploadIcon from './../assets/CloudUpload.svg';
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import useUserInfo from '../hooks/useUserInfo';
+import queryClient, { SaveGiveaway, GetGiveawayDetails } from '../lib/queryClient';
+import {
+  ConditionType,
+  ConditionValue,
+  Giveaway,
+  GiveawayCondition,
+  LocationValue,
+  Unit,
+  UserRole
+} from '../lib/types';
 
 const textInputStyle = {
   '& .MuiInputBase-root': {
@@ -30,33 +43,45 @@ const datePickerStyle = {
       borderColor: '#E1E6EF',
     }
   },
-}
-
+};
+const selectInputStyle = {
+  '& .MuiInputBase-input': {
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    minWidth: '100px',
+  },
+  mr: '1rem',
+};
 const fieldLabelStyle = {
   color: '#000000'
-}
+};
 const fieldErrorDescriptionStyle = {
   color: '#FF0000',
-}
+};
 
 const EditGiveaway = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
-  const { id } = useParams();
-  const { data } = GetGiveawayDetails(id);
+  const { giveawayId } = useParams();
+  const { data } = GetGiveawayDetails(giveawayId)
   const { handleSubmit, register, reset, control, formState, setError } = useForm<Giveaway>({
     defaultValues: useMemo(() => data, [data])
   });
   useEffect(() => {
-    reset(data);
+    if (data) {
+      reset(data);
+      setImageURL(data.image || '');
+    }
   }, [reset, data]);
 
   const [binImageFile, setBinImageFile] = useState<File>();
-  const [imageURL, setImageURL] = useState<string>('')
+  const [imageURL, setImageURL] = useState<string>('');
+  const [imageError, setImageError] = useState<string | undefined>(undefined);
 
   const onDrop = useCallback((files: File[]) => {
     setImageURL(URL.createObjectURL(files[0]));
     setBinImageFile(files[0]);
+    setImageError(undefined);
   }, [])
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -66,35 +91,67 @@ const EditGiveaway = () => {
     maxFiles: 1,
   });
 
-  function addServerErrors<Giveaway>(
-    errors: { [P in keyof Giveaway]?: string },
+  const addServerErrors = (
+    errors: { field: string; message: string }[],
     setError: (
       fieldName: keyof Giveaway,
       error: { type: string; message: string }
     ) => void
-  ) {
-    return Object.keys(errors).forEach((key) => {
-      const field = key as keyof Giveaway;
+  ) => {
+    errors.forEach((error) => {
+      const field = error.field as keyof Giveaway;
       if (field !== undefined) {
         setError(field, {
           type: "server",
-          message: errors[field] as string
+          message: error.message,
         });
       }
     });
-  }
+  };
 
   const savePress = async (data: FormData) => {
-    const result = await UpdateGiveaway(data)
-    if (!result.success && result.errors) {
-      addServerErrors(result.errors, setError);
+    const result = await SaveGiveaway(data);
+
+    if (result.response?.status === 500) {
+      if (Array.isArray(result.response.data.error)) {
+        addServerErrors(result.response.data.error, setError);
+      } else if (result.response.data.error) {
+        setErrorMessage(result.response.data.error);
+      }
     } else {
       navigate(-1);
+      queryClient.invalidateQueries('active')
     }
   }
 
+  const [giveawayConditions, setGiveawayConditions] = useState<GiveawayCondition[]>([]);
+
+  const handleConditionTypeChange = (index: number, value: ConditionType) => {
+    const newGiveawayConditions = [...giveawayConditions];
+    newGiveawayConditions.splice(index, 1, { type: value, value: newGiveawayConditions[index].type === value ? newGiveawayConditions[index].value : null });
+    setGiveawayConditions(newGiveawayConditions);
+  }
+
+  const handleConditionValueChange = (index: number, value: ConditionValue) => {
+    const newGiveawayConditions = [...giveawayConditions];
+    newGiveawayConditions.splice(index, 1, { type: newGiveawayConditions[index].type, value });
+    setGiveawayConditions(newGiveawayConditions);
+  }
+
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+
   return userInfo?.role === UserRole.ADMIN ? (
     <Container maxWidth={false}>
+      <Snackbar
+        open={!!errorMessage}
+        autoHideDuration={6000}
+        onClose={() => setErrorMessage(undefined)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <MuiAlert severity="error" onClose={() => setErrorMessage(undefined)}>
+          {errorMessage}
+        </MuiAlert>
+      </Snackbar>
       <Box sx={{ px: '5rem', py: '2rem' }}>
         <Button
           sx={{ color: 'black', px: 0, textTransform: 'capitalize', mb: '1rem' }}
@@ -117,7 +174,7 @@ const EditGiveaway = () => {
                 fullWidth
                 size="small"
                 sx={textInputStyle}
-                {...register('title')}
+                {...register('title', { required: "Name is required!" })}
                 error={formState.errors.title ? true : false}
               />
               {formState.errors.title &&
@@ -126,36 +183,50 @@ const EditGiveaway = () => {
                 </Typography>
               }
             </Box>
-            {imageURL || data?.image ?
-              <Box {...getRootProps()} sx={{
-                mb: '1.5rem',
+            {imageURL ?
+              <Box sx={{
                 borderRadius: '8px',
+                position: 'relative',
               }}>
-                <img src={imageURL || data?.image} alt='' style={{ width: '100%', maxHeight: '250px', cursor: 'pointer', borderRadius: '8px' }} />
-                <input {...getInputProps()} />
+                <Button
+                  onClick={e => {
+                    setImageURL('');
+                    setBinImageFile(undefined);
+                  }}
+                  sx={{ color: '#6D6DF0', px: '1rem', position: 'absolute', right: 0 }}
+                >
+                  <DeleteIcon />
+                </Button>
+                <Box {...getRootProps()}>
+                  <img src={imageURL} alt='' style={{ width: '100%', maxHeight: '250px', cursor: 'pointer', borderRadius: '8px' }} />
+                  <input {...getInputProps()} />
+                </Box>
               </Box>
-              :
-              <Box {...getRootProps()} sx={{
-                mb: '1.5rem',
-                backgroundColor: 'white',
-                py: '1rem',
-                cursor: 'pointer',
-                textAlign: 'center',
-                borderStyle: 'dashed',
-                borderColor: '#E1E6EF',
-                borderRadius: '8px',
-              }}>
-                <img src={uploadIcon} alt='' style={{ width: '5rem' }} />
-                <input {...getInputProps()} />
-                <Typography sx={{ mt: '1rem', fontWeight: '800' }}>
-                  Drag & drop files or <span style={{ color: '#6D6DF0' }}>Browse</span>
-                </Typography>
-                <Typography sx={{ color: '#676767', mt: '1rem' }}>
-                  Supported formats: JPEG, PNG, GIF
-                </Typography>
-              </Box>
+              : <>
+                <Box {...getRootProps()} sx={{
+                  backgroundColor: 'white',
+                  py: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  borderStyle: 'dashed',
+                  borderColor: imageError ? '#FF0000' : '#E1E6EF',
+                  borderRadius: '8px',
+                }}>
+                  <img src={uploadIcon} alt='' style={{ width: '5rem' }} />
+                  <input {...getInputProps()} />
+                  <Typography sx={{ mt: '1rem', fontWeight: '800' }}>
+                    Drag & drop files or <span style={{ color: '#6D6DF0' }}>Browse</span>
+                  </Typography>
+                  <Typography sx={{ color: '#676767', mt: '1rem' }}>
+                    Supported formats: JPEG, PNG, GIF
+                  </Typography>
+                </Box>
+                {imageError && <Typography sx={{ color: '#FF0000' }}>
+                  {imageError}
+                </Typography>}
+              </>
             }
-            <Box sx={{ mb: '1.5rem' }}>
+            <Box sx={{ my: '1.5rem' }}>
               <Typography sx={fieldLabelStyle}>
                 Start date
               </Typography>
@@ -178,6 +249,7 @@ const EditGiveaway = () => {
                           error: !!fieldState.error,
                         }
                       }}
+                      disabled={!!giveawayId}
                     />
                   </LocalizationProvider>
                 )}
@@ -211,6 +283,7 @@ const EditGiveaway = () => {
                           error: !!fieldState.error,
                         }
                       }}
+                      disabled={!!giveawayId}
                     />
                   </LocalizationProvider>
                 )}
@@ -230,7 +303,7 @@ const EditGiveaway = () => {
                 variant="outlined"
                 fullWidth
                 size="small"
-                {...register('prize')}
+                {...register('prize', { required: "Prize is required!" })}
                 error={formState.errors.prize ? true : false}
                 sx={textInputStyle}
               />
@@ -250,9 +323,10 @@ const EditGiveaway = () => {
                 fullWidth
                 size="small"
                 type="number"
-                {...register('numberOfWinners')}
+                {...register('numberOfWinners', { required: "Number of winners is required!" })}
                 error={formState.errors.numberOfWinners ? true : false}
                 sx={textInputStyle}
+                disabled={!!giveawayId}
               />
               {formState.errors.numberOfWinners &&
                 <Typography sx={fieldErrorDescriptionStyle}>
@@ -273,7 +347,7 @@ const EditGiveaway = () => {
                 fullWidth
                 multiline
                 size="small"
-                {...register('description')}
+                {...register('description', { required: "Description is required!" })}
                 error={formState.errors.description ? true : false}
                 sx={textInputStyle}
               />
@@ -304,6 +378,98 @@ const EditGiveaway = () => {
                 </Typography>
               }
             </Box>
+            <Box sx={{ mb: '1.5rem' }}>
+              <Typography sx={fieldLabelStyle}>
+                Who is eligible to participate?
+              </Typography>
+              {giveawayConditions.map((value, index) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mt: '1rem' }}>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={value.type}
+                    onChange={e => handleConditionTypeChange(index, e.target.value as ConditionType)}
+                    size="small"
+                    sx={selectInputStyle}
+                    disabled={!!giveawayId}
+                  >
+                    <MenuItem value={'unit'}>Unit</MenuItem>
+                    <MenuItem value={'location'}>Location</MenuItem>
+                  </Select>
+
+                  {value.type === "unit" ? (
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={value.value || ''}
+                      onChange={e => handleConditionValueChange(index, e.target.value as Unit)}
+                      size="small"
+                      sx={selectInputStyle}
+                      disabled={!!giveawayId}
+                    >
+                      {Object.values(Unit).map(unit => (<MenuItem key={unit} value={unit}>{unit}</MenuItem>))}
+                    </Select>
+                  ) : (
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={value.value || ''}
+                      onChange={e => handleConditionValueChange(index, e.target.value as LocationValue)}
+                      size="small"
+                      sx={selectInputStyle}
+                      disabled={!!giveawayId}
+                    >
+                      <MenuItem value="Lisbon Office">Lisbon Office</MenuItem>
+                      <MenuItem value="Porto Office">Porto Office</MenuItem>
+                    </Select>
+                  )}
+                  <Button
+                    onClick={() => {
+                      const newConditions = [...giveawayConditions];
+                      newConditions.splice(index, 1);
+                      setGiveawayConditions(newConditions)
+                    }}
+                    sx={{ textTransform: 'capitalize', px: '1rem' }}
+                    disabled={!!giveawayId}
+                  >
+                    <DeleteIcon />
+                  </Button>
+                </Box>))
+              }
+            </Box>
+
+            <Button
+              onClick={() => {
+                const newConditions = [...giveawayConditions];
+                newConditions.push({ type: 'unit', value: Unit.NODE });
+                setGiveawayConditions(newConditions);
+              }}
+              sx={{ textTransform: 'capitalize', px: '1rem' }}
+              disabled={!!giveawayId}
+            >
+              + Add condition
+            </Button>
+
+            <Box>
+              <FormControlLabel
+                control={
+                  <Controller
+                    name={'manual'}
+                    control={control}
+                    defaultValue={data?.manual}
+                    render={({ field: { ref, ...field }, fieldState }) => (
+                      <Checkbox
+                        {...field}
+                        defaultChecked={field.value}
+                        inputRef={ref}
+                        disabled={!!giveawayId}
+                      />
+                    )}
+                  />
+                }
+                label="Manual giveaway"
+              />
+            </Box>
             <Box sx={{ display: 'flex', mt: '2rem', justifyContent: 'flex-end' }}>
               <Box sx={{ borderRadius: '0.6rem', borderColor: '#6D6DF0', borderWidth: '3px', borderStyle: 'solid' }}>
                 <Button onClick={() => navigate(-1)} sx={{ textTransform: 'capitalize', color: '#6D6DF0', fontWeight: 600, px: '1rem' }}>
@@ -323,11 +489,11 @@ const EditGiveaway = () => {
                 variant="contained"
                 onClick={handleSubmit((data) => {
                   const formData = new FormData();
-                  if (id) {
-                    formData.append("id", id);
-                  }
-                  formData.append("title", data?.title || '');
-                  if (binImageFile) {
+                  formData.append("title", data.title);
+                  if (!binImageFile && !imageURL) {
+                    setImageError("Image is required");
+                    return;
+                  } else if (binImageFile) {
                     formData.append("image", binImageFile);
                   }
                   formData.append("startTime", data?.startTime?.toISOString() || '');
@@ -335,9 +501,11 @@ const EditGiveaway = () => {
                   formData.append("prize", `${data?.prize}`);
                   formData.append("numberOfWinners", `${data?.numberOfWinners}`);
                   formData.append("description", data?.description || '');
-                  if (data?.rules) {
-                    formData.append("rules", data.rules);
-                  }
+                  formData.append("rules", data.rules || '');
+                  // if (giveawayConditions) {
+                    //formData.append("requirements", giveawayConditions);
+                  // }
+                  formData.append("isManual", `${data?.manual}`);
                   savePress(formData);
                 })}>
                 Save

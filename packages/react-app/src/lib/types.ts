@@ -6,10 +6,12 @@ type Giveaway = {
   endTime: Date;
   winners: string[];
   numberOfWinners: number;
+  participants: Participant[];
   rules?: string;
   requirements?: Requirements;
-  image?: string;
-  prize?: string;
+  image: string;
+  prize: string;
+  manual?: boolean;
 };
 
 type UserInfo = {
@@ -64,7 +66,29 @@ enum ParticipationState {
   NOT_ALLOWED = 'notAllowed',
 }
 
-export {
+type UnitCondition = {
+  type: 'unit';
+  value: Unit | null;
+}
+type LocationCondition = {
+  type: 'location';
+  value: LocationValue | null;
+}
+
+type ConditionType = 'unit' | 'location';
+
+type LocationValue = {
+  name: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
+}
+
+type ConditionValue = Unit | LocationValue | null;
+
+type GiveawayCondition = UnitCondition | LocationCondition;
+
+export { 
   Giveaway,
   UserInfo,
   Requirements,
@@ -73,4 +97,8 @@ export {
   Unit,
   ParticipationState,
   Participant,
+  GiveawayCondition,
+  ConditionType,
+  ConditionValue,
+  LocationValue,  
 };
