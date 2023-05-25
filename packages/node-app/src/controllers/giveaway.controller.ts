@@ -10,6 +10,7 @@ import {
 } from '../utils/model.util';
 import { validateParticipant, getParticipant } from '../utils/inside.util';
 import { objectIdToBytes24, encrypt, decrypt } from '../utils/web3.util';
+import { isoStringToSecondsTimestamp, hasEnded } from '../utils/date.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -63,7 +64,7 @@ export const createGiveaway = async (req: Request, res: Response) => {
       description,
       startTime,
       endTime,
-      numberOfWinners: Number(numberOfWinners),
+      numberOfWinners,
       requirements,
       prize,
       image,
@@ -76,8 +77,8 @@ export const createGiveaway = async (req: Request, res: Response) => {
     await giveawaysContract.methods
       .createGiveaway(
         objectIdToBytes24(giveawayId),
-        new Date(startTime).getTime(),
-        new Date(endTime).getTime(),
+        isoStringToSecondsTimestamp(startTime),
+        isoStringToSecondsTimestamp(endTime),
         Number(numberOfWinners)
       )
       .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
@@ -196,7 +197,7 @@ export const generateWinners = async (req: Request, res: Response) => {
 
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
-    if (new Date() < giveaway.endTime)
+    if (!hasEnded(giveaway.endTime))
       return res.status(400).json({ error: 'Giveaway has not ended yet' });
 
     if (giveaway.winners.length > 0)
