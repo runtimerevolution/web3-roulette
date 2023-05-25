@@ -5,6 +5,7 @@ import { app } from '../app';
 import { Giveaway } from '../models/giveaway.model';
 import { giveawaysContract } from '../contracts';
 import { objectIdToBytes24 } from '../utils/web3.util';
+import { isoStringToSecondsTimestamp } from '../utils/date.utils';
 
 const createGiveawayMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const addParticipantMock = jest.fn().mockReturnValue({ send: () => ({}) });
@@ -155,8 +156,8 @@ describe('POST /giveaways', () => {
 
     expect(giveawaysContract.methods.createGiveaway).toHaveBeenCalledWith(
       objectIdToBytes24(response.body._id),
-      new Date(newGiveaway.startTime).getTime(),
-      new Date(newGiveaway.endTime).getTime(),
+      isoStringToSecondsTimestamp(newGiveaway.startTime),
+      isoStringToSecondsTimestamp(newGiveaway.endTime),
       newGiveaway.numberOfWinners
     );
   });
