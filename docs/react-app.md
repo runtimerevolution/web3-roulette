@@ -22,10 +22,10 @@
 ## Docker Setup
 
 1. Build docker image \
-   `docker build -t web3-roulette .`
+   `docker build -f ./packages/react-app/react.Dockerfile -t luckydart .`
 
 2. Run a command in a new container \
-   `docker run -p 8080:8080 -d web3-roulette`
+   `docker run -d -p 8080:80 luckydart `
 
 Helpful commands:
 
@@ -39,19 +39,19 @@ Helpful commands:
    https://fly.io/docs/hands-on/install-flyctl/
 
 2. Deploy the app \
-   `flyctl deploy`
+   `fly deploy --config fly.react.toml --dockerfile packages/react-app/react.Dockerfile .`
 
 Helpful commands:
 
 - Add a secret \
-  `flyctl secrets set key=value`
+  `flyctl --config fly.react.toml secrets set key=value`
 
 - Check secrets and env variables \
-  `flyctl secrets list`
-  `flyctl config env`
+  `flyctl --config fly.react.toml secrets list`
+  `flyctl --config fly.react.toml config env`
 
 - Check app status and vms \
-  `flyctl status`
+  `flyctl --config fly.react.toml status`
 
 - Check app services \
   `flyctl services list -a luckydart`
