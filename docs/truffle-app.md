@@ -35,3 +35,16 @@ If you already ran `setup-contract` once and just want to redeploy the contract 
 #### If you ran `setup-contract` once and want to modify the contract
 
 From there, you can run `truffle compile`, `truffle migrate` (`truffle migrate --reset` if you already ran `truffle migrate` once) and `truffle test` to compile your contract, deploy the contract to the network, and run the associated unit tests.
+
+## Deployment
+
+To deploy the smart contract to a public blockchain you are going to need to create an `.env` file and add the following variables:
+
+- `INFURA_API_KEY`: API key from your created Infura Account. [Infura](https://www.infura.io/) will be used to access public networks using an API.
+- `PRIVATE_KEY`: Private key of the account you want to use to deploy your smart contract (make sure you have sufficient funds for the deployment).
+
+Then, similar to the development deployments, just run the migrate command and specify the network you want to use. For example:
+
+```
+truffle migrate --network sepolia
+```
