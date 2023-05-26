@@ -22,5 +22,6 @@ COPY yarn.lock .
 RUN yarn install
 COPY . .
 
+EXPOSE 27017
 EXPOSE 3000
 CMD mongod --fork --logpath /var/log/mongodb.log && npx nx run node-app:serve --configuration=production

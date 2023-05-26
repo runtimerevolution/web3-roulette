@@ -1,0 +1,8 @@
+./packages/node-app
+./packages/truffle-app
+README.md
+dist
+docs
+fly.toml
+node_modules
+tmp
