@@ -1,0 +1,36 @@
+# fly.toml app configuration file generated for luckydart-api on 2023-05-26T12:19:10+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "luckydart-api"
+primary_region = "mad"
+
+[env]
+  SERVER_HOST = "0.0.0.0"
+  SERVER_PORT = "3000"
+  DATABASE_URI = "mongodb://127.0.0.1:27017/web3-roulette"
+  APP_ORIGIN = "https://luckydart.fly.dev"
+
+[[services]]
+  internal_port = 3000
+  processes = ["app"]
+  protocol = "tcp"
+  
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[services.tcp_checks]]
+    grace_period = "1s"
+    interval = "15s"
+    timeout = "2s"
