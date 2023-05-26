@@ -1,6 +1,9 @@
 FROM mongo:latest
-WORKDIR /app
 
+RUN mkdir -p /data/db
+VOLUME /data/db
+
+WORKDIR /app
 ENV NODE_VERSION=18.16.0
 ENV NVM_DIR=/root/.nvm
 
@@ -22,6 +25,5 @@ COPY yarn.lock .
 RUN yarn install
 COPY . .
 
-EXPOSE 27017
 EXPOSE 3000
 CMD mongod --fork --logpath /var/log/mongodb.log && npx nx run node-app:serve --configuration=production
