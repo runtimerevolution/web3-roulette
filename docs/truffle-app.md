@@ -38,12 +38,12 @@ From there, you can run `truffle compile`, `truffle migrate` (`truffle migrate -
 
 ## Deployment
 
-To deploy the smart contract to a public blockchain you are going to need to create a `.env` file and add the following variables:
+To deploy the smart contract to a public blockchain you are going to need to create an `.env` file and add the following variables:
 
 - `INFURA_API_KEY`: API key from your created Infura Account. [Infura](https://www.infura.io/) will be used to access public networks using an API.
 - `PRIVATE_KEY`: Private key of the account you want to use to deploy your smart contract (make sure you have sufficient funds for the deployment).
 
-Then, similar to the development deployments, just run the migrate command and specify the network you want you use. For example:
+Then, similar to the development deployments, just run the migrate command and specify the network you want to use. For example:
 
 ```
 truffle migrate --network sepolia

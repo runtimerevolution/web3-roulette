@@ -17,7 +17,7 @@ First let's setup our development environment by running `yarn setup-node-app`. 
 - `GIVEAWAYS_CONTRACT_ADDRESS`: The address of the Giveaways contract on the blockchain. This value is required for the application to function and you can get it from the terminal once you deploy the contract to your Ganache instance (for more instructions on how to do that refer to the [Smart Contract Documentation](./truffle-app.md)).
 - `OWNER_ACCOUNT_ADDRESS`: The address of the contract owner account on the blockchain. This value is required for the application to function and will be the first address in your Ganache instance (for more instructions on how to do that refer to the [Smart Contract Documentation](./truffle-app.md)).
 - `ENCRYPTION_KEY`: A 256 bits string (32 characters) used to encrypt any user related data before sending it to the blockchain.
-- `PRIVATE_KEY`: The private key of the account with owner access to the smart contract, used to send transaction to the blockchain without need for manual approval.
+- `PRIVATE_KEY`: The private key of the account with owner access to the smart contract, used to send transactions to the blockchain without need for manual approval.
 
 ### Install MongoDB locally
 
