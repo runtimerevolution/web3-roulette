@@ -77,4 +77,20 @@
   padding-top: 1rem;
   padding-bottom: 1rem;
   height: 70px;
+
+  @include mobile {
+    flex-direction: column;
+    height: auto;
+    padding-bottom: 50px;
+  }
+}
+
+.giveaways-title {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  text-decoration: none;
+
+  @include mobile {
+    padding-bottom: 10px;
+  }
 }

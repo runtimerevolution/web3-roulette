@@ -67,14 +67,7 @@ const Manage = () => {
       </Snackbar>
       <Box sx={{ px: '3.5rem', py: '1rem' }}>
         <Box className="giveaways-subheader-box">
-          <Typography
-            noWrap
-            sx={{
-              fontSize: '28px',
-              fontWeight: 800,
-              textDecoration: 'none',
-            }}
-          >
+          <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
           </Typography>
           {userInfo?.role === UserRole.ADMIN && <CreateNewButton />}
