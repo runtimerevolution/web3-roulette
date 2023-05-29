@@ -8,6 +8,7 @@ import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
 import CreateNewButton from '../components/CreateNewButton';
+import AdminEmptyState from '../components/giveaways/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
 } from '../components/giveaways/Card';
@@ -48,6 +49,14 @@ const Manage = () => {
   const closeError = () => {
     setError(false);
   };
+
+  if (data?.length === 0) {
+    return userInfo?.role === UserRole.ADMIN ? (
+      <AdminEmptyState />
+    ) : (
+      <div>Page will be available soon.</div> // todo: replace with user empty state
+    );
+  }
 
   return (
     <Container maxWidth={false}>
