@@ -10,6 +10,14 @@ import {
 } from '@mui/material';
 
 const CreateNewButton = () => {
+  const handleCreateGiveaway = () => {
+    // todo
+  };
+
+  const handleCreateLocation = () => {
+    // todo
+  };
+
   return (
     <Accordion id="create-new-accordion" disableGutters elevation={0}>
       <AccordionSummary id="create-new-accordion-summary">
@@ -27,6 +35,7 @@ const CreateNewButton = () => {
           <Button
             className="create-new-option-button"
             startIcon={<CardGiftcardIcon className="create-new-option-icon" />}
+            onClick={handleCreateGiveaway}
             disableElevation
           >
             Giveaway
@@ -34,6 +43,7 @@ const CreateNewButton = () => {
           <Button
             className="create-new-option-button"
             startIcon={<LocationOnIcon className="create-new-option-icon" />}
+            onClick={handleCreateLocation}
             disableElevation
           >
             Location
