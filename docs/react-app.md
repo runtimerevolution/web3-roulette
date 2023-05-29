@@ -22,17 +22,14 @@
 ## Docker Setup
 
 1. Build docker image \
-   <<<<<<< HEAD
    `docker build -f ./packages/react-app/react.Dockerfile -t luckydart .`
 
 2. Run a command in a new container \
-    `docker run -d -p 8080:80 luckydart `
-   =======
+   `docker run -d -p 8080:80 luckydart`
    `docker build -t web3-roulette .`
 
 3. Run a command in a new container \
-    `docker run -p 8080:8080 -d web3-roulette`
-   > > > > > > > main
+   `docker run -p 8080:8080 -d web3-roulette`
 
 Helpful commands:
 
