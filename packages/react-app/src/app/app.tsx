@@ -14,6 +14,7 @@ import EditGiveaway from '../pages/edit';
 import LoginPage from '../pages/login';
 import Manage from '../pages/manage';
 import AuthRoute from '../routes/AuthRoute';
+import LocationEdit from '../pages/location';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,6 +26,10 @@ const router = createBrowserRouter(
           path="giveaways/:giveawayId"
           element={<GiveawayDetailsPage />}
           loader={giveawayLoader}
+        />
+        <Route
+          path="location/new"
+          element={<LocationEdit />}
         />
       </Route>
       <Route path="/login" element={<LoginPage />} />

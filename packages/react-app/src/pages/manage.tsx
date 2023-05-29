@@ -2,8 +2,8 @@ import { isAfter, isBefore } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import AddIcon from '@mui/icons-material/Add';
-import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Box, Container, Grid, Menu, MenuItem, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
@@ -24,6 +24,7 @@ const Manage = () => {
   const userInfo = useUserInfo();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [error, setError] = useState(false);
+  const [anchorElNew, setAnchorElNew] = useState<null | HTMLElement>(null);
   const { isLoading, data } = GetGiveaways();
 
   const giveaways = data?.filter((g) => {
@@ -77,23 +78,48 @@ const Manage = () => {
             GIVEAWAYS
           </Typography>
           {userInfo?.role === UserRole.ADMIN && (
-            <Button
-              variant="contained"
-              sx={{
-                textTransform: 'none',
-                width: '150px',
-                height: '35px',
-                borderRadius: '10px',
-                fontSize: '16px',
-              }}
-              startIcon={<AddIcon />}
-              onClick={() => {
-                navigate('/edit');
-              }}
-              disableElevation
-            >
-              Create new
-            </Button>
+            <>
+              <Menu
+                id="menu-appbar"
+                className="mt-40"
+                anchorEl={anchorElNew}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElNew)}
+                onClose={() => setAnchorElNew(null)}
+              >
+                <MenuItem key="newGiveaway" onClick={() => navigate('/edit')}>
+                  <Typography textAlign="center">Giveaway</Typography>
+                </MenuItem>
+                <MenuItem key="newLocation" onClick={() => navigate('/location/new')}>
+                  <Typography textAlign="center">Location</Typography>
+                </MenuItem>
+              </Menu>
+              <Button
+                variant="contained"
+                sx={{
+                  textTransform: 'none',
+                  width: '150px',
+                  height: '35px',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                }}
+                endIcon={<ExpandMoreIcon />}
+                onClick={event => {
+                  setAnchorElNew(event.currentTarget);
+                }}
+                disableElevation
+              >
+                Create new
+              </Button>
+            </>
           )}
         </Box>
 
