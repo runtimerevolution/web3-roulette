@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -10,12 +12,14 @@ import {
 } from '@mui/material';
 
 const CreateNewButton = () => {
+  const navigate = useNavigate();
+
   const handleCreateGiveaway = () => {
-    // todo
+    navigate('/edit');
   };
 
   const handleCreateLocation = () => {
-    // todo
+    navigate('/locations/new');
   };
 
   return (
