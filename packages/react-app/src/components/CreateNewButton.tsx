@@ -33,16 +33,16 @@ const CreateNewButton = () => {
       <AccordionDetails className="accordion-details">
         <Stack className="create-new-options" alignItems="start">
           <Button
-            className="create-new-option-button"
-            startIcon={<CardGiftcardIcon className="create-new-option-icon" />}
+            className="create-new-options-button"
+            startIcon={<CardGiftcardIcon className="create-new-options-icon" />}
             onClick={handleCreateGiveaway}
             disableElevation
           >
             Giveaway
           </Button>
           <Button
-            className="create-new-option-button"
-            startIcon={<LocationOnIcon className="create-new-option-icon" />}
+            className="create-new-options-button"
+            startIcon={<LocationOnIcon className="create-new-options-icon" />}
             onClick={handleCreateLocation}
             disableElevation
           >
