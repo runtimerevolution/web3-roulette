@@ -17,9 +17,9 @@
 .app-bar-container {
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: $app-bar-padding;
   background-color: white;
-  height: 60px;
+  height: $app-bar-height;
 }
 
 .nav-logo {

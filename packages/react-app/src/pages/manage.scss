@@ -1,6 +1,7 @@
 @import '../foundation.scss';
 
 #create-new-accordion {
+  width: 175px;
   border-radius: 10px;
   background-color: transparent;
 }
@@ -48,4 +49,23 @@
 
 .create-new-option-icon {
   color: #8e8eba;
+}
+
+.empty-state-admin {
+  height: calc(100vh - $app-bar-height - 2 * $app-bar-padding);
+}
+
+.confetti-img {
+  width: 160px;
+}
+
+.welcome-text {
+  font-size: 20px !important;
+  font-weight: bold !important;
+  padding-top: 50px;
+}
+
+.create-first-giveaway-text {
+  font-size: 20px !important;
+  padding-top: 10px;
 }
