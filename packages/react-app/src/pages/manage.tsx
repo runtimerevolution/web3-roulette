@@ -66,14 +66,7 @@ const Manage = () => {
         </MuiAlert>
       </Snackbar>
       <Box sx={{ px: '3.5rem', py: '1rem' }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            py: '1rem',
-          }}
-        >
+        <Box className="giveaways-subheader-box">
           <Typography
             noWrap
             sx={{
