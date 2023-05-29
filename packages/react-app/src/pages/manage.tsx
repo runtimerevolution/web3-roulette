@@ -1,5 +1,3 @@
-import './manage.scss';
-
 import { isAfter, isBefore } from 'date-fns';
 import { useEffect, useState } from 'react';
 
