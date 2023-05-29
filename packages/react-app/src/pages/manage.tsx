@@ -1,5 +1,5 @@
 import { isAfter, isBefore } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import AddIcon from '@mui/icons-material/Add';
@@ -34,6 +34,12 @@ const Manage = () => {
       ? isAfter(giveawayEndDate, now)
       : isBefore(giveawayEndDate, now);
   });
+
+  useEffect(() => {
+    if (data === undefined && !isLoading) {
+      setError(true);
+    }
+  }, [data, isLoading]);
 
   const promptError = () => {
     setError(true);
@@ -144,7 +150,7 @@ const Manage = () => {
                 <GiveawayCardSkeleton />
               </Grid>
             </>
-          ) : giveaways?.length === 0 ? (
+          ) : giveaways === undefined || giveaways?.length === 0 ? (
             <Typography
               variant="subtitle1"
               margin="30px"
