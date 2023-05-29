@@ -1,12 +1,13 @@
+import './manage.scss';
+
 import { isAfter, isBefore } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import AddIcon from '@mui/icons-material/Add';
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
+import CreateNewButton from '../components/CreateNewButton';
 import GiveawayCard, {
   GiveawayCardSkeleton,
 } from '../components/giveaways/Card';
@@ -20,7 +21,6 @@ const Tabs = {
 };
 
 const Manage = () => {
-  const navigate = useNavigate();
   const userInfo = useUserInfo();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [error, setError] = useState(false);
@@ -62,7 +62,6 @@ const Manage = () => {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'center',
             py: '1rem',
           }}
         >
@@ -76,25 +75,7 @@ const Manage = () => {
           >
             GIVEAWAYS
           </Typography>
-          {userInfo?.role === UserRole.ADMIN && (
-            <Button
-              variant="contained"
-              sx={{
-                textTransform: 'none',
-                width: '150px',
-                height: '35px',
-                borderRadius: '10px',
-                fontSize: '16px',
-              }}
-              startIcon={<AddIcon />}
-              onClick={() => {
-                navigate('/edit');
-              }}
-              disableElevation
-            >
-              Create new
-            </Button>
-          )}
+          {userInfo?.role === UserRole.ADMIN && <CreateNewButton />}
         </Box>
 
         <Button
