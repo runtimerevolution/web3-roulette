@@ -13,6 +13,7 @@ import GiveawayDetailsPage, {
 import EditGiveaway from '../pages/edit';
 import LoginPage from '../pages/login';
 import Manage from '../pages/manage';
+import ParticipantsManagerPage from '../pages/participants';
 import AuthRoute from '../routes/AuthRoute';
 import LocationEdit from '../pages/location';
 
@@ -21,22 +22,21 @@ const router = createBrowserRouter(
     <Route>
       <Route path="/" element={<AuthRoute />}>
         <Route index element={<Manage />} />
-        <Route
-          path="giveaways/new"
-          element={<EditGiveaway />}
-        />
+        <Route path="giveaways/new" element={<EditGiveaway />} />
         <Route
           path="giveaways/:giveawayId"
           element={<GiveawayDetailsPage />}
           loader={giveawayLoader}
         />
         <Route
-          path="giveaways/:giveawayId/edit"
-          element={<EditGiveaway />}
+          path="giveaways/:giveawayId/participants"
+          element={<ParticipantsManagerPage />}
         />
+        <Route path="giveaways/:giveawayId/edit" element={<EditGiveaway />} />
         <Route
           path="locations/new"
           element={<LocationEdit />}
+          loader={giveawayLoader}
         />
       </Route>
       <Route path="/login" element={<LoginPage />} />
