@@ -28,7 +28,7 @@ const router = createBrowserRouter(
           loader={giveawayLoader}
         />
         <Route
-          path="location/new"
+          path="locations/new"
           element={<LocationEdit />}
         />
       </Route>
