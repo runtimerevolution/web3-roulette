@@ -20,7 +20,8 @@ export const listGiveaways = async (req: Request, res: Response) => {
     );
     res.status(200).json(giveaways);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -31,7 +32,8 @@ export const getGiveaway = async (req: Request, res: Response) => {
     );
     res.status(200).json(giveaway);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -88,7 +90,8 @@ export const createGiveaway = async (req: Request, res: Response) => {
   } catch (error) {
     if (giveawayId) await Giveaway.findByIdAndDelete(giveawayId);
 
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   } finally {
     // remove image from tmp folder
     fs.unlink(file.path, () => {
@@ -116,7 +119,8 @@ export const updateGiveaway = async (req: Request, res: Response) => {
 
     res.status(200).json(giveaway);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   } finally {
     if (file)
       fs.unlink(file.path, () => {
@@ -176,7 +180,8 @@ export const addParticipant = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: 'Participant added successfully' });
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -187,7 +192,8 @@ export const getParticipants = async (req: Request, res: Response) => {
 
     res.status(200).json(giveaway.participants);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -207,14 +213,8 @@ export const updateParticipant = async (req: Request, res: Response) => {
     if (participant.state !== ParticipantState.PENDING)
       return res.status(400).json({ error: 'Participant state already set' });
 
-    // valid state
-    const { state } = req.body;
-    if (!Object.values(ParticipantState).includes(state))
-      return res
-        .status(400)
-        .json({ error: `${state} is not a valid participation state` });
-
     // add to smart contract
+    const { state } = req.body;
     if (state === ParticipantState.CONFIRMED) {
       const participantHash = encrypt(participant.id);
       await giveawaysContract.methods
@@ -228,7 +228,8 @@ export const updateParticipant = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: 'Participant state updated successfully' });
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -260,6 +261,7 @@ export const generateWinners = async (req: Request, res: Response) => {
 
     res.status(200).json(decryptedWinners);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };

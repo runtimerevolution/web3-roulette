@@ -1,4 +1,10 @@
 import fs from 'fs';
+import { Error as MongooseError } from 'mongoose';
+
+type APIError = {
+  code: number;
+  message: object[] | string;
+};
 
 export const fileToBase64 = (file: Express.Multer.File): string => {
   const imageBuffer = fs.readFileSync(file.path);
@@ -20,11 +26,13 @@ export const getDefinedFields = (
   return definedFields;
 };
 
-export const handleError = (error) => {
-  if (error.errors)
-    return Object.entries(error.errors).map(([field, error]) => ({
+export const handleError = (error: Error): APIError => {
+  if (error instanceof MongooseError.ValidationError) {
+    const message = Object.entries(error.errors).map(([field, error]) => ({
       field,
-      message: (error as any).message,
+      message: error.message,
     }));
-  return error.message;
+    return { code: 400, message };
+  }
+  return { code: 500, message: error.message };
 };
