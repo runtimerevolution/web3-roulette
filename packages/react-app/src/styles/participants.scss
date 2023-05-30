@@ -1,0 +1,43 @@
+.participant-entry-container {
+  width: 726px;
+  height: 60px;
+  background-color: white;
+  margin: 40px;
+
+  .participant-name {
+    font-size: 20px;
+    font-weight: 500;
+    padding-left: 21px;
+  }
+
+  .action-button {
+    height: 39px;
+    font-weight: 700;
+    text-transform: none !important;
+    font-size: 18px;
+    border-radius: 10px !important;
+    margin: 5px;
+
+    &.reject {
+      width: 98px;
+      background-color: rgba(238, 88, 73, 0.2);
+      color: #ee5849;
+    }
+
+    &.approve {
+      width: 121px;
+      background-color: rgba(18, 187, 106, 0.18);
+      color: #12bb6a;
+    }
+
+    &.reject:hover {
+      background-color: rgb(238, 88, 73);
+      color: white;
+    }
+
+    &.approve:hover {
+      background-color: rgb(18, 187, 106);
+      color: white;
+    }
+  }
+}
