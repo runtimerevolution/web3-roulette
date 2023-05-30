@@ -1,5 +1,3 @@
-import './login.scss';
-
 import { useState } from 'react';
 
 import { Snackbar, Stack } from '@mui/material';

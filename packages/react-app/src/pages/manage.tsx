@@ -1,12 +1,12 @@
 import { isAfter, isBefore } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import AddIcon from '@mui/icons-material/Add';
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
+import CreateNewButton from '../components/CreateNewButton';
+import AdminEmptyState from '../components/giveaways/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
 } from '../components/giveaways/Card';
@@ -20,7 +20,6 @@ const Tabs = {
 };
 
 const Manage = () => {
-  const navigate = useNavigate();
   const userInfo = useUserInfo();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [error, setError] = useState(false);
@@ -49,6 +48,14 @@ const Manage = () => {
     setError(false);
   };
 
+  if (data?.length === 0) {
+    return userInfo?.role === UserRole.ADMIN ? (
+      <AdminEmptyState />
+    ) : (
+      <div>Page will be available soon.</div> // todo: replace with user empty state
+    );
+  }
+
   return (
     <Container maxWidth={false}>
       <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
@@ -57,44 +64,11 @@ const Manage = () => {
         </MuiAlert>
       </Snackbar>
       <Box sx={{ px: '3.5rem', py: '1rem' }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            py: '1rem',
-          }}
-        >
-          <Typography
-            noWrap
-            sx={{
-              fontSize: '28px',
-              fontWeight: 800,
-              textDecoration: 'none',
-            }}
-          >
+        <Box className="giveaways-subheader-box">
+          <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
           </Typography>
-          {userInfo?.role === UserRole.ADMIN && (
-            <Button
-              variant="contained"
-              sx={{
-                textTransform: 'none',
-                width: '150px',
-                height: '35px',
-                borderRadius: '10px',
-                fontSize: '16px',
-              }}
-              startIcon={<AddIcon />}
-              onClick={() => {
-                navigate('/edit');
-              }}
-              disableElevation
-            >
-              Create new
-            </Button>
-          )}
+          {userInfo?.role === UserRole.ADMIN && <CreateNewButton />}
         </Box>
 
         <Button
