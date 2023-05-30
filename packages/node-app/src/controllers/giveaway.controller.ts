@@ -244,47 +244,6 @@ export const updateParticipant = async (req: Request, res: Response) => {
   }
 };
 
-export const updateParticipant = async (req: Request, res: Response) => {
-  try {
-    // valid giveaway
-    const giveaway = await Giveaway.findById(req.params.id);
-    if (!giveaway)
-      return res.status(404).json({ message: 'Giveaway not found' });
-
-    // valid participant
-    const participant = giveaway.participants.find(
-      (participant) => participant.id === req.params.participantId
-    );
-    if (!participant)
-      return res.status(404).json({ message: 'Participant not found' });
-    if (participant.state !== ParticipantState.PENDING)
-      return res.status(400).json({ error: 'Participant state already set' });
-
-    // valid state
-    const { state } = req.body;
-    if (!Object.values(ParticipantState).includes(state))
-      return res
-        .status(400)
-        .json({ error: `${state} is not a valid participation state` });
-
-    // add to smart contract
-    if (state === ParticipantState.CONFIRMED) {
-      const participantHash = encrypt(participant.id);
-      await giveawaysContract.methods
-        .addParticipant(objectIdToBytes24(giveaway._id), participantHash)
-        .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
-    }
-
-    // save participant
-    participant.state = state;
-    await giveaway.save();
-
-    res.status(200).json({ message: 'Participant state updated successfully' });
-  } catch (error) {
-    res.status(500).json({ error: handleError(error) });
-  }
-};
-
 export const generateWinners = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
