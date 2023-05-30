@@ -81,17 +81,17 @@ const LocationEdit = () => {
       });
   }
 
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   return (
     <Box>
       <Snackbar
         open={!!errorMessage}
         autoHideDuration={6000}
-        onClose={() => setErrorMessage(undefined)}
+        onClose={() => setErrorMessage(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <MuiAlert severity="error" onClose={() => setErrorMessage(undefined)}>
+        <MuiAlert severity="error" onClose={() => setErrorMessage(null)}>
           {errorMessage}
         </MuiAlert>
       </Snackbar>
@@ -131,7 +131,7 @@ const LocationEdit = () => {
                 size="small"
                 sx={textInputStyle}
                 {...register('name', { required: 'Required' })}
-                error={formState.errors.name ? true : false}
+                error={!!formState.errors.name}
               />
               {formState.errors.name &&
                 <Typography sx={fieldErrorDescriptionStyle}>
@@ -152,7 +152,7 @@ const LocationEdit = () => {
                 sx={textInputStyle}
                 value={position.lat}
                 {...register('latitude', { required: 'Required' })}
-                error={formState.errors.latitude ? true : false}
+                error={!!formState.errors.latitude}
                 onChange={e => {
                   setValue('latitude', parseFloat(e.target.value))
                   setPosition({ ...position, lat: parseFloat(e.target.value) });
@@ -176,7 +176,7 @@ const LocationEdit = () => {
                 type='number'
                 sx={textInputStyle}
                 value={position.lng}
-                error={formState.errors.longitude ? true : false}
+                error={!!formState.errors.longitude}
                 {...register('longitude', { required: 'Required' })}
                 onChange={e => {
                   setPosition({ ...position, lng: parseFloat(e.target.value) });
