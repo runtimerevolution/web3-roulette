@@ -23,6 +23,7 @@ const Manage = () => {
   const userInfo = useUserInfo();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [error, setError] = useState(false);
+  const [anchorElNew, setAnchorElNew] = useState<null | HTMLElement>(null);
   const { isLoading, data } = GetGiveaways();
 
   const giveaways = data?.filter((g) => {
