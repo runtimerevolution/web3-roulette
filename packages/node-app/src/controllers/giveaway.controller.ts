@@ -152,7 +152,11 @@ export const addParticipant = async (req: Request, res: Response) => {
         .json({ error: 'Participant already exists in the giveaway' });
 
     const state = validateParticipant(participant, giveaway);
-    giveaway.participants.push({ id: participant.id, state });
+    giveaway.participants.push({
+      id: participant.id,
+      name: participant.name,
+      state,
+    });
     await giveaway.save();
 
     // send state feedback

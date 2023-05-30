@@ -19,6 +19,7 @@ export enum ParticipantState {
 
 interface Participant {
   id: string;
+  name: string;
   state: ParticipantState;
   notified?: boolean;
 }
