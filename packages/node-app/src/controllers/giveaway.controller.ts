@@ -255,14 +255,8 @@ export const updateParticipant = async (req: Request, res: Response) => {
     if (participant.state !== ParticipantState.PENDING)
       return res.status(400).json({ error: 'Participant state already set' });
 
-    // valid state
-    const { state } = req.body;
-    if (!Object.values(ParticipantState).includes(state))
-      return res
-        .status(400)
-        .json({ error: `${state} is not a valid participation state` });
-
     // save participant
+    const { state } = req.body;
     participant.state = state;
     await giveaway.save();
 
