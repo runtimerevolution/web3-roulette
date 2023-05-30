@@ -255,24 +255,18 @@ export const updateParticipant = async (req: Request, res: Response) => {
     if (participant.state !== ParticipantState.PENDING)
       return res.status(400).json({ error: 'Participant state already set' });
 
-    // save participant
+    // add to smart contract
     const { state } = req.body;
+    if (state === ParticipantState.CONFIRMED) {
+      const participantHash = encrypt(participant.id);
+      await giveawaysContract.methods
+        .addParticipant(objectIdToBytes24(giveaway._id), participantHash)
+        .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+    }
+
+    // save participant
     participant.state = state;
     await giveaway.save();
-
-    // add to smart contract
-    try {
-      if (state === ParticipantState.CONFIRMED) {
-        const participantHash = encrypt(participant.id);
-        await giveawaysContract.methods
-          .addParticipant(objectIdToBytes24(giveaway._id), participantHash)
-          .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
-      }
-    } catch (error) {
-      participant.state = ParticipantState.PENDING;
-      await giveaway.save();
-      throw error;
-    }
 
     res.status(200).json({ message: 'Participant state updated successfully' });
   } catch (error) {
