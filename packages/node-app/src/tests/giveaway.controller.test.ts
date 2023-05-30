@@ -277,13 +277,17 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
   it('should fail if invalid participant', async () => {
     const giveaway = await Giveaway.create(giveawayData);
 
-    const body = { state: 'invalid' };
+    const body = { state: ParticipantState.CONFIRMED };
     const res = await request(app)
       .put(`/giveaways/${giveaway._id}/participants/invalid`)
       .send(body);
 
-    expect(res.status === 400);
-    expect(giveaway.participants[0].state === ParticipantState.PENDING);
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(res.status).toEqual(404);
+    expect(res.body.message).toEqual('Participant not found');
+    expect(updatedGiveaway.participants[0].state).toEqual(
+      ParticipantState.PENDING
+    );
     expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
   });
 
@@ -295,8 +299,11 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
       .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
       .send(body);
 
-    expect(res.status === 400);
-    expect(giveaway.participants[0].state === ParticipantState.PENDING);
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(res.status).toEqual(400);
+    expect(updatedGiveaway.participants[0].state).toEqual(
+      ParticipantState.PENDING
+    );
     expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
   });
 
@@ -308,8 +315,11 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
       .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
       .send(body);
 
-    expect(res.status === 200);
-    expect(giveaway.participants[0].state === ParticipantState.CONFIRMED);
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(res.status).toEqual(200);
+    expect(updatedGiveaway.participants[0].state).toEqual(
+      ParticipantState.CONFIRMED
+    );
     expect(giveawaysContract.methods.addParticipant).toHaveBeenCalledWith(
       objectIdToBytes24(giveaway._id),
       encrypt(participant.id)
@@ -324,8 +334,11 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
       .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
       .send(body);
 
-    expect(res.status === 200);
-    expect(giveaway.participants[0].state === ParticipantState.REJECTED);
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(res.status).toEqual(200);
+    expect(updatedGiveaway.participants[0].state).toEqual(
+      ParticipantState.REJECTED
+    );
     expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
   });
 });
