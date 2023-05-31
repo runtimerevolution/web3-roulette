@@ -4,11 +4,7 @@ import fs from 'fs';
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
-import {
-  dateToSecondsTimestamp,
-  hasEnded,
-  isoStringToSecondsTimestamp,
-} from '../utils/date.utils';
+import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
 import { getParticipant, validateParticipant } from '../utils/inside.util';
 import {
   fileToBase64,
@@ -140,15 +136,6 @@ export const addParticipant = async (req: Request, res: Response) => {
       'requirements.location'
     );
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
-
-    // if already started
-    const currentTimestamp = dateToSecondsTimestamp(new Date());
-    const startTimestamp = dateToSecondsTimestamp(giveaway.startTime);
-    const endTimestamp = dateToSecondsTimestamp(giveaway.endTime);
-
-    if (currentTimestamp < startTimestamp || currentTimestamp > endTimestamp) {
-      return res.status(400).json({ error: 'Giveaway not active.' });
-    }
 
     // get participant state based on requirements and save to db
     const participant = getParticipant(req.body);
