@@ -64,18 +64,24 @@ const ParticipantsManagerPage = () => {
       </Snackbar>
       <SubHeader />
       <Typography className="title">Participants</Typography>
-      <Stack
-        className="pending-users-container"
-        divider={<Divider orientation="horizontal" flexItem />}
-      >
-        {pendingParticipants.map((participant) => (
-          <ParticipantEntry
-            key={participant.id}
-            participant={participant}
-            onUpdateState={updateParticipant}
-          />
-        ))}
-      </Stack>
+      {pendingParticipants.length > 0 ? (
+        <Stack
+          className="pending-users-container"
+          divider={<Divider orientation="horizontal" flexItem />}
+        >
+          {pendingParticipants.map((participant) => (
+            <ParticipantEntry
+              key={participant.id}
+              participant={participant}
+              onUpdateState={updateParticipant}
+            />
+          ))}
+        </Stack>
+      ) : (
+        <Typography className="no-pending-participants-msg">
+          There are no participants to validate.
+        </Typography>
+      )}
     </div>
   );
 };
