@@ -97,6 +97,8 @@ class BackendService {
     return locations.find((l) => l._id === locationId);
   };
 
+  postLocation = async (location: Location) => this.makeRequest('/locations/', 'POST', undefined, location);
+
   getParticipants = async (giveawayId: string) => {
     return await this.makeRequest<Participant[]>(
       `/giveaways/${giveawayId}/participants/`,
