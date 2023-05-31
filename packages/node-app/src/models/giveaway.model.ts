@@ -68,6 +68,7 @@ const giveawaySchema = new Schema<Giveaway>(
     participants: [
       {
         id: { type: String, required: true },
+        name: { type: String, required: true },
         state: {
           type: String,
           enum: Object.values(ParticipantState),
