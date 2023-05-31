@@ -1,11 +1,8 @@
 import { Button, Stack, Typography } from '@mui/material';
 
-type ParticipantEntryProps = {
-  id: string;
-  name: string;
-};
+import { Participant } from '../../lib/types';
 
-const ParticipantEntry = ({ id, name }: ParticipantEntryProps) => {
+const ParticipantEntry = (participant: Participant) => {
   return (
     <Stack
       className="participant-entry-container"
@@ -13,7 +10,7 @@ const ParticipantEntry = ({ id, name }: ParticipantEntryProps) => {
       alignItems={'center'}
       justifyContent={'space-between'}
     >
-      <Typography className="participant-name">{name}</Typography>
+      <Typography className="participant-name">{participant.name}</Typography>
       <Stack direction={'row'}>
         <Button
           className="action-button reject"

@@ -2,7 +2,6 @@
   width: 726px;
   height: 60px;
   background-color: white;
-  margin: 40px;
 
   .participant-name {
     font-size: 20px;
@@ -40,4 +39,12 @@
       color: white;
     }
   }
+}
+
+.pending-users-container {
+  background-color: white;
+  margin-left: 75px;
+  padding: 0 10px;
+  width: fit-content;
+  border-radius: 10px;
 }
