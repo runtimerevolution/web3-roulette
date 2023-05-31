@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useLoaderData, useParams } from 'react-router-dom';
 
-import { Divider, Stack, Typography } from '@mui/material';
+import { Divider, Snackbar, Stack, Typography } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 
 import ParticipantEntry from '../components/giveaways/ParticipantEntry';
 import SubHeader from '../components/SubHeader';
@@ -22,8 +23,9 @@ const loader = async ({ params }: any) => {
 const ParticipantsManagerPage = () => {
   const userInfo = useUserInfo();
   const participantsData = useLoaderData() as Participant[];
-  const [participants, setParticipants] = useState(participantsData);
   const { giveawayId } = useParams();
+  const [participants, setParticipants] = useState(participantsData);
+  const [error, setError] = useState(false);
 
   const pendingParticipants = useMemo(() => {
     return participants.filter((p) => p.state === 'pending');
@@ -38,8 +40,15 @@ const ParticipantsManagerPage = () => {
       newState,
       () => {
         setParticipants(participants.filter((p) => p.id !== participantId));
+      },
+      () => {
+        setError(true);
       }
     );
+  };
+
+  const closeError = () => {
+    setError(false);
   };
 
   if (userInfo?.role !== UserRole.ADMIN) {
@@ -48,6 +57,11 @@ const ParticipantsManagerPage = () => {
 
   return (
     <div>
+      <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
+        <MuiAlert severity="error" onClose={closeError}>
+          Oops, something went wrong! Please try again later.
+        </MuiAlert>
+      </Snackbar>
       <SubHeader />
       <Typography className="title">Participants</Typography>
       <Stack
