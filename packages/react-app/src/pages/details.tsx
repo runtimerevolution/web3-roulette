@@ -1,5 +1,3 @@
-import './details.scss';
-
 import { createContext } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
