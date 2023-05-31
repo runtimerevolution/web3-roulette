@@ -2,7 +2,15 @@ import { Button, Stack, Typography } from '@mui/material';
 
 import { Participant } from '../../lib/types';
 
-const ParticipantEntry = (participant: Participant) => {
+type ParticipantEntryProps = {
+  participant: Participant;
+  onUpdateState: (participantId: string, newState: string) => void;
+};
+
+const ParticipantEntry = ({
+  participant,
+  onUpdateState,
+}: ParticipantEntryProps) => {
   return (
     <Stack
       className="participant-entry-container"
@@ -16,6 +24,9 @@ const ParticipantEntry = (participant: Participant) => {
           className="action-button reject"
           variant="contained"
           color="error"
+          onClick={() => {
+            onUpdateState(participant.id, 'rejected');
+          }}
           disableElevation
         >
           Reject
@@ -24,6 +35,9 @@ const ParticipantEntry = (participant: Participant) => {
           className="action-button approve"
           variant="contained"
           color="success"
+          onClick={() => {
+            onUpdateState(participant.id, 'confirmed');
+          }}
           disableElevation
         >
           Approve

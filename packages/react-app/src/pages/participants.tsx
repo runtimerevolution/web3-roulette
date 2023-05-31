@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Navigate, useLoaderData, useParams } from 'react-router-dom';
 
 import { Divider, Stack, Typography } from '@mui/material';
@@ -21,12 +21,26 @@ const loader = async ({ params }: any) => {
 
 const ParticipantsManagerPage = () => {
   const userInfo = useUserInfo();
-  const participants = useLoaderData() as Participant[];
+  const participantsData = useLoaderData() as Participant[];
+  const [participants, setParticipants] = useState(participantsData);
   const { giveawayId } = useParams();
 
   const pendingParticipants = useMemo(() => {
     return participants.filter((p) => p.state === 'pending');
   }, [participants]);
+
+  const updateParticipant = (participantId: string, newState: string) => {
+    if (!giveawayId) return;
+
+    FrontendApiClient.manageParticipant(
+      giveawayId,
+      participantId,
+      newState,
+      () => {
+        setParticipants(participants.filter((p) => p.id !== participantId));
+      }
+    );
+  };
 
   if (userInfo?.role !== UserRole.ADMIN) {
     return <Navigate to={`/giveaways/${giveawayId}`} />;
@@ -41,7 +55,11 @@ const ParticipantsManagerPage = () => {
         divider={<Divider orientation="horizontal" flexItem />}
       >
         {pendingParticipants.map((participant) => (
-          <ParticipantEntry {...participant} />
+          <ParticipantEntry
+            key={participant.id}
+            participant={participant}
+            onUpdateState={updateParticipant}
+          />
         ))}
       </Stack>
     </div>
