@@ -207,7 +207,7 @@ describe('POST /giveaways/:id/participants', () => {
     const giveaway = await Giveaway.create({
       title: 'Giveaway',
       description: 'Description for giveaway',
-      startTime: Date.now() + 60,
+      startTime: Date.now() + 10,
       endTime: Date.now() + 120,
       numberOfWinners: 1,
       prize: 'Test prize',
