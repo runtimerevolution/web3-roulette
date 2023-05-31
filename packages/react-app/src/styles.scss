@@ -114,4 +114,8 @@
   margin-top: 20px !important;
   margin-bottom: 22px !important;
   margin-left: 75px !important;
+
+  @include mobile {
+    margin-left: 10px !important;
+  }
 }

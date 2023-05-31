@@ -77,7 +77,13 @@ const GiveawayMainContent = () => {
             {format(giveaway.endTime, 'MMMM d, yyyy')}
           </>
         </Typography>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack
+          justifyContent="space-between"
+          sx={{
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: { xs: 'start', lg: 'space-between' },
+          }}
+        >
           <Typography sx={{ fontSize: '18px', color: '#303136' }}>
             <>
               <span

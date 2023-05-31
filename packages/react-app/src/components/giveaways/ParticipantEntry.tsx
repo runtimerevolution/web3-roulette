@@ -14,9 +14,9 @@ const ParticipantEntry = ({
   return (
     <Stack
       className="participant-entry-container"
-      direction={'row'}
       alignItems={'center'}
       justifyContent={'space-between'}
+      sx={{ flexDirection: { xs: 'column', sm: 'row' } }}
     >
       <Typography className="participant-name">{participant.name}</Typography>
       <Stack direction={'row'}>

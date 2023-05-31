@@ -1,7 +1,12 @@
 .participant-entry-container {
-  width: 726px;
+  width: 650px;
   height: 60px;
   background-color: white;
+  max-width: 90vw;
+
+  @include mobile {
+    height: 90px;
+  }
 
   .participant-name {
     font-size: 20px;
@@ -47,9 +52,17 @@
   padding: 0 10px;
   width: fit-content;
   border-radius: 10px;
+
+  @include mobile {
+    margin-left: 10px;
+  }
 }
 
 .no-pending-participants-msg {
   font-size: 20px !important;
   margin-left: 75px !important;
+
+  @include mobile {
+    margin-left: 10px !important;
+  }
 }
