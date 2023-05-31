@@ -7,32 +7,38 @@ import GiveawayAsideContent from '../components/giveaways/AsideContent';
 import GiveawayMainContent from '../components/giveaways/MainContent';
 import SubHeader from '../components/SubHeader';
 import useUserInfo from '../hooks/useUserInfo';
-import { Giveaway, UserRole } from '../lib/types';
+import { Giveaway, Participant, UserRole } from '../lib/types';
 import FrontendApiClient from '../services/backend';
 
-const GiveawayContext = createContext<Giveaway | null>(null);
+type GiveawayDetailData = {
+  giveaway: Giveaway;
+  participants: Participant[];
+};
+
+const GiveawayContext = createContext<GiveawayDetailData | null>(null);
 
 const loader = async ({ params }: any) => {
   const giveaway = await FrontendApiClient.getGiveaway(params.giveawayId);
   if (!giveaway) {
     throw new Response('', { status: 404, statusText: 'Giveaway not found.' });
   }
-  return giveaway;
+  const participants = await FrontendApiClient.getParticipants(giveaway._id);
+  return { giveaway, participants };
 };
 
 const GiveawayDetailsPage = () => {
   const userInfo = useUserInfo();
-  const giveaway = useLoaderData() as Giveaway;
+  const giveawayData = useLoaderData() as GiveawayDetailData;
 
   return (
-    <GiveawayContext.Provider value={giveaway}>
+    <GiveawayContext.Provider value={giveawayData}>
       <SubHeader />
       <Stack
         justifyContent="center"
         sx={{ flexDirection: { xs: 'column', md: 'row' } }}
       >
         <GiveawayMainContent />
-        {(giveaway.rules || userInfo?.role === UserRole.ADMIN) && (
+        {(giveawayData.giveaway.rules || userInfo?.role === UserRole.ADMIN) && (
           <GiveawayAsideContent />
         )}
       </Stack>
@@ -41,4 +47,4 @@ const GiveawayDetailsPage = () => {
 };
 
 export default GiveawayDetailsPage;
-export { loader, GiveawayContext };
+export { loader, GiveawayContext, GiveawayDetailData };

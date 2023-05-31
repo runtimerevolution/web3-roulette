@@ -28,3 +28,16 @@
     padding-top: 30px;
   }
 }
+
+.pending-alert-button {
+  width: 252px;
+  height: 35px;
+  background-color: #ee5849 !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  text-transform: none !important;
+}
+
+.pending-alert-button:hover {
+  opacity: 0.9;
+}

@@ -4,15 +4,15 @@ import QRCode from 'react-qr-code';
 import { Stack, Typography } from '@mui/material';
 
 import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway, UserRole } from '../../lib/types';
-import { GiveawayContext } from '../../pages/details';
+import { UserRole } from '../../lib/types';
+import { GiveawayContext, GiveawayDetailData } from '../../pages/details';
 import Constants from '../../utils/Constants';
 import SvgHelper from '../../utils/SvgHelper';
 import { DownloadButton } from './PDFDocument';
 
 const GiveawayAsideContent = () => {
   const userInfo = useUserInfo();
-  const giveaway = useContext(GiveawayContext) as Giveaway;
+  const { giveaway } = useContext(GiveawayContext) as GiveawayDetailData;
   const qrContainerRef = useRef<HTMLDivElement>(null);
   const [qrDataURL, setQrDataURL] = useState<string>();
   const isAdmin = userInfo?.role === UserRole.ADMIN;
