@@ -10,6 +10,7 @@ import AdminEmptyState from '../components/giveaways/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
 } from '../components/giveaways/Card';
+import UserEmptyState from '../components/giveaways/UserEmptyState';
 import useUserInfo from '../hooks/useUserInfo';
 import { GetGiveaways } from '../lib/queryClient';
 import { UserRole } from '../lib/types';
@@ -52,7 +53,7 @@ const Manage = () => {
     return userInfo?.role === UserRole.ADMIN ? (
       <AdminEmptyState />
     ) : (
-      <div>Page will be available soon.</div> // todo: replace with user empty state
+      <UserEmptyState />
     );
   }
 
