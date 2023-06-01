@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
+import { omit } from 'lodash';
 
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
@@ -15,9 +16,12 @@ import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
-    const giveaways = await Giveaway.find().select(
-      'title description startTime endTime winners requirements prize image'
-    );
+    let giveaways = await Giveaway.find()
+      .select(
+        'title description startTime endTime winners requirements prize participants'
+      )
+      .lean();
+    giveaways = giveaways.map((giveaway) => setParticipantsStats(giveaway));
     res.status(200).json(giveaways);
   } catch (error) {
     const { code, message } = handleError(error);
@@ -27,9 +31,8 @@ export const listGiveaways = async (req: Request, res: Response) => {
 
 export const getGiveaway = async (req: Request, res: Response) => {
   try {
-    const giveaway = await Giveaway.findById(req.params.id).select(
-      '-participants'
-    );
+    let giveaway = await Giveaway.findById(req.params.id).lean();
+    giveaway = setParticipantsStats(giveaway);
     res.status(200).json(giveaway);
   } catch (error) {
     const { code, message } = handleError(error);
@@ -275,4 +278,19 @@ export const generateWinners = async (req: Request, res: Response) => {
     const { code, message } = handleError(error);
     res.status(code).json({ error: message });
   }
+};
+
+const setParticipantsStats = (giveaway: any) => {
+  const nrConfirmedParticipants = giveaway.participants.filter(
+    (p) => p.state === ParticipantState.CONFIRMED
+  ).length;
+  const nrPendingParticipants = giveaway.participants.filter(
+    (p) => p.state === ParticipantState.PENDING
+  ).length;
+
+  return {
+    ...omit(giveaway, ['participants']),
+    nrConfirmedParticipants,
+    nrPendingParticipants,
+  };
 };
