@@ -49,23 +49,25 @@
   }
 }
 
-.empty-state-admin {
+.empty-state-container {
   height: calc(100vh - $app-bar-height - 2 * $app-bar-padding);
-}
 
-.confetti-img {
-  width: 160px;
-}
+  .img {
+    width: 160px;
+  }
 
-.welcome-text {
-  font-size: 20px !important;
-  font-weight: bold !important;
-  padding-top: 50px;
-}
+  .welcome {
+    font-size: 20px !important;
+    font-weight: bold !important;
+    padding-top: 50px;
+  }
 
-.create-first-giveaway-text {
-  font-size: 20px !important;
-  padding-top: 10px;
+  .description {
+    font-size: 20px !important;
+    padding-top: 10px;
+    max-width: 400px;
+    text-align: center;
+  }
 }
 
 .giveaways-subheader-box {
