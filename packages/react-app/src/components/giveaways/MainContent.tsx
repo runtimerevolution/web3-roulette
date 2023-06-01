@@ -88,7 +88,7 @@ const GiveawayMainContent = () => {
               {`${nrParticipants} participants`}
             </>
           </Typography>
-          {isAdmin && nrPending && nrPending > 0 && (
+          {isAdmin && nrPending !== undefined && nrPending > 0 && (
             <Button
               className="pending-alert-button"
               variant="contained"
