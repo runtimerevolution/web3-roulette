@@ -1,11 +1,12 @@
-import request from 'supertest';
-import mongoose from 'mongoose';
 import fs from 'fs';
+import mongoose from 'mongoose';
+import request from 'supertest';
+
 import { app } from '../app';
-import { Giveaway } from '../models/giveaway.model';
 import { giveawaysContract } from '../contracts';
-import { objectIdToBytes24 } from '../utils/web3.util';
+import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { isoStringToSecondsTimestamp } from '../utils/date.utils';
+import { encrypt, objectIdToBytes24 } from '../utils/web3.util';
 
 const createGiveawayMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const addParticipantMock = jest.fn().mockReturnValue({ send: () => ({}) });
@@ -37,6 +38,7 @@ afterAll(async () => {
 
 afterEach(async () => {
   await Giveaway.deleteMany({});
+  jest.clearAllMocks();
 });
 
 describe('GET /', () => {
@@ -252,5 +254,91 @@ describe('GET /giveaways/:id/generate-winners', () => {
     expect(giveawaysContract.methods.getWinners).toHaveBeenCalledWith(
       objectIdToBytes24(giveaway._id)
     );
+  });
+});
+
+describe('PUT giveaways/:id/participants/:participantId', () => {
+  const participant = {
+    id: 'user',
+    state: ParticipantState.PENDING,
+  };
+
+  const giveawayData = {
+    title: 'Giveaway',
+    description: 'Description for giveaway',
+    startTime: Date.now() + 10000,
+    endTime: Date.now() + 12000,
+    numberOfWinners: 1,
+    prize: 'Test prize',
+    image: 'test-image-base64',
+    participants: [participant],
+  };
+
+  it('should fail if invalid participant', async () => {
+    const giveaway = await Giveaway.create(giveawayData);
+
+    const body = { state: ParticipantState.CONFIRMED };
+    const res = await request(app)
+      .put(`/giveaways/${giveaway._id}/participants/invalid`)
+      .send(body);
+
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(res.status).toEqual(404);
+    expect(res.body.message).toEqual('Participant not found');
+    expect(updatedGiveaway.participants[0].state).toEqual(
+      ParticipantState.PENDING
+    );
+    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+  });
+
+  it('should fail if invalid state', async () => {
+    const giveaway = await Giveaway.create(giveawayData);
+
+    const body = { state: 'invalid' };
+    const res = await request(app)
+      .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
+      .send(body);
+
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(res.status).toEqual(400);
+    expect(updatedGiveaway.participants[0].state).toEqual(
+      ParticipantState.PENDING
+    );
+    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+  });
+
+  it('should update participant state', async () => {
+    const giveaway = await Giveaway.create(giveawayData);
+
+    const body = { state: ParticipantState.CONFIRMED };
+    const res = await request(app)
+      .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
+      .send(body);
+
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(res.status).toEqual(200);
+    expect(updatedGiveaway.participants[0].state).toEqual(
+      ParticipantState.CONFIRMED
+    );
+    expect(giveawaysContract.methods.addParticipant).toHaveBeenCalledWith(
+      objectIdToBytes24(giveaway._id),
+      encrypt(participant.id)
+    );
+  });
+
+  it('should not add to contract if rejected', async () => {
+    const giveaway = await Giveaway.create(giveawayData);
+
+    const body = { state: ParticipantState.REJECTED };
+    const res = await request(app)
+      .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
+      .send(body);
+
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(res.status).toEqual(200);
+    expect(updatedGiveaway.participants[0].state).toEqual(
+      ParticipantState.REJECTED
+    );
+    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
   });
 });

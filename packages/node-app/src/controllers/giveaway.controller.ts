@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
+
+import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
-import { giveawaysContract } from '../contracts';
+import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
+import { getParticipant, validateParticipant } from '../utils/inside.util';
 import {
   fileToBase64,
   getDefinedFields,
   handleError,
 } from '../utils/model.util';
-import { validateParticipant, getParticipant } from '../utils/inside.util';
-import { objectIdToBytes24, encrypt, decrypt } from '../utils/web3.util';
-import { isoStringToSecondsTimestamp, hasEnded } from '../utils/date.utils';
+import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -19,7 +20,8 @@ export const listGiveaways = async (req: Request, res: Response) => {
     );
     res.status(200).json(giveaways);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -30,7 +32,8 @@ export const getGiveaway = async (req: Request, res: Response) => {
     );
     res.status(200).json(giveaway);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -87,7 +90,8 @@ export const createGiveaway = async (req: Request, res: Response) => {
   } catch (error) {
     if (giveawayId) await Giveaway.findByIdAndDelete(giveawayId);
 
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   } finally {
     // remove image from tmp folder
     fs.unlink(file.path, () => {
@@ -115,7 +119,8 @@ export const updateGiveaway = async (req: Request, res: Response) => {
 
     res.status(200).json(giveaway);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   } finally {
     if (file)
       fs.unlink(file.path, () => {
@@ -175,7 +180,8 @@ export const addParticipant = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: 'Participant added successfully' });
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -186,7 +192,43 @@ export const getParticipants = async (req: Request, res: Response) => {
 
     res.status(200).json(giveaway.participants);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
+  }
+};
+
+export const updateParticipant = async (req: Request, res: Response) => {
+  try {
+    // valid giveaway
+    const giveaway = await Giveaway.findById(req.params.id);
+    if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
+
+    // valid participant
+    const participant = giveaway.participants.find(
+      (participant) => participant.id === req.params.participantId
+    );
+    if (!participant)
+      return res.status(404).json({ error: 'Participant not found' });
+    if (participant.state !== ParticipantState.PENDING)
+      return res.status(400).json({ error: 'Participant state already set' });
+
+    // add to smart contract
+    const { state } = req.body;
+    if (state === ParticipantState.CONFIRMED) {
+      const participantHash = encrypt(participant.id);
+      await giveawaysContract.methods
+        .addParticipant(objectIdToBytes24(giveaway._id), participantHash)
+        .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+    }
+
+    // save participant
+    participant.state = state;
+    await giveaway.save();
+
+    res.status(200).json({ message: 'Participant state updated successfully' });
+  } catch (error) {
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
 
@@ -218,6 +260,7 @@ export const generateWinners = async (req: Request, res: Response) => {
 
     res.status(200).json(decryptedWinners);
   } catch (error) {
-    res.status(500).json({ error: handleError(error) });
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
   }
 };
