@@ -1,30 +1,22 @@
 import { format } from 'date-fns';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Stack, Typography } from '@mui/material';
 
 import useUserInfo from '../../hooks/useUserInfo';
-import { GiveawayContext, GiveawayDetailData } from '../../pages/details';
-import { UserRole } from '../../lib/types';
+import { GiveawayContext } from '../../pages/details';
+import { Giveaway, UserRole } from '../../lib/types';
 
 const GiveawayMainContent = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
+  const giveaway = useContext(GiveawayContext) as Giveaway;
   const isAdmin = userInfo?.role === UserRole.ADMIN;
 
-  const { giveaway, participants } = useContext(
-    GiveawayContext
-  ) as GiveawayDetailData;
-
-  const nrParticipants = useMemo(() => {
-    return participants.filter((p) => p.state === 'confirmed').length;
-  }, [participants]);
-
-  const nrPending = useMemo(() => {
-    return participants.filter((p) => p.state === 'pending').length;
-  }, [participants]);
+  const nrParticipants = giveaway.nrConfirmedParticipants;
+  const nrPending = giveaway.nrPendingParticipants;
 
   const manageParticipants = () => {
     navigate(`/giveaways/${giveaway._id}/participants`);
@@ -96,7 +88,7 @@ const GiveawayMainContent = () => {
               {`${nrParticipants} participants`}
             </>
           </Typography>
-          {isAdmin && nrPending > 0 && (
+          {isAdmin && nrPending && nrPending > 0 && (
             <Button
               className="pending-alert-button"
               variant="contained"

@@ -18,7 +18,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
   try {
     let giveaways = await Giveaway.find()
       .select(
-        'title description startTime endTime winners requirements prize participants'
+        'title description startTime endTime winners requirements prize image participants'
       )
       .lean();
     giveaways = giveaways.map((giveaway) => setParticipantsStats(giveaway));

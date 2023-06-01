@@ -12,6 +12,8 @@ type Giveaway = {
   image: string;
   prize: string;
   manual?: boolean;
+  nrConfirmedParticipants?: number;
+  nrPendingParticipants?: number;
 };
 
 type UserInfo = {
