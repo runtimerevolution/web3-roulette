@@ -4,7 +4,7 @@ type Giveaway = {
   description: string;
   startTime: Date;
   endTime: Date;
-  winners: string[];
+  winners: [{ id: string }];
   numberOfWinners: number;
   participants: Participant[];
   rules?: string;
@@ -30,6 +30,7 @@ type UserInfo = {
 
 type Participant = {
   id: string;
+  notified: boolean;
   state: string;
 };
 

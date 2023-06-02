@@ -152,6 +152,19 @@ class BackendService {
       errorCallback
     );
   };
+
+  setNotifiedParticipant = async (
+    giveawayId: string,
+    participantId: string
+  ) => {
+    const body = { notified: true };
+    await this.makeRequest(
+      `/giveaways/${giveawayId}/participants/${participantId}`,
+      'PUT',
+      undefined,
+      body
+    );
+  };
 }
 
 const API = new BackendService();

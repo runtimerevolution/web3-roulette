@@ -10,10 +10,13 @@ import AdminEmptyState from '../components/giveaways/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
 } from '../components/giveaways/Card';
+import { WinnerModal } from '../components/giveaways/StatusModals';
 import UserEmptyState from '../components/giveaways/UserEmptyState';
 import useUserInfo from '../hooks/useUserInfo';
 import { GetGiveaways } from '../lib/queryClient';
-import { UserRole } from '../lib/types';
+import { Giveaway, UserRole } from '../lib/types';
+import FrontendApiClient from '../services/backend';
+import ParticipationService from '../services/giveawayparticipation';
 
 const Tabs = {
   Active: 0,
@@ -22,9 +25,10 @@ const Tabs = {
 
 const Manage = () => {
   const userInfo = useUserInfo();
-  const [activeTab, setActiveTab] = useState(Tabs.Active);
-  const [error, setError] = useState(false);
   const { isLoading, data } = GetGiveaways();
+  const [activeTab, setActiveTab] = useState(Tabs.Active);
+  const [winnerGiveaway, setWinnerGiveaway] = useState<Giveaway>();
+  const [error, setError] = useState(false);
 
   const giveaways = data?.filter((g) => {
     const now = new Date();
@@ -39,7 +43,21 @@ const Manage = () => {
     if (data === undefined && !isLoading) {
       setError(true);
     }
-  }, [data, isLoading]);
+
+    if (data && userInfo) {
+      ParticipationService.getWinnerNotification(data, userInfo).then(
+        (giveaway) => {
+          if (giveaway) {
+            setWinnerGiveaway(giveaway);
+            FrontendApiClient.setNotifiedParticipant(
+              giveaway._id,
+              userInfo.email
+            );
+          }
+        }
+      );
+    }
+  }, [data, isLoading, userInfo]);
 
   const promptError = () => {
     setError(true);
@@ -59,6 +77,13 @@ const Manage = () => {
 
   return (
     <Container maxWidth={false}>
+      <div>
+        <WinnerModal
+          giveaway={winnerGiveaway}
+          open={winnerGiveaway !== undefined}
+          onClose={() => setWinnerGiveaway(undefined)}
+        />
+      </div>
       <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
         <MuiAlert severity="error" onClose={closeError}>
           Oops, something went wrong! Please try again later.
