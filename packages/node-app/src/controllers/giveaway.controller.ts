@@ -209,23 +209,31 @@ export const updateParticipant = async (req: Request, res: Response) => {
     );
     if (!participant)
       return res.status(404).json({ error: 'Participant not found' });
-    if (participant.state !== ParticipantState.PENDING)
-      return res.status(400).json({ error: 'Participant state already set' });
 
-    // add to smart contract
-    const { state } = req.body;
-    if (state === ParticipantState.CONFIRMED) {
-      const participantHash = encrypt(participant.id);
-      await giveawaysContract.methods
-        .addParticipant(objectIdToBytes24(giveaway._id), participantHash)
-        .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+    // handle state
+    const { state, notified } = req.body;
+    if (state) {
+      if (participant.state !== ParticipantState.PENDING)
+        return res.status(400).json({ error: 'Participant state already set' });
+
+      // add to smart contract
+      if (state === ParticipantState.CONFIRMED) {
+        const participantHash = encrypt(participant.id);
+        await giveawaysContract.methods
+          .addParticipant(objectIdToBytes24(giveaway._id), participantHash)
+          .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+      }
+
+      participant.state = state;
     }
 
     // save participant
-    participant.state = state;
+    if (notified) {
+      participant.notified = notified;
+    }
     await giveaway.save();
 
-    res.status(200).json({ message: 'Participant state updated successfully' });
+    res.status(200).json({ message: 'Participant updated successfully' });
   } catch (error) {
     const { code, message } = handleError(error);
     res.status(code).json({ error: message });
