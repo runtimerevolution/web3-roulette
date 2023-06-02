@@ -22,6 +22,7 @@ import {
   ParticipateButton,
   ParticipatingButton,
 } from './ActionButtons';
+import { PendingLocationModal } from './StatusModals';
 
 const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
   manage: ManageButton,
@@ -44,6 +45,7 @@ const GiveawayCard = ({
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const [showPendingModal, setShowPendingModal] = useState(false);
 
   const [participationState, setParticipationState] =
     useState<ParticipationState>(
@@ -59,7 +61,12 @@ const GiveawayCard = ({
         userInfo: userInfo,
         successCallback: () => {
           ParticipationService.getParticipationState(giveaway, userInfo).then(
-            (state) => setParticipationState(state)
+            (state) => {
+              setParticipationState(state);
+              if (state === ParticipationState.PENDING) {
+                setShowPendingModal(true);
+              }
+            }
           );
         },
         errorCallback: () => {
@@ -104,6 +111,12 @@ const GiveawayCard = ({
             : 'white',
       }}
     >
+      <div>
+        <PendingLocationModal
+          open={showPendingModal}
+          onClose={() => setShowPendingModal(false)}
+        />
+      </div>
       <CardMedia
         className="clickable"
         component="img"

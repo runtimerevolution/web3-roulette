@@ -3,18 +3,29 @@ import { ReactNode } from 'react';
 
 type OverlayModalProps = {
   img: string;
-  title?: string;
   description: ReactNode;
+  title?: string;
+  onClose?: () => void;
 };
 
-const OverlayModal = ({ img, title, description }: OverlayModalProps) => {
+const OverlayModal = ({
+  img,
+  title,
+  description,
+  onClose,
+}: OverlayModalProps) => {
   return (
-    <div className="overlay">
-      <div className="modal">
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div style={{ textAlign: 'center' }}>
           <img className="img" src={img} alt="Location" />
-          <Typography className="description">{description}</Typography>
-          <Button className="ok" variant="contained" disableElevation>
+          <div className="description">{description}</div>
+          <Button
+            className="ok"
+            variant="contained"
+            onClick={onClose}
+            disableElevation
+          >
             Ok
           </Button>
         </div>
