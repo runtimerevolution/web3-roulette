@@ -204,9 +204,11 @@ const LocationEdit = () => {
                     min={10}
                     max={1000}
                     onChange={e => {
-                      const value = parseInt(e.target.value);
-                      setRadius(value);
-                      field.onChange(value);
+                      if (e.target) {
+                        const value = parseInt((e.target as HTMLInputElement).value);
+                        setRadius(value);
+                        field.onChange(value);
+                      }
                     }}
                   />
                 )}
@@ -217,14 +219,18 @@ const LocationEdit = () => {
                 </Typography>
               }
             </Box>
-            <Box sx={{ display: 'flex', mt: '2rem', justifyContent: 'flex-end' }}>
-              <Box sx={{ borderRadius: '0.6rem', borderColor: '#6D6DF0', borderWidth: '3px', borderStyle: 'solid' }}>
-                <Button onClick={() => navigate(-1)} sx={{ textTransform: 'capitalize', color: '#6D6DF0', fontWeight: 600, px: '1rem' }}>
+            <Box sx={{ display: 'flex', mt: '2rem' }}>
+              <Box sx={{ borderRadius: '0.6rem', borderColor: '#6D6DF0', borderWidth: '3px', borderStyle: 'solid', width: '50%' }}>
+                <Button
+                  onClick={() => navigate(-1)}
+                  sx={{ textTransform: 'capitalize', color: '#6D6DF0', fontWeight: 600, px: '1rem', width: '100%' }}
+                >
                   Cancel
                 </Button>
               </Box>
               <Button
                 sx={{
+                  width: '50%',
                   ml: '1rem',
                   textTransform: 'capitalize',
                   backgroundColor: '#6D6DF0',
@@ -241,7 +247,7 @@ const LocationEdit = () => {
           </Grid>
         </Grid>
       </Box>
-    </Box >
+    </Box>
   )
 };
 

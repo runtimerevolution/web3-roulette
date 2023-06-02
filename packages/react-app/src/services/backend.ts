@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, Method } from 'axios';
+import axios, { AxiosRequestConfig, Method, AxiosResponse, AxiosError } from 'axios';
 
 import { Giveaway, Location, Participant } from '../lib/types';
 import Constants from '../utils/Constants';
@@ -20,12 +20,12 @@ class BackendService {
   ): Promise<T> {
     const instance = axios.create();
 
-    const successResponseInterceptor = (response: any) => {
+    const successResponseInterceptor = (response: AxiosResponse) => {
       successCallback?.();
       return response.data;
     };
 
-    const errorResponseInterceptor = (error: any) => {
+    const errorResponseInterceptor = (error: AxiosError) => {
       if (
         error?.response?.status === 401 &&
         error?.request?.headers?.AUTHORIZATION
@@ -38,7 +38,7 @@ class BackendService {
 
       console.error(error);
       errorCallback?.();
-      return error
+      return Promise.reject(error.response);
     };
 
     instance.interceptors.response.use(
@@ -79,8 +79,8 @@ class BackendService {
 
 
   saveGiveaway = (data: FormData) => data.get("_id")
-    ? this.makeRequest<Giveaway>(`/giveaways/${data.get('_id')}`, "PUT", { "Content-Type": "multipart/form-data" }, data)
-    : this.makeRequest<Giveaway>('/giveaways/', "POST", { "Content-Type": "multipart/form-data" }, data);
+    ? this.makeRequest(`/giveaways/${data.get('_id')}`, "PUT", { "Content-Type": "multipart/form-data" }, data)
+    : this.makeRequest('/giveaways/', "POST", { "Content-Type": "multipart/form-data" }, data);
 
   getGiveaway = async (giveawayId: string) => {
     const giveaway = await this.makeRequest<Giveaway>(

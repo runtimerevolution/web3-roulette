@@ -66,27 +66,13 @@ enum ParticipationState {
   NOT_ALLOWED = 'notAllowed',
 }
 
-type UnitCondition = {
-  type: 'unit';
-  value: Unit | null;
-}
-type LocationCondition = {
-  type: 'location';
-  value: LocationValue | null;
-}
-
 type ConditionType = 'unit' | 'location';
+type ConditionValue = Unit | string | null;
 
-type LocationValue = {
-  name: string;
-  latitude: number;
-  longitude: number;
-  radius: number;
+type GiveawayCondition = {
+  type: ConditionType;
+  value: ConditionValue;
 }
-
-type ConditionValue = Unit | LocationValue | null;
-
-type GiveawayCondition = UnitCondition | LocationCondition;
 
 export { 
   Giveaway,
@@ -100,5 +86,4 @@ export {
   GiveawayCondition,
   ConditionType,
   ConditionValue,
-  LocationValue,  
 };

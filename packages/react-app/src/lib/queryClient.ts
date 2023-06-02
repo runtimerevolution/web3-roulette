@@ -1,7 +1,7 @@
 import { QueryClient, useQuery } from 'react-query';
 
 import API from '../services/backend';
-import { Giveaway } from './types';
+import { Giveaway, Location } from './types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -12,10 +12,10 @@ const queryClient = new QueryClient({
   },
 });
 
-export const GetGiveawayDetails = (id?: string) => useQuery<Giveaway | undefined>(['details', id], () => API.getGiveaway(id));
-export const SaveGiveaway = (data: FormData) => API.saveGiveaway(data);
-
 const GetGiveaways = () => useQuery('active', API.getGiveaways);
+const GetGiveawayDetails = (id?: string) => useQuery<Giveaway | undefined>(['details', id], () => id ? API.getGiveaway(id) : undefined);
+
+const GetLocations = () => useQuery<Location[] | undefined>('locations', API.getLocations)
 
 export default queryClient;
-export { GetGiveaways };
+export { GetGiveaways, GetGiveawayDetails, GetLocations };

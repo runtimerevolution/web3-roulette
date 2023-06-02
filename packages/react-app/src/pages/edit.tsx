@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Controller, useForm } from 'react-hook-form';
+import { useMutation } from 'react-query';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -12,18 +13,17 @@ import MuiAlert from '@mui/material/Alert';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-import uploadIcon from './../assets/CloudUpload.svg';
+import uploadIcon from '../assets/CloudUpload.png';
 import useUserInfo from '../hooks/useUserInfo';
-import queryClient, { SaveGiveaway, GetGiveawayDetails } from '../lib/queryClient';
+import queryClient, { GetGiveawayDetails, GetLocations } from '../lib/queryClient';
 import {
   ConditionType,
-  ConditionValue,
   Giveaway,
   GiveawayCondition,
-  LocationValue,
   Unit,
   UserRole
 } from '../lib/types';
+import API from '../services/backend';
 
 const textInputStyle = {
   '& .MuiInputBase-root': {
@@ -64,6 +64,7 @@ const EditGiveaway = () => {
   const userInfo = useUserInfo();
   const { giveawayId } = useParams();
   const { data } = GetGiveawayDetails(giveawayId)
+  const locations = GetLocations();
   const { handleSubmit, register, reset, control, formState, setError } = useForm<Giveaway>({
     defaultValues: useMemo(() => data, [data])
   });
@@ -71,6 +72,16 @@ const EditGiveaway = () => {
     if (data) {
       reset(data);
       setImageURL(data.image || '');
+      if (data.requirements) {
+        const requirements: GiveawayCondition[] = [];
+        if (data.requirements.unit) {
+          requirements.push({ type: 'unit', value: data.requirements.unit });
+        }
+        if (data.requirements.location) {
+          requirements.push({ type: 'location', value: data.requirements.location });
+        }
+        setGiveawayConditions(requirements);
+      }
     }
   }, [reset, data]);
 
@@ -109,19 +120,53 @@ const EditGiveaway = () => {
     });
   };
 
-  const savePress = async (data: FormData) => {
-    const result = await SaveGiveaway(data);
-
-    if (result.response?.status === 500) {
-      if (Array.isArray(result.response.data.error)) {
-        addServerErrors(result.response.data.error, setError);
-      } else if (result.response.data.error) {
-        setErrorMessage(result.response.data.error);
+  const saveMutation = useMutation({
+    mutationFn: (data: FormData) => API.saveGiveaway(data),
+    onError: (e: any) => {
+      if (Array.isArray(e.data.error)) {
+        addServerErrors(e.data.error, setError);
+      } else if (e.data.error) {
+        setErrorMessage(e.data.error);
       }
-    } else {
+    },
+    onSuccess: () => {
       navigate(-1);
-      queryClient.invalidateQueries('active')
+      queryClient.invalidateQueries('active');
+    },
+  })
+
+  const saveGiveaway = (data: Giveaway) => {
+    const formData = new FormData();
+    formData.append("title", data.title);
+    if (!binImageFile && !imageURL) {
+      setImageError("Image is required");
+      return;
+    } else if (binImageFile) {
+      formData.append("image", binImageFile);
     }
+    if (giveawayId) {
+      formData.append("_id", giveawayId);
+    } else {
+      formData.append("startTime", data?.startTime?.toISOString() || '');
+      formData.append("endTime", data?.endTime?.toISOString() || '');
+      formData.append("numberOfWinners", `${data?.numberOfWinners}`);
+      formData.append("isManual", `${data?.manual}`);
+    }
+    formData.append("prize", `${data?.prize}`);
+    formData.append("description", data?.description || '');
+    formData.append("rules", data.rules || '');
+    if (giveawayConditions) {
+      giveawayConditions.forEach(condition => {
+        if (condition.value) {
+          if (condition.type === 'unit') {
+            formData.append("requirements[unit]", condition.value);
+          } else if (condition.type === 'location') {
+            formData.append("requirements[location]", condition.value);
+          }
+        }
+      })
+    }
+    saveMutation.mutate(formData);
   }
 
   const [giveawayConditions, setGiveawayConditions] = useState<GiveawayCondition[]>([]);
@@ -132,7 +177,7 @@ const EditGiveaway = () => {
     setGiveawayConditions(newGiveawayConditions);
   }
 
-  const handleConditionValueChange = (index: number, value: ConditionValue) => {
+  const handleConditionValueChange = (index: number, value: Unit | string) => {
     const newGiveawayConditions = [...giveawayConditions];
     newGiveawayConditions.splice(index, 1, { type: newGiveawayConditions[index].type, value });
     setGiveawayConditions(newGiveawayConditions);
@@ -402,7 +447,7 @@ const EditGiveaway = () => {
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={value.value || ''}
-                      onChange={e => handleConditionValueChange(index, e.target.value as Unit)}
+                      onChange={e => handleConditionValueChange(index, e.target.value)}
                       size="small"
                       sx={selectInputStyle}
                       disabled={!!giveawayId}
@@ -414,41 +459,52 @@ const EditGiveaway = () => {
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={value.value || ''}
-                      onChange={e => handleConditionValueChange(index, e.target.value as LocationValue)}
+                      onChange={e => handleConditionValueChange(index, e.target.value)}
                       size="small"
                       sx={selectInputStyle}
                       disabled={!!giveawayId}
                     >
-                      <MenuItem value="Lisbon Office">Lisbon Office</MenuItem>
-                      <MenuItem value="Porto Office">Porto Office</MenuItem>
+                      {locations.data?.map(loc => (<MenuItem key={loc._id} value={loc._id}>{loc.name}</MenuItem>))}
                     </Select>
                   )}
-                  <Button
-                    onClick={() => {
-                      const newConditions = [...giveawayConditions];
-                      newConditions.splice(index, 1);
-                      setGiveawayConditions(newConditions)
-                    }}
-                    sx={{ textTransform: 'capitalize', px: '1rem' }}
-                    disabled={!!giveawayId}
-                  >
-                    <DeleteIcon />
-                  </Button>
+                  {!giveawayId && (
+                    < Button
+                      onClick={() => {
+                        const newConditions = [...giveawayConditions];
+                        newConditions.splice(index, 1);
+                        setGiveawayConditions(newConditions)
+                      }}
+                      sx={{ textTransform: 'capitalize', px: '1rem' }}
+                      disabled={!!giveawayId}
+                    >
+                      <DeleteIcon />
+                    </Button>
+                  )}
                 </Box>))
               }
             </Box>
 
-            <Button
-              onClick={() => {
-                const newConditions = [...giveawayConditions];
-                newConditions.push({ type: 'unit', value: Unit.NODE });
-                setGiveawayConditions(newConditions);
-              }}
-              sx={{ textTransform: 'capitalize', px: '1rem' }}
-              disabled={!!giveawayId}
-            >
-              + Add condition
-            </Button>
+            {!giveawayId && giveawayConditions.length < 2 &&
+              <Button
+                onClick={() => {
+                  const newConditions = [...giveawayConditions];
+                  if (giveawayConditions.length) {
+                    if (giveawayConditions[0].type === 'unit') {
+                      newConditions.push({ type: 'location', value: "" });
+                    } else {
+                      newConditions.push({ type: 'unit', value: Unit.NODE });
+                    }
+                  } else {
+                    newConditions.push({ type: 'unit', value: Unit.NODE });
+                  }
+                  setGiveawayConditions(newConditions);
+                }}
+                sx={{ textTransform: 'capitalize', px: '1rem' }}
+                disabled={!!giveawayId}
+              >
+                + Add condition
+              </Button>
+            }
 
             <Box>
               <FormControlLabel
@@ -468,6 +524,7 @@ const EditGiveaway = () => {
                   />
                 }
                 label="Manual giveaway"
+                disabled={!!giveawayId}
               />
             </Box>
             <Box sx={{ display: 'flex', mt: '2rem', justifyContent: 'flex-end' }}>
@@ -487,27 +544,7 @@ const EditGiveaway = () => {
                   borderRadius: '0.6rem',
                 }}
                 variant="contained"
-                onClick={handleSubmit((data) => {
-                  const formData = new FormData();
-                  formData.append("title", data.title);
-                  if (!binImageFile && !imageURL) {
-                    setImageError("Image is required");
-                    return;
-                  } else if (binImageFile) {
-                    formData.append("image", binImageFile);
-                  }
-                  formData.append("startTime", data?.startTime?.toISOString() || '');
-                  formData.append("endTime", data?.endTime?.toISOString() || '');
-                  formData.append("prize", `${data?.prize}`);
-                  formData.append("numberOfWinners", `${data?.numberOfWinners}`);
-                  formData.append("description", data?.description || '');
-                  formData.append("rules", data.rules || '');
-                  // if (giveawayConditions) {
-                    //formData.append("requirements", giveawayConditions);
-                  // }
-                  formData.append("isManual", `${data?.manual}`);
-                  savePress(formData);
-                })}>
+                onClick={handleSubmit(saveGiveaway)}>
                 Save
               </Button>
             </Box>
