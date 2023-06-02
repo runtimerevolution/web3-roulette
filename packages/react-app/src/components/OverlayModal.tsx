@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 
 type OverlayModalProps = {
   img: string;
-  title: string;
+  title?: string;
   description: ReactNode;
 };
 
