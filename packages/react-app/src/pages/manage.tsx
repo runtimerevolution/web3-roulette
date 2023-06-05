@@ -10,7 +10,10 @@ import AdminEmptyState from '../components/giveaways/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
 } from '../components/giveaways/Card';
-import { WinnerModal } from '../components/giveaways/StatusModals';
+import {
+  RejectionModal,
+  WinnerModal,
+} from '../components/giveaways/StatusModals';
 import UserEmptyState from '../components/giveaways/UserEmptyState';
 import useUserInfo from '../hooks/useUserInfo';
 import { GetGiveaways } from '../lib/queryClient';
@@ -27,7 +30,8 @@ const Manage = () => {
   const userInfo = useUserInfo();
   const { isLoading, data } = GetGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
-  const [winnerGiveaway, setWinnerGiveaway] = useState<Giveaway>();
+  const [winnerGiveaways, setWinnerGiveaways] = useState<Giveaway[]>([]);
+  const [rejectedGiveaways, setRejectedGiveaways] = useState<Giveaway[]>([]);
   const [error, setError] = useState(false);
 
   const giveaways = data?.filter((g) => {
@@ -45,19 +49,16 @@ const Manage = () => {
     }
 
     if (data && userInfo) {
-      ParticipationService.getWinnerNotification(data, userInfo).then(
-        (giveaway) => {
-          if (giveaway) {
-            setWinnerGiveaway(giveaway);
-            FrontendApiClient.setNotifiedParticipant(
-              giveaway._id,
-              userInfo.email
-            );
-          }
+      ParticipationService.getWinnerNotifications(data, userInfo).then(
+        (giveaways) => {
+          setWinnerGiveaways(giveaways);
+          giveaways.forEach((g) => {
+            FrontendApiClient.setNotifiedParticipant(g._id, userInfo.email);
+          });
         }
       );
     }
-  }, [data, isLoading, userInfo]);
+  }, [data, isLoading]);
 
   const promptError = () => {
     setError(true);
@@ -65,6 +66,30 @@ const Manage = () => {
 
   const closeError = () => {
     setError(false);
+  };
+
+  const notifyRejection = (giveaway: Giveaway) => {
+    if (!userInfo) return;
+    if (!rejectedGiveaways.find((g) => g._id === giveaway._id)) {
+      setRejectedGiveaways([...rejectedGiveaways, giveaway]);
+      FrontendApiClient.setNotifiedParticipant(giveaway._id, userInfo.email);
+    }
+  };
+
+  const popWinnerGiveaway = (giveaway: Giveaway) => {
+    setWinnerGiveaways(
+      winnerGiveaways.filter(
+        (winnerGiveaway) => winnerGiveaway._id !== giveaway._id
+      )
+    );
+  };
+
+  const popRejectionNotification = (giveaway: Giveaway) => {
+    setRejectedGiveaways(
+      rejectedGiveaways.filter(
+        (rejectedGiveaway) => rejectedGiveaway._id !== giveaway._id
+      )
+    );
   };
 
   if (data?.length === 0) {
@@ -78,11 +103,24 @@ const Manage = () => {
   return (
     <Container maxWidth={false}>
       <div>
-        <WinnerModal
-          giveaway={winnerGiveaway}
-          open={winnerGiveaway !== undefined}
-          onClose={() => setWinnerGiveaway(undefined)}
-        />
+        {rejectedGiveaways.map((g, i) => (
+          <RejectionModal
+            key={g._id}
+            giveaway={g}
+            open={true}
+            darkBackground={i === 0}
+            onClose={() => popRejectionNotification(g)}
+          />
+        ))}
+        {winnerGiveaways.map((g, i) => (
+          <WinnerModal
+            key={g._id}
+            giveaway={g}
+            open={true}
+            darkBackground={rejectedGiveaways.length === 0 && i === 0}
+            onClose={() => popWinnerGiveaway(g)}
+          />
+        ))}
       </div>
       <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
         <MuiAlert severity="error" onClose={closeError}>
@@ -159,11 +197,14 @@ const Manage = () => {
               There are no giveaways to present.
             </Typography>
           ) : (
-            giveaways?.map((item) => (
-              <Grid item xs={3} sx={{ minWidth: '300px' }} key={item._id}>
+            giveaways?.map((g) => (
+              <Grid item xs={3} sx={{ minWidth: '300px' }} key={g._id}>
                 <GiveawayCard
-                  giveaway={item}
+                  giveaway={g}
                   onParticipationError={promptError}
+                  onRejection={() => {
+                    notifyRejection(g);
+                  }}
                 />
               </Grid>
             ))

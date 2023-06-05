@@ -65,6 +65,7 @@ enum ParticipationState {
   PENDING = 'pending',
   ALLOWED = 'allowed',
   NOT_ALLOWED = 'notAllowed',
+  REJECTED = 'rejected',
 }
 
 type ConditionType = 'unit' | 'location';

@@ -5,16 +5,22 @@ import OverlayModal from '../OverlayModal';
 
 type PendingLocationModalProps = {
   open: boolean;
+  darkBackground?: boolean;
   onClose?: () => void;
 };
 
-type WinnerModalProps = {
+type GiveawayModalProps = {
   open: boolean;
   giveaway?: Giveaway;
+  darkBackground?: boolean;
   onClose?: () => void;
 };
 
-const PendingLocationModal = ({ open, onClose }: PendingLocationModalProps) => {
+const PendingLocationModal = ({
+  open,
+  onClose,
+  darkBackground = true,
+}: PendingLocationModalProps) => {
   if (!open) {
     return null;
   }
@@ -30,13 +36,19 @@ const PendingLocationModal = ({ open, onClose }: PendingLocationModalProps) => {
             participation.
           </p>
         }
+        darkBackground={darkBackground}
         onClose={onClose}
       />
     </div>
   );
 };
 
-const WinnerModal = ({ giveaway, open, onClose }: WinnerModalProps) => {
+const WinnerModal = ({
+  giveaway,
+  open,
+  onClose,
+  darkBackground = true,
+}: GiveawayModalProps) => {
   const userInfo = useUserInfo();
 
   if (!open || !giveaway) {
@@ -54,10 +66,39 @@ const WinnerModal = ({ giveaway, open, onClose }: WinnerModalProps) => {
             ${giveaway.prize}. Please check your inbox to claim your prize!`}
           </p>
         }
+        darkBackground={darkBackground}
         onClose={onClose}
       />
     </div>
   );
 };
 
-export { PendingLocationModal, WinnerModal };
+const RejectionModal = ({
+  giveaway,
+  open,
+  onClose,
+  darkBackground = true,
+}: GiveawayModalProps) => {
+  if (!open || !giveaway) {
+    return null;
+  }
+
+  return (
+    <div>
+      <OverlayModal
+        img={Resources.SadEmoji}
+        title={'Sorry!'}
+        description={
+          <p>
+            {`Unfortunately you cannot participate in ${giveaway.title} 
+            contest because you do not meet all the requirements`}
+          </p>
+        }
+        darkBackground={darkBackground}
+        onClose={onClose}
+      />
+    </div>
+  );
+};
+
+export { PendingLocationModal, RejectionModal, WinnerModal };

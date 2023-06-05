@@ -31,16 +31,19 @@ const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
   allowed: ParticipateButton,
   notAllowed: NotAllowedButton,
   checking: CheckingButton,
+  rejected: NotAllowedButton,
 };
 
 type GiveawayCardProps = {
   giveaway: Giveaway;
   onParticipationError: () => void;
+  onRejection?: () => void;
 };
 
 const GiveawayCard = ({
   giveaway,
   onParticipationError,
+  onRejection,
 }: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
@@ -89,12 +92,17 @@ const GiveawayCard = ({
   useEffect(() => {
     if (!isAdmin) {
       ParticipationService.getParticipationState(giveaway, userInfo).then(
-        (state) => setParticipationState(state)
+        (state) => {
+          if (state === ParticipationState.REJECTED) {
+            onRejection?.();
+          }
+          setParticipationState(state);
+        }
       );
     } else {
       setParticipationState(ParticipationState.MANAGE);
     }
-  }, [giveaway, userInfo, isAdmin]);
+  }, [giveaway, onRejection, userInfo, isAdmin]);
 
   const navigateDetails = () => {
     navigate(`/giveaways/${giveaway._id}`);
