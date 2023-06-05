@@ -21,5 +21,11 @@ const GetGiveawayDetails = (id?: string) =>
 const GetLocations = () =>
   useQuery<Location[] | undefined>('locations', API.getLocations);
 
+const GetParticipants = (giveawayId: string) => {
+  return useQuery(['participants', giveawayId], () =>
+    API.getParticipants(giveawayId)
+  );
+};
+
 export default queryClient;
-export { GetGiveaways, GetGiveawayDetails, GetLocations };
+export { GetGiveaways, GetGiveawayDetails, GetLocations, GetParticipants };
