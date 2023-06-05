@@ -5,6 +5,7 @@ type OverlayModalProps = {
   img: string;
   description: ReactNode;
   title?: string;
+  darkBackground?: boolean;
   onClose?: () => void;
 };
 
@@ -13,9 +14,13 @@ const OverlayModal = ({
   title,
   description,
   onClose,
+  darkBackground = true,
 }: OverlayModalProps) => {
   return (
-    <div className="overlay" onClick={onClose}>
+    <div
+      className={darkBackground ? 'overlay' : 'overlay nobackground'}
+      onClick={onClose}
+    >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div style={{ textAlign: 'center' }}>
           <img className="img" src={img} alt="Location" />
