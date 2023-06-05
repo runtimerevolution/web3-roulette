@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import { useMemo, useRef, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, ControllerRenderProps, useForm } from 'react-hook-form';
 import { Circle, MapContainer, Marker, TileLayer } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 
@@ -92,6 +92,17 @@ const LocationEdit = () => {
   };
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const updateRadius = (
+    e: Event,
+    field: ControllerRenderProps<Location, 'radius'>
+  ) => {
+    if (e.target) {
+      const value = parseInt((e.target as HTMLInputElement).value);
+      setRadius(value);
+      field.onChange(value);
+    }
+  };
 
   return (
     <Box>
@@ -210,15 +221,7 @@ const LocationEdit = () => {
                     valueLabelDisplay="auto"
                     min={10}
                     max={1000}
-                    onChange={(e) => {
-                      if (e.target) {
-                        const value = parseInt(
-                          (e.target as HTMLInputElement).value
-                        );
-                        setRadius(value);
-                        field.onChange(value);
-                      }
-                    }}
+                    onChange={(e) => updateRadius(e, field)}
                   />
                 )}
               />
