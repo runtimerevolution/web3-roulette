@@ -17,6 +17,14 @@ const submitParticipation = (
   );
 };
 
+const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {
+  if (!userInfo) return false;
+  return (
+    giveaway.winners.find((winner) => winner.id === userInfo.email) !==
+    undefined
+  );
+};
+
 const getParticipationState = async (
   giveaway: Giveaway,
   userInfo?: UserInfo
@@ -102,5 +110,6 @@ const ParticipationService = {
   meetRequirements,
   submitParticipation,
   getWinnerNotifications,
+  wonGiveaway,
 };
 export default ParticipationService;

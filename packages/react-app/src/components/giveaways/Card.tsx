@@ -2,15 +2,9 @@ import { format } from 'date-fns';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  Skeleton,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
+import Trophy from '../../assets/Trophy.png';
 import useUserInfo from '../../hooks/useUserInfo';
 import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
 import ParticipationService from '../../services/giveawayparticipation';
@@ -49,6 +43,7 @@ const GiveawayCard = ({
   const userInfo = useUserInfo();
   const isAdmin = userInfo?.role === UserRole.ADMIN;
   const [showPendingModal, setShowPendingModal] = useState(false);
+  const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
 
   const [participationState, setParticipationState] =
     useState<ParticipationState>(
@@ -125,17 +120,17 @@ const GiveawayCard = ({
           onClose={() => setShowPendingModal(false)}
         />
       </div>
-      <CardMedia
-        className="clickable"
-        component="img"
-        height="120"
-        image={
-          giveaway.image
-            ? giveaway.image
-            : '/static/images/placeholder-image.jpg'
-        }
-        onClick={navigateDetails}
-      />
+      <div className="card-media clickable" onClick={navigateDetails}>
+        <img className="img" src={giveaway.image} alt="Giveaway thumb" />
+        {isWinner && (
+          <div className="winner">
+            <div style={{ textAlign: 'center' }}>
+              <img className="icon" src={Trophy} alt="Trophy" />
+              <Typography className="message">You won this contest!</Typography>
+            </div>
+          </div>
+        )}
+      </div>
       <CardContent>
         <Typography
           className="clickable"
