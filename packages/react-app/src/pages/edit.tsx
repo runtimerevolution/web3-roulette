@@ -504,8 +504,6 @@ const EditGiveaway = () => {
 
                   {value.type === 'unit' ? (
                     <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
                       value={value.value || ''}
                       onChange={(e) =>
                         handleConditionValueChange(index, e.target.value)
@@ -522,8 +520,6 @@ const EditGiveaway = () => {
                     </Select>
                   ) : (
                     <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
                       value={value.value || ''}
                       onChange={(e) =>
                         handleConditionValueChange(index, e.target.value)
