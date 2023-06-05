@@ -64,6 +64,12 @@
     background-color: white;
     border-radius: 15px;
 
+    .title {
+      font-weight: bold;
+      font-size: 18px;
+      padding-top: 22px;
+    }
+
     .img {
       height: 130px;
     }
@@ -72,7 +78,7 @@
       width: 454px;
       font-size: 18px !important;
       text-align: center !important;
-      margin-top: 37px;
+      margin-top: 29px;
     }
 
     .ok {
@@ -82,7 +88,7 @@
       border-radius: 10px !important;
       font-size: 18px !important;
       font-weight: bold !important;
-      margin-top: 28px;
+      margin-top: 22px;
     }
   }
 }
