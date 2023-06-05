@@ -1,4 +1,9 @@
-import axios, { AxiosRequestConfig, Method, AxiosResponse, AxiosError } from 'axios';
+import axios, {
+  AxiosRequestConfig,
+  Method,
+  AxiosResponse,
+  AxiosError,
+} from 'axios';
 
 import { Giveaway, Location, Participant } from '../lib/types';
 import Constants from '../utils/Constants';
@@ -77,10 +82,17 @@ class BackendService {
     return giveaways;
   };
 
-
-  saveGiveaway = (data: FormData) => data.get("_id")
-    ? this.makeRequest(`/giveaways/${data.get('_id')}`, "PUT", { "Content-Type": "multipart/form-data" }, data)
-    : this.makeRequest('/giveaways/', "POST", { "Content-Type": "multipart/form-data" }, data);
+  saveGiveaway = (data: FormData) => {
+    const id = data.get('_id');
+    const url = id ? `/giveaways/${id}` : '/giveaways/';
+    const requestType = id ? 'PUT' : 'POST';
+    return this.makeRequest(
+      url,
+      requestType,
+      { 'Content-Type': 'multipart/form-data' },
+      data
+    );
+  };
 
   getGiveaway = async (giveawayId: string) => {
     const giveaway = await this.makeRequest<Giveaway>(
@@ -103,7 +115,8 @@ class BackendService {
     return locations.find((l) => l._id === locationId);
   };
 
-  postLocation = async (location: Location) => this.makeRequest('/locations/', 'POST', undefined, location);
+  postLocation = async (location: Location) =>
+    this.makeRequest('/locations/', 'POST', undefined, location);
 
   getParticipants = async (giveawayId: string) => {
     return await this.makeRequest<Participant[]>(
