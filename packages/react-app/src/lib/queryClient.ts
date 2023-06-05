@@ -13,9 +13,13 @@ const queryClient = new QueryClient({
 });
 
 const GetGiveaways = () => useQuery('active', API.getGiveaways);
-const GetGiveawayDetails = (id?: string) => useQuery<Giveaway | undefined>(['details', id], () => id ? API.getGiveaway(id) : undefined);
+const GetGiveawayDetails = (id?: string) =>
+  useQuery<Giveaway | undefined>(['details', id], () =>
+    id ? API.getGiveaway(id) : undefined
+  );
 
-const GetLocations = () => useQuery<Location[] | undefined>('locations', API.getLocations)
+const GetLocations = () =>
+  useQuery<Location[] | undefined>('locations', API.getLocations);
 
 export default queryClient;
 export { GetGiveaways, GetGiveawayDetails, GetLocations };
