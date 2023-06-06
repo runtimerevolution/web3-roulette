@@ -24,10 +24,7 @@ const submitParticipation = (
 
 const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {
   if (!userInfo) return false;
-  return (
-    giveaway.winners.find((winner) => winner.id === userInfo.email) !==
-    undefined
-  );
+  return giveaway.winners.some((winner) => winner.id === userInfo.email);
 };
 
 const getParticipationState = async (
