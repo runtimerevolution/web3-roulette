@@ -98,6 +98,22 @@ const GiveawayCard = ({
     participants,
   ]);
 
+  const getWinnerStr = () => {
+    const winners = giveaway.winners;
+    if (winners.length === 0) return;
+
+    const winnerId = winners[0].id;
+    const winnerParticipant = participants?.find((p) => p.id === winnerId);
+
+    if (winnerParticipant) {
+      if (winners.length === 1) {
+        return `${winnerParticipant.name}`;
+      } else {
+        return `${winnerParticipant.name} +${winners.length - 1} more`;
+      }
+    }
+  };
+
   useEffect(() => {
     if (!isAdmin && participants) {
       ParticipationService.getParticipationState(
@@ -147,25 +163,39 @@ const GiveawayCard = ({
           </div>
         )}
       </div>
-      <CardContent>
+      <CardContent className="giveaway-card">
         <Typography
-          className="clickable"
+          className="title text-overflow clickable"
           gutterBottom
           variant="h5"
           onClick={navigateDetails}
-          mt="13px"
         >
           {giveaway.title}
         </Typography>
-        <Typography gutterBottom mt="6px">
+        <Typography className="description text-overflow" gutterBottom>
           {giveaway.description}
         </Typography>
-        <Typography gutterBottom mt="14px">
+        <Typography className="prize text-overflow" gutterBottom>
           <>🏆 {giveaway.prize}</>
         </Typography>
-        <Typography gutterBottom mt="12px">
+        <Typography className="date" gutterBottom>
           <>🗓️ {format(giveaway.endTime, 'MMMM d, yyyy')}</>
         </Typography>
+        {giveaway.winners.length > 0 && (
+          <Typography className="winners" gutterBottom>
+            <>🥳 {getWinnerStr()}</>
+          </Typography>
+        )}
+        {giveaway.endTime < new Date() && (
+          <Typography className="participants" gutterBottom>
+            <>
+              👥{' '}
+              {`${
+                participants?.filter((p) => p.state === 'confirmed').length
+              } participants`}
+            </>
+          </Typography>
+        )}
         {giveaway.endTime > new Date() && ActionButton}
       </CardContent>
     </Card>

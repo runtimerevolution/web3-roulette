@@ -4,7 +4,7 @@ type Giveaway = {
   description: string;
   startTime: Date;
   endTime: Date;
-  winners: [{ id: string }];
+  winners: Winner[];
   numberOfWinners: number;
   participants: Participant[];
   rules?: string;
@@ -35,6 +35,10 @@ type Participant = {
   notified: boolean;
   name: string;
   state: string;
+};
+
+type Winner = {
+  id: string;
 };
 
 type Requirements = {
