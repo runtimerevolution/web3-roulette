@@ -165,24 +165,33 @@ const GiveawayCard = ({
           {giveaway.description}
         </Typography>
         <Typography className="prize text-overflow" gutterBottom>
-          <>🏆 {giveaway.prize}</>
+          <span role="img" aria-label="trophy">
+            🏆
+          </span>{' '}
+          {giveaway.prize}
         </Typography>
         <Typography className="date" gutterBottom>
-          <>🗓️ {format(giveaway.endTime, 'MMMM d, yyyy')}</>
+          <span role="img" aria-label="calendar">
+            🗓️
+          </span>{' '}
+          {format(giveaway.endTime, 'MMMM d, yyyy')}
         </Typography>
         {giveaway.winners.length > 0 && (
           <Typography className="winners" gutterBottom>
-            <>🥳 {getWinnerStr()}</>
+            <span role="img" aria-label="party emoji">
+              🥳
+            </span>{' '}
+            {getWinnerStr()}
           </Typography>
         )}
         {giveaway.endTime < new Date() && (
           <Typography className="participants" gutterBottom>
-            <>
-              👥{' '}
-              {`${
-                participants?.filter((p) => p.state === 'confirmed').length
-              } participants`}
-            </>
+            <span role="img" aria-label="people">
+              👥
+            </span>{' '}
+            {`${
+              participants?.filter((p) => p.state === 'confirmed').length
+            } participants`}
           </Typography>
         )}
         {giveaway.endTime > new Date() && ActionButton}
