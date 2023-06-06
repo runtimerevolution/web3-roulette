@@ -37,7 +37,6 @@ const getParticipationState = async (
 ): Promise<ParticipationState> => {
   if (!userInfo) return ParticipationState.NOT_ALLOWED;
   const registeredUser = participants.find((p) => p.id === userInfo.email);
-  console.log(registeredUser);
 
   if (registeredUser) {
     switch (registeredUser.state) {
