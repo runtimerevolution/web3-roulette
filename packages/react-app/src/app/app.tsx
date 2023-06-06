@@ -21,11 +21,18 @@ const router = createBrowserRouter(
     <Route>
       <Route path="/" element={<AuthRoute />}>
         <Route index element={<Manage />} />
-        <Route path="edit" element={<EditGiveaway />} />
+        <Route
+          path="giveaways/new"
+          element={<EditGiveaway />}
+        />
         <Route
           path="giveaways/:giveawayId"
           element={<GiveawayDetailsPage />}
           loader={giveawayLoader}
+        />
+        <Route
+          path="giveaways/:giveawayId/edit"
+          element={<EditGiveaway />}
         />
         <Route
           path="locations/new"

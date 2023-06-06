@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Button } from '@mui/material';
@@ -28,8 +30,10 @@ type ParticipationProps = {
 };
 
 const ManageButton = ({ giveaway }: ManageProps) => {
+  const navigate = useNavigate();
+
   const manageGiveaway = () => {
-    ParticipationService.manage(giveaway);
+    navigate(`giveaways/${giveaway._id}/edit`);
   };
 
   return (

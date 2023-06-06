@@ -6,10 +6,12 @@ type Giveaway = {
   endTime: Date;
   winners: string[];
   numberOfWinners: number;
+  participants: Participant[];
   rules?: string;
   requirements?: Requirements;
-  image?: string;
-  prize?: string;
+  image: string;
+  prize: string;
+  manual?: boolean;
 };
 
 type UserInfo = {
@@ -64,7 +66,15 @@ enum ParticipationState {
   NOT_ALLOWED = 'notAllowed',
 }
 
-export {
+type ConditionType = 'unit' | 'location';
+type ConditionValue = Unit | string | null;
+
+type GiveawayCondition = {
+  type: ConditionType;
+  value: ConditionValue;
+}
+
+export { 
   Giveaway,
   UserInfo,
   Requirements,
@@ -73,4 +83,7 @@ export {
   Unit,
   ParticipationState,
   Participant,
+  GiveawayCondition,
+  ConditionType,
+  ConditionValue,
 };

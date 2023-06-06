@@ -16,11 +16,6 @@ const submitParticipation = (
   );
 };
 
-const manage = (giveaway: Giveaway) => {
-  // todo: point to specific giveway
-  window.location.href = '/edit';
-};
-
 const getParticipationState = async (
   giveaway: Giveaway,
   userInfo?: UserInfo
@@ -82,6 +77,5 @@ const ParticipationService = {
   getParticipationState,
   meetRequirements,
   submitParticipation,
-  manage,
 };
 export default ParticipationService;
