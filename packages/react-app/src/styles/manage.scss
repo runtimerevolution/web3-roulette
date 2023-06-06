@@ -151,6 +151,47 @@
     margin-top: 12px;
     color: $dark-color;
   }
+}
+
+.countdown-card {
+  width: 100%;
+  height: 265px;
+  background-color: white;
+  border-radius: 20px;
+  margin-top: 25px;
+  overflow: hidden;
+
+  .img {
+    height: 265px;
+    max-width: 350px;
+    object-fit: cover;
+  }
+
+  .info-container {
+    width: 40%;
+    color: $dark-color;
+
+    margin-top: 25px;
+    margin-left: 35px;
+  }
+
+  .description {
+    height: 100px;
+    margin-top: 9px;
+    color: $dark-color;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .trophy {
+    margin-top: 20px;
+  }
+
+  .calendar {
+    margin-top: 10px;
+  }
 
   span[role='img'] {
     margin-right: 10px;

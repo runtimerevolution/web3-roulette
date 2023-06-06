@@ -169,6 +169,7 @@ const Manage = () => {
           onClick={() => {
             setActiveTab(Tabs.Active);
           }}
+          disableElevation
         >
           Active
         </Button>
@@ -188,6 +189,7 @@ const Manage = () => {
           onClick={() => {
             setActiveTab(Tabs.Archived);
           }}
+          disableElevation
         >
           Archived
         </Button>
@@ -196,7 +198,7 @@ const Manage = () => {
             <GiveawayCountdownCard {...countdownGiveaway} />
           )}
           <Grid container spacing={3} sx={{ mt: '0rem', mb: '2rem' }}>
-            {isLoading ? (
+            {isLoading || countdownGiveaway === undefined ? (
               <>
                 <Grid item xs={3} sx={{ minWidth: '300px' }}>
                   <GiveawayCardSkeleton />
