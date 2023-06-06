@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
-import { omit } from 'lodash';
 
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
@@ -11,6 +10,7 @@ import {
   fileToBase64,
   getDefinedFields,
   handleError,
+  setParticipantsStats,
 } from '../utils/model.util';
 import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
 
@@ -278,19 +278,4 @@ export const generateWinners = async (req: Request, res: Response) => {
     const { code, message } = handleError(error);
     res.status(code).json({ error: message });
   }
-};
-
-const setParticipantsStats = (giveaway: any) => {
-  const nrConfirmedParticipants = giveaway.participants.filter(
-    (p) => p.state === ParticipantState.CONFIRMED
-  ).length;
-  const nrPendingParticipants = giveaway.participants.filter(
-    (p) => p.state === ParticipantState.PENDING
-  ).length;
-
-  return {
-    ...omit(giveaway, ['participants']),
-    nrConfirmedParticipants,
-    nrPendingParticipants,
-  };
 };
