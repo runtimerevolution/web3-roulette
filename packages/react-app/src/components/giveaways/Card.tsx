@@ -1,11 +1,12 @@
 import { format } from 'date-fns';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
 import Trophy from '../../assets/Trophy.png';
 import useUserInfo from '../../hooks/useUserInfo';
+import { GetParticipants } from '../../lib/queryClient';
 import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
 import ParticipationService from '../../services/giveawayparticipation';
 import {
@@ -17,7 +18,6 @@ import {
   ParticipatingButton,
 } from './ActionButtons';
 import { PendingLocationModal } from './StatusModals';
-import { GetParticipants } from '../../lib/queryClient';
 
 const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
   manage: ManageButton,
@@ -32,7 +32,7 @@ const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
 type GiveawayCardProps = {
   giveaway: Giveaway;
   onParticipationError: () => void;
-  onRejection?: () => void;
+  onRejection?: () => Promise<void>;
 };
 
 const GiveawayCard = ({
@@ -42,10 +42,11 @@ const GiveawayCard = ({
 }: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
-  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const { data: participants, refetch } = GetParticipants(giveaway._id);
   const [showPendingModal, setShowPendingModal] = useState(false);
+  const participationAction = useRef(false);
+  const isAdmin = userInfo?.role === UserRole.ADMIN;
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
-  const { data: participants } = GetParticipants(giveaway._id);
 
   const [participationState, setParticipationState] =
     useState<ParticipationState>(
@@ -60,25 +61,11 @@ const GiveawayCard = ({
         giveaway: giveaway,
         userInfo: userInfo,
         successCallback: () => {
-          if (!participants) return;
-          ParticipationService.getParticipationState(
-            giveaway,
-            participants,
-            userInfo
-          ).then((state) => {
-            setParticipationState(state);
-            if (state === ParticipationState.PENDING) {
-              setShowPendingModal(true);
-            }
-          });
+          refetch();
+          participationAction.current = true;
         },
         errorCallback: () => {
-          if (!participants) return;
-          ParticipationService.getParticipationState(
-            giveaway,
-            participants,
-            userInfo
-          ).then((state) => setParticipationState(state));
+          refetch();
           onParticipationError();
         },
       };
@@ -90,13 +77,7 @@ const GiveawayCard = ({
       ActionButtonComponents[participationState],
       props
     );
-  }, [
-    participationState,
-    giveaway,
-    onParticipationError,
-    userInfo,
-    participants,
-  ]);
+  }, [participationState, giveaway, onParticipationError, userInfo, refetch]);
 
   const getWinnerStr = () => {
     const winners = giveaway.winners;
@@ -122,14 +103,22 @@ const GiveawayCard = ({
         userInfo
       ).then((state) => {
         if (state === ParticipationState.REJECTED) {
-          onRejection?.();
+          onRejection?.().then(() => {
+            refetch();
+          });
+        } else if (
+          participationAction.current &&
+          state === ParticipationState.PENDING
+        ) {
+          participationAction.current = false;
+          setShowPendingModal(true);
         }
         setParticipationState(state);
       });
     } else {
       setParticipationState(ParticipationState.MANAGE);
     }
-  }, [giveaway, onRejection, userInfo, isAdmin, participants]);
+  }, [giveaway, onRejection, userInfo, isAdmin, participants, refetch]);
 
   const navigateDetails = () => {
     navigate(`/giveaways/${giveaway._id}`);

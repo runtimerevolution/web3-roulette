@@ -68,11 +68,14 @@ const Manage = () => {
     setError(false);
   };
 
-  const notifyRejection = (giveaway: Giveaway) => {
+  const notifyRejection = async (giveaway: Giveaway) => {
     if (!userInfo) return;
     if (!rejectedGiveaways.find((g) => g._id === giveaway._id)) {
       setRejectedGiveaways([...rejectedGiveaways, giveaway]);
-      FrontendApiClient.setNotifiedParticipant(giveaway._id, userInfo.email);
+      await FrontendApiClient.setNotifiedParticipant(
+        giveaway._id,
+        userInfo.email
+      );
     }
   };
 
@@ -202,8 +205,8 @@ const Manage = () => {
                 <GiveawayCard
                   giveaway={g}
                   onParticipationError={promptError}
-                  onRejection={() => {
-                    notifyRejection(g);
+                  onRejection={async () => {
+                    await notifyRejection(g);
                   }}
                 />
               </Grid>
