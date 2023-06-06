@@ -75,13 +75,12 @@
   flex-direction: row;
   justify-content: space-between;
   padding-top: 1rem;
-  padding-bottom: 1rem;
   height: 70px;
 
   @include mobile {
     flex-direction: column;
     height: auto;
-    padding-bottom: 50px;
+    padding-bottom: 20px;
   }
 }
 
@@ -124,5 +123,29 @@
       font-size: 18px;
       color: white;
     }
+  }
+}
+
+.giveaway-card {
+  .title {
+    -webkit-line-clamp: 1;
+    margin-top: 5px;
+  }
+
+  .description {
+    height: 95px;
+    -webkit-line-clamp: 4;
+    margin-top: 6px;
+  }
+
+  .prize {
+    -webkit-line-clamp: 1;
+    margin-top: 14px;
+  }
+
+  .date,
+  .winners,
+  .participants {
+    margin-top: 12px;
   }
 }

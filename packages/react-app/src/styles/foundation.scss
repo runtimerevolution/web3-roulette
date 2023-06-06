@@ -20,6 +20,12 @@ body {
   cursor: pointer;
 }
 
+.text-overflow {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
 @mixin mobile {
   @media (max-width: 599px) {
     @content;
