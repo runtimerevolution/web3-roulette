@@ -136,16 +136,19 @@
     height: 95px;
     -webkit-line-clamp: 4;
     margin-top: 6px;
+    color: $dark-color;
   }
 
   .prize {
     -webkit-line-clamp: 1;
     margin-top: 14px;
+    color: $dark-color;
   }
 
   .date,
   .winners,
   .participants {
     margin-top: 12px;
+    color: $dark-color;
   }
 }
