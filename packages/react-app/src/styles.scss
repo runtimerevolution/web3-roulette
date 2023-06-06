@@ -42,3 +42,66 @@
     margin-right: 20px;
   }
 }
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999999999;
+
+  &.nobackground {
+    background-color: transparent;
+  }
+
+  .modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 674px;
+    max-width: 100%;
+    height: 434px;
+    background-color: white;
+    border-radius: 15px;
+
+    @include mobile {
+      border-radius: 0;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 18px;
+      padding-top: 22px;
+    }
+
+    .img {
+      height: 130px;
+    }
+
+    .description {
+      width: 454px;
+      font-size: 18px !important;
+      text-align: center !important;
+      margin-top: 29px;
+
+      @include mobile {
+        width: 300px;
+      }
+    }
+
+    .ok {
+      width: 176px;
+      height: 42px;
+      text-transform: none !important;
+      border-radius: 10px !important;
+      font-size: 18px !important;
+      font-weight: bold !important;
+      margin-top: 22px;
+    }
+  }
+}

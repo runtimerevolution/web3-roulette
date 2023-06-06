@@ -22,6 +22,7 @@ import {
   ParticipateButton,
   ParticipatingButton,
 } from './ActionButtons';
+import { PendingLocationModal } from './StatusModals';
 
 const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
   manage: ManageButton,
@@ -30,20 +31,24 @@ const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
   allowed: ParticipateButton,
   notAllowed: NotAllowedButton,
   checking: CheckingButton,
+  rejected: NotAllowedButton,
 };
 
 type GiveawayCardProps = {
   giveaway: Giveaway;
   onParticipationError: () => void;
+  onRejection?: () => void;
 };
 
 const GiveawayCard = ({
   giveaway,
   onParticipationError,
+  onRejection,
 }: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const [showPendingModal, setShowPendingModal] = useState(false);
 
   const [participationState, setParticipationState] =
     useState<ParticipationState>(
@@ -59,7 +64,12 @@ const GiveawayCard = ({
         userInfo: userInfo,
         successCallback: () => {
           ParticipationService.getParticipationState(giveaway, userInfo).then(
-            (state) => setParticipationState(state)
+            (state) => {
+              setParticipationState(state);
+              if (state === ParticipationState.PENDING) {
+                setShowPendingModal(true);
+              }
+            }
           );
         },
         errorCallback: () => {
@@ -82,12 +92,17 @@ const GiveawayCard = ({
   useEffect(() => {
     if (!isAdmin) {
       ParticipationService.getParticipationState(giveaway, userInfo).then(
-        (state) => setParticipationState(state)
+        (state) => {
+          if (state === ParticipationState.REJECTED) {
+            onRejection?.();
+          }
+          setParticipationState(state);
+        }
       );
     } else {
       setParticipationState(ParticipationState.MANAGE);
     }
-  }, [giveaway, userInfo, isAdmin]);
+  }, [giveaway, onRejection, userInfo, isAdmin]);
 
   const navigateDetails = () => {
     navigate(`/giveaways/${giveaway._id}`);
@@ -104,6 +119,12 @@ const GiveawayCard = ({
             : 'white',
       }}
     >
+      <div>
+        <PendingLocationModal
+          open={showPendingModal}
+          onClose={() => setShowPendingModal(false)}
+        />
+      </div>
       <CardMedia
         className="clickable"
         component="img"

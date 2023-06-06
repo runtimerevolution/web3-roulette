@@ -20,6 +20,7 @@ export enum ParticipantState {
 interface Participant {
   id: string;
   state: ParticipantState;
+  notified?: boolean;
 }
 
 interface Giveaway extends mongoose.Document {
@@ -71,6 +72,7 @@ const giveawaySchema = new Schema<Giveaway>(
           enum: Object.values(ParticipantState),
           required: true,
         },
+        notified: { type: Boolean, required: false, default: false },
       },
     ],
     winners: [

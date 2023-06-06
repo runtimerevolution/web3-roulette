@@ -32,7 +32,9 @@ const getParticipationState = async (
       case 'confirmed':
         return ParticipationState.PARTICIPATING;
       case 'rejected':
-        return ParticipationState.NOT_ALLOWED;
+        return registeredUser.notified
+          ? ParticipationState.NOT_ALLOWED
+          : ParticipationState.REJECTED;
     }
   }
 
@@ -73,9 +75,31 @@ const meetRequirements = async (
   return true;
 };
 
+const getWinnerNotifications = async (
+  giveaways: Giveaway[],
+  userInfo: UserInfo
+): Promise<Giveaway[]> => {
+  const wonGiveaways = giveaways.filter((g) =>
+    g.winners.find((w) => w.id === userInfo.email)
+  );
+
+  const giveawaysToNotify = [];
+  for (const giveaway of wonGiveaways) {
+    const participants = await FrontendApiClient.getParticipants(giveaway._id);
+    const userObj = participants.find((p) => p.id === userInfo.email);
+
+    if (userObj && !userObj.notified) {
+      giveawaysToNotify.push(giveaway);
+    }
+  }
+
+  return giveawaysToNotify;
+};
+
 const ParticipationService = {
   getParticipationState,
   meetRequirements,
   submitParticipation,
+  getWinnerNotifications,
 };
 export default ParticipationService;

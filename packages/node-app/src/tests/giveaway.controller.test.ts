@@ -284,7 +284,7 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
 
     const updatedGiveaway = await Giveaway.findById(giveaway._id);
     expect(res.status).toEqual(404);
-    expect(res.body.message).toEqual('Participant not found');
+    expect(res.body.error).toEqual('Participant not found');
     expect(updatedGiveaway.participants[0].state).toEqual(
       ParticipantState.PENDING
     );
