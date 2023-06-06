@@ -85,6 +85,28 @@ const meetRequirements = async (
   return true;
 };
 
+const nextGiveaway = async (giveaways: Giveaway[], userInfo?: UserInfo) => {
+  if (!userInfo) return;
+
+  const participatingGiveaways = [];
+  let state;
+
+  for (const giveaway of giveaways) {
+    if (giveaway.endTime < new Date()) continue;
+
+    state = await getParticipationState(giveaway, userInfo);
+    if (state === ParticipationState.PARTICIPATING) {
+      participatingGiveaways.push(giveaway);
+    }
+  }
+
+  if (participatingGiveaways.length === 0) return;
+
+  return participatingGiveaways.reduce((prev, curr) =>
+    prev.startTime < curr.startTime ? prev : curr
+  );
+};
+
 const getWinnerNotifications = async (
   giveaways: Giveaway[],
   userInfo: UserInfo
@@ -110,6 +132,7 @@ const ParticipationService = {
   getParticipationState,
   meetRequirements,
   submitParticipation,
+  nextGiveaway,
   getWinnerNotifications,
   wonGiveaway,
 };
