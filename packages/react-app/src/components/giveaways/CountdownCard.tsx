@@ -14,7 +14,10 @@ const GiveawayCountdownCard = (giveaway: Giveaway) => {
   };
 
   return (
-    <Stack className="countdown-card" direction={'row'}>
+    <Stack
+      className="countdown-card"
+      sx={{ flexDirection: { xs: 'column', sm: 'row' } }}
+    >
       <img
         className="img clickable"
         src={giveaway.image}
@@ -37,7 +40,9 @@ const GiveawayCountdownCard = (giveaway: Giveaway) => {
           {format(giveaway.endTime, 'MMMM d, yyyy')}
         </Typography>
       </div>
-      <GiveawayCountdownBox {...giveaway} />
+      <Stack className="countdown-box-container">
+        <GiveawayCountdownBox {...giveaway} />
+      </Stack>
     </Stack>
   );
 };

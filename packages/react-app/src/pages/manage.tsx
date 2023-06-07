@@ -155,7 +155,7 @@ const Manage = () => {
           Oops, something went wrong! Please try again later.
         </MuiAlert>
       </Snackbar>
-      <Box sx={{ px: '3.5rem', py: '1rem' }}>
+      <Box sx={{ px: '2rem', py: '1rem' }}>
         <Box className="giveaways-subheader-box">
           <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
@@ -235,7 +235,12 @@ const Manage = () => {
               </Typography>
             ) : (
               giveaways?.map((g) => (
-                <Grid item xs={3} sx={{ minWidth: '300px' }} key={g._id}>
+                <Grid
+                  item
+                  xs={3}
+                  sx={{ minWidth: { xs: '100%', sm: '300px' } }}
+                  key={g._id}
+                >
                   <GiveawayCard
                     giveaway={g}
                     onParticipationError={promptError}

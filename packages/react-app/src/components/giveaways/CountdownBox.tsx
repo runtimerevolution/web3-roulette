@@ -33,7 +33,12 @@ const GiveawayCountdownBox = (giveaway: Giveaway) => {
         <div className="square">{Math.floor((seconds / 10) % 10)}</div>
         <div className="square">{Math.floor(seconds % 10)}</div>
       </Stack>
-      <Stack direction={'row'} alignItems={'end'}>
+      <Stack
+        sx={{
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: { xs: 'center', sm: 'end' },
+        }}
+      >
         <Button
           className="watch-giveaway-btn"
           variant="text"

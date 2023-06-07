@@ -155,15 +155,15 @@
 
 .countdown-card {
   width: 100%;
-  height: 265px;
   background-color: white;
   border-radius: 20px;
   margin-top: 25px;
   overflow: hidden;
+  flex-wrap: wrap;
 
   .img {
     height: 265px;
-    max-width: 23%;
+    width: 333px;
     object-fit: cover;
   }
 
@@ -173,6 +173,12 @@
 
     margin-top: 25px;
     margin-left: 35px;
+
+    @include mobile {
+      width: 90%;
+      margin-top: 15px;
+      margin-left: 20px;
+    }
   }
 
   .description {
@@ -194,18 +200,45 @@
   }
 
   span[role='img'] {
-    margin-right: 10px;
+    margin-right: 5px;
+  }
+}
+
+.countdown-box-container {
+  align-items: end;
+  margin-right: 18px;
+  margin-left: auto;
+
+  @include mobile {
+    margin: 0px;
+    width: 100%;
+    align-items: center;
+  }
+
+  @include tablet {
+    width: 100%;
+    align-items: center;
   }
 }
 
 .countdown-box {
-  width: 27%;
+  width: 350px;
   height: 229px;
   background-color: $primary-color;
   border-radius: 10px;
   margin-top: 18px;
-  margin-right: 18px;
-  margin-left: auto;
+
+  @include mobile {
+    width: 95%;
+    margin: 0px;
+    padding: 2.5%;
+    margin-top: 20px;
+  }
+
+  @include tablet {
+    margin-right: 0;
+    margin-left: 0;
+  }
 
   .timer-container {
     color: white;
@@ -226,6 +259,10 @@
 
   .hourglass-img {
     width: 136px;
+
+    @include mobile {
+      width: 110px;
+    }
   }
 }
 
@@ -236,4 +273,8 @@
   font-weight: 800 !important;
   margin-left: 5px !important;
   margin-bottom: 10px !important;
+
+  @include mobile {
+    margin-bottom: 0 !important;
+  }
 }
