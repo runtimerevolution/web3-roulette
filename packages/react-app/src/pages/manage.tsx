@@ -21,6 +21,7 @@ import { Giveaway, UserRole } from '../lib/types';
 import FrontendApiClient from '../services/backend';
 import ParticipationService from '../services/giveawayparticipation';
 import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
+import { splitTimeLeft } from '../hooks/useTimer';
 
 const Tabs = {
   Active: 0,
@@ -66,10 +67,18 @@ const Manage = () => {
         }
       );
 
-      if (countdownGiveaway === undefined) {
+      if (userInfo.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
         ParticipationService.nextGiveaway(data, userInfo).then(
           (nextGiveaway) => {
-            setCountdownGiveaway(nextGiveaway ? nextGiveaway : null);
+            if (nextGiveaway) {
+              const giveawayTime = nextGiveaway.endTime.getTime();
+              const timeLeft = splitTimeLeft(
+                giveawayTime - new Date().getTime()
+              );
+              setCountdownGiveaway(timeLeft[0] >= 100 ? null : nextGiveaway);
+            } else {
+              setCountdownGiveaway(null);
+            }
           }
         );
       }

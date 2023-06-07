@@ -163,7 +163,7 @@
 
   .img {
     height: 265px;
-    max-width: 350px;
+    max-width: 23%;
     object-fit: cover;
   }
 
@@ -196,4 +196,44 @@
   span[role='img'] {
     margin-right: 10px;
   }
+}
+
+.countdown-box {
+  width: 27%;
+  height: 229px;
+  background-color: $primary-color;
+  border-radius: 10px;
+  margin-top: 18px;
+  margin-right: 18px;
+  margin-left: auto;
+
+  .timer-container {
+    color: white;
+    margin-top: 20px;
+
+    .square {
+      width: 45px;
+      height: 64px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      color: $dark;
+      font-size: 30px;
+      border-radius: 5px;
+    }
+  }
+
+  .hourglass-img {
+    width: 136px;
+  }
+}
+
+.watch-giveaway-btn {
+  color: white !important;
+  text-transform: none !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  margin-left: 5px !important;
+  margin-bottom: 10px !important;
 }

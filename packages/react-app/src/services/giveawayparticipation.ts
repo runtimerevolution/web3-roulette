@@ -92,7 +92,8 @@ const nextGiveaway = async (giveaways: Giveaway[], userInfo?: UserInfo) => {
   let state;
 
   for (const giveaway of giveaways) {
-    if (giveaway.endTime < new Date()) continue;
+    if (giveaway.startTime > new Date() || new Date() > giveaway.endTime)
+      continue;
 
     state = await getParticipationState(giveaway, userInfo);
     if (state === ParticipationState.PARTICIPATING) {
@@ -103,7 +104,7 @@ const nextGiveaway = async (giveaways: Giveaway[], userInfo?: UserInfo) => {
   if (participatingGiveaways.length === 0) return;
 
   return participatingGiveaways.reduce((prev, curr) =>
-    prev.startTime < curr.startTime ? prev : curr
+    prev.endTime < curr.endTime ? prev : curr
   );
 };
 
