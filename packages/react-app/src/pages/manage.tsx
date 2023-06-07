@@ -40,7 +40,12 @@ const Manage = () => {
   const giveaways = useMemo(() => {
     return data?.filter((g) => {
       const now = new Date();
+      const giveawayStartDate = new Date(g.startTime);
       const giveawayEndDate = new Date(g.endTime);
+
+      if (userInfo?.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
+        return false;
+      }
 
       if (g._id === countdownGiveaway?._id) {
         return false;
