@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import { useMemo, useRef, useState } from 'react';
 import { Controller, ControllerRenderProps, useForm } from 'react-hook-form';
 import { Circle, MapContainer, Marker, TileLayer } from 'react-leaflet';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 import {
   Box,
@@ -17,7 +17,8 @@ import {
 import MuiAlert from '@mui/material/Alert';
 
 import SubHeader from '../components/SubHeader';
-import { Location } from '../lib/types';
+import useUserInfo from '../hooks/useUserInfo';
+import { Location, UserRole } from '../lib/types';
 import FrontendApiClient from '../services/backend';
 
 const textInputStyle = {
@@ -41,6 +42,7 @@ const defaultRadius = 200;
 
 const LocationEdit = () => {
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
 
   const { handleSubmit, register, formState, setValue, control } =
     useForm<Location>({});
@@ -103,6 +105,10 @@ const LocationEdit = () => {
       field.onChange(value);
     }
   };
+
+  if (userInfo?.role !== UserRole.ADMIN) {
+    return <Navigate to={`/`} />;
+  }
 
   return (
     <Box>
