@@ -1,17 +1,12 @@
 import { format } from 'date-fns';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  Skeleton,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
+import Trophy from '../../assets/Trophy.png';
 import useUserInfo from '../../hooks/useUserInfo';
+import { GetParticipants } from '../../lib/queryClient';
 import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
 import ParticipationService from '../../services/giveawayparticipation';
 import {
@@ -37,7 +32,7 @@ const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
 type GiveawayCardProps = {
   giveaway: Giveaway;
   onParticipationError: () => void;
-  onRejection?: () => void;
+  onRejection?: () => Promise<void>;
 };
 
 const GiveawayCard = ({
@@ -47,8 +42,11 @@ const GiveawayCard = ({
 }: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
-  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const { data: participants, refetch } = GetParticipants(giveaway._id);
   const [showPendingModal, setShowPendingModal] = useState(false);
+  const participationAction = useRef(false);
+  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
 
   const [participationState, setParticipationState] =
     useState<ParticipationState>(
@@ -63,19 +61,11 @@ const GiveawayCard = ({
         giveaway: giveaway,
         userInfo: userInfo,
         successCallback: () => {
-          ParticipationService.getParticipationState(giveaway, userInfo).then(
-            (state) => {
-              setParticipationState(state);
-              if (state === ParticipationState.PENDING) {
-                setShowPendingModal(true);
-              }
-            }
-          );
+          refetch();
+          participationAction.current = true;
         },
         errorCallback: () => {
-          ParticipationService.getParticipationState(giveaway, userInfo).then(
-            (state) => setParticipationState(state)
-          );
+          refetch();
           onParticipationError();
         },
       };
@@ -87,22 +77,48 @@ const GiveawayCard = ({
       ActionButtonComponents[participationState],
       props
     );
-  }, [participationState, giveaway, onParticipationError, userInfo]);
+  }, [participationState, giveaway, onParticipationError, userInfo, refetch]);
+
+  const getWinnerStr = () => {
+    const winners = giveaway.winners;
+    if (winners.length === 0) return;
+
+    const winnerId = winners[0].id;
+    const winnerParticipant = participants?.find((p) => p.id === winnerId);
+
+    if (winnerParticipant) {
+      if (winners.length === 1) {
+        return `${winnerParticipant.name}`;
+      } else {
+        return `${winnerParticipant.name} +${winners.length - 1} more`;
+      }
+    }
+  };
 
   useEffect(() => {
-    if (!isAdmin) {
-      ParticipationService.getParticipationState(giveaway, userInfo).then(
-        (state) => {
-          if (state === ParticipationState.REJECTED) {
-            onRejection?.();
-          }
-          setParticipationState(state);
+    if (!isAdmin && participants) {
+      ParticipationService.getParticipationState(
+        giveaway,
+        participants,
+        userInfo
+      ).then((state) => {
+        if (state === ParticipationState.REJECTED) {
+          onRejection?.().then(() => {
+            refetch();
+          });
+        } else if (
+          participationAction.current &&
+          state === ParticipationState.PENDING
+        ) {
+          participationAction.current = false;
+          setShowPendingModal(true);
         }
-      );
+        setParticipationState(state);
+      });
     } else {
       setParticipationState(ParticipationState.MANAGE);
     }
-  }, [giveaway, onRejection, userInfo, isAdmin]);
+  }, [giveaway, onRejection, userInfo, isAdmin, participants, refetch]);
 
   const navigateDetails = () => {
     navigate(`/giveaways/${giveaway._id}`);
@@ -125,36 +141,59 @@ const GiveawayCard = ({
           onClose={() => setShowPendingModal(false)}
         />
       </div>
-      <CardMedia
-        className="clickable"
-        component="img"
-        height="120"
-        image={
-          giveaway.image
-            ? giveaway.image
-            : '/static/images/placeholder-image.jpg'
-        }
-        onClick={navigateDetails}
-      />
-      <CardContent>
+      <div className="card-media clickable" onClick={navigateDetails}>
+        <img className="img" src={giveaway.image} alt="Giveaway thumb" />
+        {isWinner && (
+          <div className="winner">
+            <div style={{ textAlign: 'center' }}>
+              <img className="icon" src={Trophy} alt="Trophy" />
+              <Typography className="message">You won this contest!</Typography>
+            </div>
+          </div>
+        )}
+      </div>
+      <CardContent className="giveaway-card">
         <Typography
-          className="clickable"
+          className="giveaway-title text-overflow clickable"
           gutterBottom
           variant="h5"
           onClick={navigateDetails}
-          mt="13px"
         >
           {giveaway.title}
         </Typography>
-        <Typography gutterBottom mt="6px">
+        <Typography className="description text-overflow" gutterBottom>
           {giveaway.description}
         </Typography>
-        <Typography gutterBottom mt="14px">
-          <>🏆 {giveaway.prize}</>
+        <Typography className="prize text-overflow" gutterBottom>
+          <span role="img" aria-label="trophy">
+            🏆
+          </span>{' '}
+          {giveaway.prize}
         </Typography>
-        <Typography gutterBottom mt="12px">
-          <>🗓️ {format(giveaway.endTime, 'MMMM d, yyyy')}</>
+        <Typography className="date" gutterBottom>
+          <span role="img" aria-label="calendar">
+            🗓️
+          </span>{' '}
+          {format(giveaway.endTime, 'MMMM d, yyyy')}
         </Typography>
+        {giveaway.winners.length > 0 && (
+          <Typography className="winners" gutterBottom>
+            <span role="img" aria-label="party emoji">
+              🥳
+            </span>{' '}
+            {getWinnerStr()}
+          </Typography>
+        )}
+        {giveaway.endTime < new Date() && (
+          <Typography className="participants" gutterBottom>
+            <span role="img" aria-label="people">
+              👥
+            </span>{' '}
+            {`${
+              participants?.filter((p) => p.state === 'confirmed').length
+            } participants`}
+          </Typography>
+        )}
         {giveaway.endTime > new Date() && ActionButton}
       </CardContent>
     </Card>

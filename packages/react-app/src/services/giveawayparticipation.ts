@@ -1,4 +1,9 @@
-import { Giveaway, ParticipationState, UserInfo } from '../lib/types';
+import {
+  Giveaway,
+  Participant,
+  ParticipationState,
+  UserInfo,
+} from '../lib/types';
 import FrontendApiClient from './backend';
 import GeolocationService from './geolocation';
 
@@ -17,13 +22,17 @@ const submitParticipation = (
   );
 };
 
+const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {
+  if (!userInfo) return false;
+  return giveaway.winners.some((winner) => winner.id === userInfo.email);
+};
+
 const getParticipationState = async (
   giveaway: Giveaway,
+  participants: Participant[],
   userInfo?: UserInfo
 ): Promise<ParticipationState> => {
   if (!userInfo) return ParticipationState.NOT_ALLOWED;
-
-  const participants = await FrontendApiClient.getParticipants(giveaway._id);
   const registeredUser = participants.find((p) => p.id === userInfo.email);
 
   if (registeredUser) {
@@ -102,5 +111,6 @@ const ParticipationService = {
   meetRequirements,
   submitParticipation,
   getWinnerNotifications,
+  wonGiveaway,
 };
 export default ParticipationService;
