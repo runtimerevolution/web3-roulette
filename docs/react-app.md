@@ -9,14 +9,16 @@
 
 3. Fill `VITE_OAUTH_CLIENT_ID` value. Request to someone from the team. This value is a reference to cliend ID used for google authentication.
 
-4. Update `VITE_FRONTEND_URI` value. Replace `localhost` with the domain hosting the react application. This will make sure that features such as QR code will work, when scaning through the mobile device.
+4. Fill `VITE_ENCRYPTION_KEY` value. Replace with an AES key.
 
-5. Do the [backend api setup](./node-app.md).
+5. Update `VITE_FRONTEND_URI` value. Replace `localhost` with the domain hosting the react application. This will make sure that features such as QR code will work, when scaning through the mobile device.
 
-6. Start the backend api \
+6. Do the [backend api setup](./node-app.md).
+
+7. Start the backend api \
    `yarn start-node-app`
 
-7. Start the app \
+8. Start the app \
    `yarn start-react-app`
 
 ## Docker Setup

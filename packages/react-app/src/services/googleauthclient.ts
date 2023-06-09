@@ -1,7 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
-
 import { UserInfo } from '../lib/types';
 import Constants from '../utils/Constants';
+import { AES, enc } from 'crypto-js';
+
+const ENCRYPTION_KEY = import.meta.env.VITE_ENCRYPTION_KEY;
 
 const googleAuthInstance: AxiosInstance = axios.create({
   baseURL: Constants.GOOGLE_OAUTH_URI,
@@ -23,13 +25,23 @@ const getUserInfo = async (tokenType: string, accessToken: string) => {
 };
 
 const saveUser = (userObj: UserInfo) => {
-  localStorage.setItem('user', JSON.stringify(userObj));
+  const userStr = JSON.stringify(userObj);
+  const encryptedUser = AES.encrypt(userStr, ENCRYPTION_KEY).toString();
+
+  if (encryptedUser) {
+    localStorage.setItem('user', encryptedUser);
+  }
 };
 
 const getUser = (): UserInfo | undefined => {
   const userData: string | null = localStorage.getItem('user');
-  if (userData) {
-    return JSON.parse(userData) as UserInfo;
+  if (!userData) return;
+
+  const decryptedUser = AES.decrypt(userData, ENCRYPTION_KEY).toString(
+    enc.Utf8
+  );
+  if (decryptedUser) {
+    return JSON.parse(decryptedUser) as UserInfo;
   }
 };
 
