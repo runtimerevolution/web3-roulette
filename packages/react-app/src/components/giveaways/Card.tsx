@@ -1,13 +1,18 @@
 import { format } from 'date-fns';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
 import Trophy from '../../assets/Trophy.png';
-import useUserInfo from '../../hooks/useUserInfo';
 import { GetParticipants } from '../../lib/queryClient';
-import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
+import {
+  Giveaway,
+  ParticipationState,
+  UserInfo,
+  UserRole,
+} from '../../lib/types';
+import { UserContext } from '../../routes/AuthRoute';
 import ParticipationService from '../../services/giveawayparticipation';
 import {
   ApprovalPendingButton,
@@ -41,11 +46,11 @@ const GiveawayCard = ({
   onRejection,
 }: GiveawayCardProps) => {
   const navigate = useNavigate();
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const { data: participants, refetch } = GetParticipants(giveaway._id);
   const [showPendingModal, setShowPendingModal] = useState(false);
   const participationAction = useRef(false);
-  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const isAdmin = userInfo.role === UserRole.ADMIN;
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
 
   const [participationState, setParticipationState] =

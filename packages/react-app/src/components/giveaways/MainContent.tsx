@@ -5,15 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Stack, Typography } from '@mui/material';
 
-import useUserInfo from '../../hooks/useUserInfo';
+import { Giveaway, UserInfo, UserRole } from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
-import { Giveaway, UserRole } from '../../lib/types';
+import { UserContext } from '../../routes/AuthRoute';
 
 const GiveawayMainContent = () => {
   const navigate = useNavigate();
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useContext(GiveawayContext) as Giveaway;
-  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const isAdmin = userInfo.role === UserRole.ADMIN;
 
   const nrParticipants = giveaway.nrConfirmedParticipants;
   const nrPending = giveaway.nrPendingParticipants;

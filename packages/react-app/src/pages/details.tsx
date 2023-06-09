@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import { Stack } from '@mui/material';
@@ -6,8 +6,8 @@ import { Stack } from '@mui/material';
 import GiveawayAsideContent from '../components/giveaways/AsideContent';
 import GiveawayMainContent from '../components/giveaways/MainContent';
 import SubHeader from '../components/SubHeader';
-import useUserInfo from '../hooks/useUserInfo';
-import { Giveaway, UserRole } from '../lib/types';
+import { Giveaway, UserInfo, UserRole } from '../lib/types';
+import { UserContext } from '../routes/AuthRoute';
 import FrontendApiClient from '../services/backend';
 
 const GiveawayContext = createContext<Giveaway | null>(null);
@@ -21,7 +21,7 @@ const loader = async ({ params }: any) => {
 };
 
 const GiveawayDetailsPage = () => {
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useLoaderData() as Giveaway;
 
   return (
@@ -32,7 +32,7 @@ const GiveawayDetailsPage = () => {
         sx={{ flexDirection: { xs: 'column', md: 'row' } }}
       >
         <GiveawayMainContent />
-        {(giveaway.rules || userInfo?.role === UserRole.ADMIN) && (
+        {(giveaway.rules || userInfo.role === UserRole.ADMIN) && (
           <GiveawayAsideContent />
         )}
       </Stack>

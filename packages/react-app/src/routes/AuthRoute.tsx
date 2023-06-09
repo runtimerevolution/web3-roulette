@@ -1,18 +1,28 @@
+import { createContext } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import useUserInfo from '../hooks/useUserInfo';
+
 import ResponsiveAppBar from '../components/AppBar';
+import { UserInfo } from '../lib/types';
+import GoogleAuthClient from '../services/googleauthclient';
+
+const UserContext = createContext<UserInfo | null>(null);
 
 const AuthRoute = () => {
-  const user = useUserInfo();
+  const user = GoogleAuthClient.getUser();
 
-  return user && user.email ? (
-    <>
+  if (!user || !user.email) {
+    return (
+      <Navigate to="/login" state={{ referrer: window.location.pathname }} />
+    );
+  }
+
+  return (
+    <UserContext.Provider value={user}>
       <ResponsiveAppBar />
       <Outlet />
-    </>
-  ) : (
-    <Navigate to="/login" state={{ referrer: window.location.pathname }} />
+    </UserContext.Provider>
   );
 };
 
 export default AuthRoute;
+export { UserContext };

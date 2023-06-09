@@ -1,5 +1,5 @@
 import { isAfter, isBefore } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
@@ -10,18 +10,18 @@ import AdminEmptyState from '../components/giveaways/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
 } from '../components/giveaways/Card';
+import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
 import {
   RejectionModal,
   WinnerModal,
 } from '../components/giveaways/StatusModals';
 import UserEmptyState from '../components/giveaways/UserEmptyState';
-import useUserInfo from '../hooks/useUserInfo';
+import { splitTimeLeft } from '../hooks/useTimer';
 import { GetGiveaways } from '../lib/queryClient';
-import { Giveaway, UserRole } from '../lib/types';
+import { Giveaway, UserInfo, UserRole } from '../lib/types';
+import { UserContext } from '../routes/AuthRoute';
 import FrontendApiClient from '../services/backend';
 import ParticipationService from '../services/giveawayparticipation';
-import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
-import { splitTimeLeft } from '../hooks/useTimer';
 
 const Tabs = {
   Active: 0,
@@ -29,7 +29,7 @@ const Tabs = {
 };
 
 const Manage = () => {
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const { isLoading, data } = GetGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
@@ -43,7 +43,7 @@ const Manage = () => {
       const giveawayStartDate = new Date(g.startTime);
       const giveawayEndDate = new Date(g.endTime);
 
-      if (userInfo?.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
+      if (userInfo.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
         return false;
       }
 
@@ -62,7 +62,7 @@ const Manage = () => {
       setError(true);
     }
 
-    if (data && userInfo) {
+    if (data) {
       ParticipationService.getWinnerNotifications(data, userInfo).then(
         (giveaways) => {
           setWinnerGiveaways(giveaways);
@@ -101,7 +101,6 @@ const Manage = () => {
   };
 
   const notifyRejection = async (giveaway: Giveaway) => {
-    if (!userInfo) return;
     if (!rejectedGiveaways.find((g) => g._id === giveaway._id)) {
       setRejectedGiveaways([...rejectedGiveaways, giveaway]);
       await FrontendApiClient.setNotifiedParticipant(
@@ -128,7 +127,7 @@ const Manage = () => {
   };
 
   if (data?.length === 0) {
-    return userInfo?.role === UserRole.ADMIN ? (
+    return userInfo.role === UserRole.ADMIN ? (
       <AdminEmptyState />
     ) : (
       <UserEmptyState />
@@ -167,7 +166,7 @@ const Manage = () => {
           <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
           </Typography>
-          {userInfo?.role === UserRole.ADMIN && <CreateNewButton />}
+          {userInfo.role === UserRole.ADMIN && <CreateNewButton />}
         </Box>
 
         <Button
