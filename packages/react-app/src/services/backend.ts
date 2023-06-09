@@ -42,7 +42,6 @@ class BackendService {
         )}`;
       }
 
-      console.error(error);
       errorCallback?.();
       return Promise.reject(error.response);
     };
