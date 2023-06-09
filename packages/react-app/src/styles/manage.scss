@@ -151,8 +151,130 @@
     margin-top: 12px;
     color: $dark-color;
   }
+}
+
+.countdown-card {
+  width: 100%;
+  background-color: white;
+  border-radius: 20px;
+  margin-top: 25px;
+  overflow: hidden;
+  flex-wrap: wrap;
+
+  .img {
+    height: 265px;
+    width: 333px;
+    object-fit: cover;
+  }
+
+  .info-container {
+    width: 40%;
+    color: $dark-color;
+
+    margin-top: 25px;
+    margin-left: 35px;
+
+    @include mobile {
+      width: 90%;
+      margin-top: 15px;
+      margin-left: 20px;
+    }
+  }
+
+  .description {
+    height: 100px;
+    margin-top: 9px;
+    color: $dark-color;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .trophy {
+    margin-top: 20px;
+  }
+
+  .calendar {
+    margin-top: 10px;
+  }
 
   span[role='img'] {
-    margin-right: 10px;
+    margin-right: 5px;
+  }
+}
+
+.countdown-box-container {
+  align-items: end;
+  margin-right: 18px;
+  margin-left: auto;
+
+  @include mobile {
+    margin: 0px;
+    width: 100%;
+    align-items: center;
+  }
+
+  @include tablet {
+    width: 100%;
+    align-items: center;
+  }
+}
+
+.countdown-box {
+  width: 350px;
+  height: 229px;
+  background-color: $primary-color;
+  border-radius: 10px;
+  margin-top: 18px;
+
+  @include mobile {
+    width: 95%;
+    margin: 0px;
+    padding: 2.5%;
+    margin-top: 20px;
+  }
+
+  @include tablet {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .timer-container {
+    color: white;
+    margin-top: 20px;
+
+    .square {
+      width: 45px;
+      height: 64px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      color: $dark-color;
+      font-size: 30px;
+      border-radius: 5px;
+    }
+  }
+
+  .hourglass-img {
+    width: 136px;
+
+    @include mobile {
+      width: 110px;
+    }
+  }
+}
+
+.watch-giveaway-btn {
+  color: white !important;
+  text-transform: none !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  margin-left: 5px !important;
+  margin-bottom: 10px !important;
+
+  @include mobile {
+    margin-bottom: 0 !important;
   }
 }

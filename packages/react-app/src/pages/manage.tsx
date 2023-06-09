@@ -1,5 +1,5 @@
 import { isAfter, isBefore } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
@@ -20,6 +20,8 @@ import { GetGiveaways } from '../lib/queryClient';
 import { Giveaway, UserRole } from '../lib/types';
 import FrontendApiClient from '../services/backend';
 import ParticipationService from '../services/giveawayparticipation';
+import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
+import { splitTimeLeft } from '../hooks/useTimer';
 
 const Tabs = {
   Active: 0,
@@ -30,18 +32,25 @@ const Manage = () => {
   const userInfo = useUserInfo();
   const { isLoading, data } = GetGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
+  const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [winnerGiveaways, setWinnerGiveaways] = useState<Giveaway[]>([]);
   const [rejectedGiveaways, setRejectedGiveaways] = useState<Giveaway[]>([]);
   const [error, setError] = useState(false);
 
-  const giveaways = data?.filter((g) => {
-    const now = new Date();
-    const giveawayEndDate = new Date(g.endTime);
+  const giveaways = useMemo(() => {
+    return data?.filter((g) => {
+      const now = new Date();
+      const giveawayEndDate = new Date(g.endTime);
 
-    return activeTab === Tabs.Active
-      ? isAfter(giveawayEndDate, now)
-      : isBefore(giveawayEndDate, now);
-  });
+      if (g._id === countdownGiveaway?._id) {
+        return false;
+      }
+
+      return activeTab === Tabs.Active
+        ? isAfter(giveawayEndDate, now)
+        : isBefore(giveawayEndDate, now);
+    });
+  }, [activeTab, data, countdownGiveaway]);
 
   useEffect(() => {
     if (data === undefined && !isLoading) {
@@ -57,6 +66,24 @@ const Manage = () => {
           });
         }
       );
+
+      if (userInfo.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
+        ParticipationService.nextGiveaway(data, userInfo).then(
+          (nextGiveaway) => {
+            if (nextGiveaway) {
+              const giveawayTime = nextGiveaway.endTime.getTime();
+              const timeLeft = splitTimeLeft(
+                giveawayTime - new Date().getTime()
+              );
+              setCountdownGiveaway(timeLeft[0] >= 100 ? null : nextGiveaway);
+            } else {
+              setCountdownGiveaway(null);
+            }
+          }
+        );
+      } else if (userInfo.role === UserRole.ADMIN) {
+        setCountdownGiveaway(null);
+      }
     }
   }, [data, isLoading]);
 
@@ -130,7 +157,7 @@ const Manage = () => {
           Oops, something went wrong! Please try again later.
         </MuiAlert>
       </Snackbar>
-      <Box sx={{ px: '3.5rem', py: '1rem' }}>
+      <Box sx={{ px: '2rem', py: '1rem' }}>
         <Box className="giveaways-subheader-box">
           <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
@@ -153,6 +180,7 @@ const Manage = () => {
           onClick={() => {
             setActiveTab(Tabs.Active);
           }}
+          disableElevation
         >
           Active
         </Button>
@@ -172,47 +200,61 @@ const Manage = () => {
           onClick={() => {
             setActiveTab(Tabs.Archived);
           }}
+          disableElevation
         >
           Archived
         </Button>
-        <Grid container spacing={3} sx={{ mt: '0rem', mb: '2rem' }}>
-          {isLoading ? (
-            <>
-              <Grid item xs={3} sx={{ minWidth: '300px' }}>
-                <GiveawayCardSkeleton />
-              </Grid>
-              <Grid item xs={3} sx={{ minWidth: '300px' }}>
-                <GiveawayCardSkeleton />
-              </Grid>
-              <Grid item xs={3} sx={{ minWidth: '300px' }}>
-                <GiveawayCardSkeleton />
-              </Grid>
-              <Grid item xs={3} sx={{ minWidth: '300px' }}>
-                <GiveawayCardSkeleton />
-              </Grid>
-            </>
-          ) : giveaways === undefined || giveaways?.length === 0 ? (
-            <Typography
-              variant="subtitle1"
-              margin="30px"
-              sx={{ color: '#45507C' }}
-            >
-              There are no giveaways to present.
-            </Typography>
-          ) : (
-            giveaways?.map((g) => (
-              <Grid item xs={3} sx={{ minWidth: '300px' }} key={g._id}>
-                <GiveawayCard
-                  giveaway={g}
-                  onParticipationError={promptError}
-                  onRejection={async () => {
-                    await notifyRejection(g);
-                  }}
-                />
-              </Grid>
-            ))
+        <div>
+          {countdownGiveaway && activeTab === Tabs.Active && (
+            <GiveawayCountdownCard {...countdownGiveaway} />
           )}
-        </Grid>
+          <Grid container spacing={3} sx={{ mt: '0rem', mb: '2rem' }}>
+            {isLoading || countdownGiveaway === undefined ? (
+              <>
+                <Grid item xs={3} sx={{ minWidth: '300px' }}>
+                  <GiveawayCardSkeleton />
+                </Grid>
+                <Grid item xs={3} sx={{ minWidth: '300px' }}>
+                  <GiveawayCardSkeleton />
+                </Grid>
+                <Grid item xs={3} sx={{ minWidth: '300px' }}>
+                  <GiveawayCardSkeleton />
+                </Grid>
+                <Grid item xs={3} sx={{ minWidth: '300px' }}>
+                  <GiveawayCardSkeleton />
+                </Grid>
+              </>
+            ) : giveaways === undefined ||
+              (giveaways?.length === 0 &&
+                ((!countdownGiveaway && activeTab === Tabs.Active) ||
+                  activeTab === Tabs.Archived)) ? (
+              <Typography
+                variant="subtitle1"
+                margin="30px"
+                sx={{ color: '#45507C' }}
+              >
+                There are no giveaways to present.
+              </Typography>
+            ) : (
+              giveaways?.map((g) => (
+                <Grid
+                  item
+                  xs={3}
+                  sx={{ minWidth: { xs: '100%', sm: '300px' } }}
+                  key={g._id}
+                >
+                  <GiveawayCard
+                    giveaway={g}
+                    onParticipationError={promptError}
+                    onRejection={async () => {
+                      await notifyRejection(g);
+                    }}
+                  />
+                </Grid>
+              ))
+            )}
+          </Grid>
+        </div>
       </Box>
     </Container>
   );
