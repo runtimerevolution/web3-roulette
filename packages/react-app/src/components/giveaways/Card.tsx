@@ -154,7 +154,7 @@ const GiveawayCard = ({
       </div>
       <CardContent className="giveaway-card">
         <Typography
-          className="title text-overflow clickable"
+          className="giveaway-title text-overflow clickable"
           gutterBottom
           variant="h5"
           onClick={navigateDetails}
