@@ -34,6 +34,11 @@
       color: #12bb6a;
     }
 
+    &.disabled {
+      background-color: #cccccc;
+      color: #666666;
+    }
+
     &.reject:hover {
       background-color: rgb(238, 88, 73);
       color: white;

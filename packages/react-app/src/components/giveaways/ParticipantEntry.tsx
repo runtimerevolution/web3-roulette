@@ -4,11 +4,13 @@ import { Participant } from '../../lib/types';
 
 type ParticipantEntryProps = {
   participant: Participant;
+  actionAllowed: boolean;
   onUpdateState: (participantId: string, newState: string) => void;
 };
 
 const ParticipantEntry = ({
   participant,
+  actionAllowed,
   onUpdateState,
 }: ParticipantEntryProps) => {
   return (
@@ -21,24 +23,26 @@ const ParticipantEntry = ({
       <Typography className="participant-name">{participant.name}</Typography>
       <Stack direction={'row'}>
         <Button
-          className="action-button reject"
+          className={`action-button reject ${!actionAllowed && 'disabled'}`}
           variant="contained"
           color="error"
           onClick={() => {
             onUpdateState(participant.id, 'rejected');
           }}
           disableElevation
+          disabled={!actionAllowed}
         >
           Reject
         </Button>
         <Button
-          className="action-button approve"
+          className={`action-button approve ${!actionAllowed && 'disabled'}`}
           variant="contained"
           color="success"
           onClick={() => {
             onUpdateState(participant.id, 'confirmed');
           }}
           disableElevation
+          disabled={!actionAllowed}
         >
           Approve
         </Button>
