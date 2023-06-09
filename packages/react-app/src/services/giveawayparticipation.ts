@@ -11,6 +11,7 @@ const submitParticipation = (
   FrontendApiClient.postParticipant(
     giveaway,
     userInfo.email,
+    userInfo.name,
     successCallback,
     errorCallback
   );

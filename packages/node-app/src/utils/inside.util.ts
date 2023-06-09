@@ -6,6 +6,7 @@ import { ParticipantState, Unit } from '../models/giveaway.model';
 export const getParticipant = (data) => {
   return {
     id: data.id,
+    name: data.name,
     location: data.location,
     unit: Unit.NODE,
   };

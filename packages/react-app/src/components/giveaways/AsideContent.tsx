@@ -35,7 +35,7 @@ const GiveawayAsideContent = () => {
   return (
     <div className="giveaway-aside-info">
       {isAdmin && (
-        <Stack alignItems="end">
+        <Stack sx={{ alignItems: { xs: 'center', lg: 'end' } }}>
           <DownloadButton giveaway={giveaway} qrDataURL={qrDataURL} />
         </Stack>
       )}

@@ -11,6 +11,7 @@ import GeolocationService, { Coordinates } from './geolocation';
 
 type ParticipantBody = {
   id: string;
+  name: string;
   location?: Coordinates;
 };
 
@@ -127,11 +128,12 @@ class BackendService {
 
   postParticipant = async (
     giveaway: Giveaway,
-    participant: string,
+    participantId: string,
+    participantName: string,
     successCallback?: () => void,
     errorCallback?: () => void
   ) => {
-    const body: ParticipantBody = { id: participant };
+    const body: ParticipantBody = { id: participantId, name: participantName };
 
     if (giveaway.requirements?.location) {
       const location = await GeolocationService.getLocation();
@@ -145,6 +147,24 @@ class BackendService {
 
     await this.makeRequest(
       `/giveaways/${giveaway._id}/participants/`,
+      'PUT',
+      undefined,
+      body,
+      successCallback,
+      errorCallback
+    );
+  };
+
+  manageParticipant = async (
+    giveawayId: string,
+    participantId: string,
+    newState: string,
+    successCallback?: () => void,
+    errorCallback?: () => void
+  ) => {
+    const body = { state: newState };
+    await this.makeRequest(
+      `/giveaways/${giveawayId}/participants/${participantId}`,
       'PUT',
       undefined,
       body,

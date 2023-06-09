@@ -2,6 +2,7 @@
 @import './styles/login.scss';
 @import './styles/manage.scss';
 @import './styles/details.scss';
+@import './styles/participants.scss';
 
 .logo {
   width: 235px;
@@ -9,7 +10,7 @@
 
 .back-btn {
   margin-left: 75px;
-  margin-top: 30px;
+  margin-top: 20px;
 
   @include mobile {
     margin-left: 10px;
@@ -103,5 +104,18 @@
       font-weight: bold !important;
       margin-top: 22px;
     }
+  }
+}
+
+.title {
+  font-weight: bold !important;
+  font-size: 35px !important;
+  color: $dark-color;
+  margin-top: 20px !important;
+  margin-bottom: 22px !important;
+  margin-left: 75px !important;
+
+  @include mobile {
+    margin-left: 10px !important;
   }
 }

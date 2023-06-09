@@ -10,14 +10,18 @@ import {
   fileToBase64,
   getDefinedFields,
   handleError,
+  setParticipantsStats,
 } from '../utils/model.util';
 import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
-    const giveaways = await Giveaway.find().select(
-      'title description startTime endTime winners requirements prize image'
-    );
+    let giveaways = await Giveaway.find()
+      .select(
+        'title description startTime endTime winners requirements prize image participants'
+      )
+      .lean();
+    giveaways = giveaways.map((giveaway) => setParticipantsStats(giveaway));
     res.status(200).json(giveaways);
   } catch (error) {
     const { code, message } = handleError(error);
@@ -27,9 +31,8 @@ export const listGiveaways = async (req: Request, res: Response) => {
 
 export const getGiveaway = async (req: Request, res: Response) => {
   try {
-    const giveaway = await Giveaway.findById(req.params.id).select(
-      '-participants'
-    );
+    let giveaway = await Giveaway.findById(req.params.id).lean();
+    giveaway = setParticipantsStats(giveaway);
     res.status(200).json(giveaway);
   } catch (error) {
     const { code, message } = handleError(error);
@@ -152,7 +155,11 @@ export const addParticipant = async (req: Request, res: Response) => {
         .json({ error: 'Participant already exists in the giveaway' });
 
     const state = validateParticipant(participant, giveaway);
-    giveaway.participants.push({ id: participant.id, state });
+    giveaway.participants.push({
+      id: participant.id,
+      name: participant.name,
+      state,
+    });
     await giveaway.save();
 
     // send state feedback

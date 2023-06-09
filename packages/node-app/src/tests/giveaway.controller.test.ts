@@ -214,7 +214,7 @@ describe('POST /giveaways/:id/participants', () => {
       image: 'test-image-base64',
     });
 
-    const body = { id: 'participant@example.com' };
+    const body = { id: 'participant@example.com', name: 'participant' };
 
     const response = await request(app)
       .put(`/giveaways/${giveaway._id}/participants`)

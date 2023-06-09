@@ -1,5 +1,8 @@
 import fs from 'fs';
+import { omit } from 'lodash';
 import { Error as MongooseError } from 'mongoose';
+
+import { ParticipantState } from '../models/giveaway.model';
 
 type APIError = {
   code: number;
@@ -24,6 +27,21 @@ export const getDefinedFields = (
   }
 
   return definedFields;
+};
+
+export const setParticipantsStats = (giveaway: any) => {
+  const nrConfirmedParticipants = giveaway.participants.filter(
+    (p) => p.state === ParticipantState.CONFIRMED
+  ).length;
+  const nrPendingParticipants = giveaway.participants.filter(
+    (p) => p.state === ParticipantState.PENDING
+  ).length;
+
+  return {
+    ...omit(giveaway, ['participants']),
+    nrConfirmedParticipants,
+    nrPendingParticipants,
+  };
 };
 
 export const handleError = (error: Error): APIError => {

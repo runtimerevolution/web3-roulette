@@ -19,6 +19,7 @@ export enum ParticipantState {
 
 interface Participant {
   id: string;
+  name: string;
   state: ParticipantState;
   notified?: boolean;
 }
@@ -67,6 +68,7 @@ const giveawaySchema = new Schema<Giveaway>(
     participants: [
       {
         id: { type: String, required: true },
+        name: { type: String, required: true },
         state: {
           type: String,
           enum: Object.values(ParticipantState),

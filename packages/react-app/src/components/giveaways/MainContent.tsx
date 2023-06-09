@@ -1,13 +1,26 @@
 import { format } from 'date-fns';
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { Stack, Typography } from '@mui/material';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Button, Stack, Typography } from '@mui/material';
 
-import { Giveaway } from '../../lib/types';
+import useUserInfo from '../../hooks/useUserInfo';
 import { GiveawayContext } from '../../pages/details';
+import { Giveaway, UserRole } from '../../lib/types';
 
 const GiveawayMainContent = () => {
+  const navigate = useNavigate();
+  const userInfo = useUserInfo();
   const giveaway = useContext(GiveawayContext) as Giveaway;
+  const isAdmin = userInfo?.role === UserRole.ADMIN;
+
+  const nrParticipants = giveaway.nrConfirmedParticipants;
+  const nrPending = giveaway.nrPendingParticipants;
+
+  const manageParticipants = () => {
+    navigate(`/giveaways/${giveaway._id}/participants`);
+  };
 
   return (
     <Stack sx={{ paddingLeft: { sm: '80px', lg: '0px' } }}>
@@ -16,7 +29,7 @@ const GiveawayMainContent = () => {
           fontSize: '35px',
           fontWeight: 'bold',
           color: '#303136',
-          marginTop: '13px',
+          marginTop: '5px',
           marginLeft: { xs: '10px', md: '0px' },
         }}
       >
@@ -56,6 +69,35 @@ const GiveawayMainContent = () => {
             {format(giveaway.endTime, 'MMMM d, yyyy')}
           </>
         </Typography>
+        <Stack
+          justifyContent="space-between"
+          sx={{
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: { xs: 'start', lg: 'space-between' },
+          }}
+        >
+          <Typography sx={{ fontSize: '18px', color: '#303136' }}>
+            <>
+              <span
+                className="giveaway-info-icon"
+                role="img"
+                aria-label="calendar"
+              >
+                👥
+              </span>{' '}
+              {`${nrParticipants} participants`}
+            </>
+          </Typography>
+          {isAdmin && nrPending !== undefined && nrPending > 0 && (
+            <Button
+              className="pending-alert-button"
+              variant="contained"
+              startIcon={<ErrorIcon />}
+              onClick={manageParticipants}
+              disableElevation
+            >{`${nrPending} waiting for approval`}</Button>
+          )}
+        </Stack>
       </Stack>
     </Stack>
   );

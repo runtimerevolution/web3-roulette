@@ -12,6 +12,8 @@ type Giveaway = {
   image: string;
   prize: string;
   manual?: boolean;
+  nrConfirmedParticipants?: number;
+  nrPendingParticipants?: number;
 };
 
 type UserInfo = {
@@ -31,6 +33,7 @@ type UserInfo = {
 type Participant = {
   id: string;
   notified: boolean;
+  name: string;
   state: string;
 };
 
@@ -74,9 +77,9 @@ type ConditionValue = Unit | string | null;
 type GiveawayCondition = {
   type: ConditionType;
   value: ConditionValue;
-}
+};
 
-export { 
+export {
   Giveaway,
   UserInfo,
   Requirements,
