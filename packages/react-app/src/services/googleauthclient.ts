@@ -37,11 +37,16 @@ const getUser = (): UserInfo | undefined => {
   const userData: string | null = localStorage.getItem('user');
   if (!userData) return;
 
-  const decryptedUser = AES.decrypt(userData, ENCRYPTION_KEY).toString(
-    enc.Utf8
-  );
-  if (decryptedUser) {
-    return JSON.parse(decryptedUser) as UserInfo;
+  try {
+    const decryptedUser = AES.decrypt(userData, ENCRYPTION_KEY).toString(
+      enc.Utf8
+    );
+    if (decryptedUser) {
+      return JSON.parse(decryptedUser) as UserInfo;
+    }
+  } catch {
+    console.log('problems getting the user');
+    removeUser();
   }
 };
 
