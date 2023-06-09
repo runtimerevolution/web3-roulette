@@ -81,6 +81,8 @@ const Manage = () => {
             }
           }
         );
+      } else if (userInfo.role === UserRole.ADMIN) {
+        setCountdownGiveaway(null);
       }
     }
   }, [data, isLoading]);

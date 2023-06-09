@@ -89,13 +89,15 @@ const nextGiveaway = async (giveaways: Giveaway[], userInfo?: UserInfo) => {
   if (!userInfo) return;
 
   const participatingGiveaways = [];
-  let state;
+  let state, participants;
 
   for (const giveaway of giveaways) {
     if (giveaway.startTime > new Date() || new Date() > giveaway.endTime)
       continue;
 
-    state = await getParticipationState(giveaway, userInfo);
+    participants = await FrontendApiClient.getParticipants(giveaway._id);
+    state = await getParticipationState(giveaway, participants, userInfo);
+
     if (state === ParticipationState.PARTICIPATING) {
       participatingGiveaways.push(giveaway);
     }
