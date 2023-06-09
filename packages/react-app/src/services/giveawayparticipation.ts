@@ -19,7 +19,7 @@ const submitParticipation = (
     userInfo.name,
     successCallback,
     errorCallback
-  );
+  ).catch((err) => console.log(`problems submitting participation`));
 };
 
 const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {

@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 
 import { Giveaway, UserInfo } from '../../lib/types';
@@ -107,29 +109,46 @@ const ParticipateButton = ({
   successCallback,
   errorCallback,
 }: ParticipationProps) => {
+  const [loading, setLoading] = useState(false);
+
   const handleParticipation = () => {
+    setLoading(true);
+
     ParticipationService.submitParticipation(
       giveaway,
       userInfo,
-      successCallback,
-      errorCallback
+      () => {
+        setLoading(false);
+        successCallback();
+      },
+      () => {
+        setLoading(false);
+        errorCallback();
+      }
     );
   };
 
   return (
-    <Button
+    <LoadingButton
+      loading={loading}
       className="card-action-btn"
       variant="contained"
       sx={{
         ...ButtonBaseStyle,
         backgroundColor: '#6D6DF0',
         color: 'white',
+
+        '&.Mui-disabled': {
+          background: '#6D6DF0',
+          color: 'white',
+        },
       }}
       onClick={handleParticipation}
       disableElevation
+      disabled={loading}
     >
-      Participate
-    </Button>
+      {!loading && 'Participate'}
+    </LoadingButton>
   );
 };
 
@@ -158,22 +177,23 @@ const NotAllowedButton = () => {
 
 const CheckingButton = () => {
   return (
-    <Button
+    <LoadingButton
+      loading
       className="card-action-btn"
       variant="contained"
       sx={{
         ...ButtonBaseStyle,
-        backgroundColor: 'white',
+        backgroundColor: '#6D6DF0',
         color: 'white',
 
         '&.Mui-disabled': {
-          background: 'white',
+          background: '#6D6DF0',
           color: 'white',
         },
       }}
       disabled
       disableElevation
-    ></Button>
+    ></LoadingButton>
   );
 };
 
