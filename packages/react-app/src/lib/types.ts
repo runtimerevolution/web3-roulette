@@ -39,6 +39,7 @@ type Participant = {
 
 type Winner = {
   id: string;
+  name: string;
 };
 
 type Requirements = {

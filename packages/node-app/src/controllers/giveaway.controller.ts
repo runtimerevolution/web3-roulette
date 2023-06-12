@@ -10,6 +10,7 @@ import {
   fileToBase64,
   getDefinedFields,
   handleError,
+  includeWinnersName,
   setParticipantsStats,
 } from '../utils/model.util';
 import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
@@ -21,7 +22,10 @@ export const listGiveaways = async (req: Request, res: Response) => {
         'title description startTime endTime winners requirements prize image participants'
       )
       .lean();
+
+    giveaways = giveaways.map((giveaway) => includeWinnersName(giveaway));
     giveaways = giveaways.map((giveaway) => setParticipantsStats(giveaway));
+
     res.status(200).json(giveaways);
   } catch (error) {
     const { code, message } = handleError(error);
@@ -32,6 +36,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
 export const getGiveaway = async (req: Request, res: Response) => {
   try {
     let giveaway = await Giveaway.findById(req.params.id).lean();
+    giveaway = includeWinnersName(giveaway);
     giveaway = setParticipantsStats(giveaway);
     res.status(200).json(giveaway);
   } catch (error) {

@@ -74,6 +74,20 @@ const GiveawayMainContent = () => {
             {format(giveaway.endTime, 'MMMM d, yyyy')}
           </>
         </Typography>
+        {giveaway.winners && giveaway.winners.length > 0 && (
+          <Typography sx={{ fontSize: '18px', color: '#303136' }}>
+            <>
+              <span
+                className="giveaway-info-icon"
+                role="img"
+                aria-label="Party emoji"
+              >
+                🥳
+              </span>{' '}
+              {giveaway.winners.map((winner) => winner.name).join(', ')}
+            </>
+          </Typography>
+        )}
         <Stack
           justifyContent="space-between"
           sx={{

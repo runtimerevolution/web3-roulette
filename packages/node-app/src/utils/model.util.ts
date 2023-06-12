@@ -44,6 +44,19 @@ export const setParticipantsStats = (giveaway: any) => {
   };
 };
 
+export const includeWinnersName = (giveaway: any) => {
+  const winners = giveaway.winners.map((winner) => {
+    const participantObj = giveaway.participants.find(
+      (p) => p.id === winner.id
+    );
+    return {
+      ...winner,
+      name: participantObj.name,
+    };
+  });
+  return { ...omit(giveaway, ['winners']), winners };
+};
+
 export const handleError = (error: Error): APIError => {
   if (error instanceof MongooseError.ValidationError) {
     const message = Object.entries(error.errors).map(([field, error]) => ({
