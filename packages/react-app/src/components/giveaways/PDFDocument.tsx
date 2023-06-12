@@ -116,19 +116,12 @@ const GiveawayPDFDocument = ({
 const DownloadButton = ({ giveaway, qrDataURL }: DownloadProps) => {
   const button = (
     <Button
+      className="share-giveaway-btn"
       variant="contained"
-      sx={{
-        textTransform: 'none',
-        marginTop: '20px',
-        borderRadius: '10px',
-        fontWeight: '500',
-        fontSize: '16px',
-        width: '235px',
-      }}
       disableElevation
       disabled={qrDataURL === undefined}
     >
-      Download giveaway PDF
+      Export pdf
     </Button>
   );
 

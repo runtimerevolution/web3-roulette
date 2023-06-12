@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 
-import { Stack, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 
 import useUserInfo from '../../hooks/useUserInfo';
 import { Giveaway, UserRole } from '../../lib/types';
@@ -34,35 +34,41 @@ const GiveawayAsideContent = () => {
 
   return (
     <div className="giveaway-aside-info">
-      {isAdmin && (
-        <Stack sx={{ alignItems: { xs: 'center', lg: 'end' } }}>
-          <DownloadButton giveaway={giveaway} qrDataURL={qrDataURL} />
-        </Stack>
-      )}
       {giveaway.rules && (
-        <Stack mt={isAdmin ? '20px' : '80px'}>
-          <Typography
-            sx={{
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: '#282655',
-            }}
-          >
-            Rules
-          </Typography>
-          <Typography sx={{ fontSize: '16px', marginTop: '5px' }}>
-            {giveaway.rules}
-          </Typography>
+        <Stack sx={{ marginBottom: '41px' }}>
+          <Typography className="aside-title">Rules</Typography>
+          <Typography className="aside-text">{giveaway.rules}</Typography>
         </Stack>
       )}
       {isAdmin && (
-        <Stack alignItems="center" mt="50px">
-          <div ref={qrContainerRef}>
+        <Stack alignItems="center" spacing={'27px'}>
+          <div>
+            <Typography className="aside-title">Share QR code</Typography>
+            <Typography className="aside-text">
+              Description Lorem ipsum dolor sit amet consectetur. Elementum
+              facilisi diam amet turpis. Nisi pharetra aenean tristique at Lorem
+              ipsum.
+            </Typography>
+          </div>
+          <div className="qr-container" ref={qrContainerRef}>
             <QRCode
               value={`${Constants.FRONTEND_URI}/giveaways/${giveaway._id}`}
             />
           </div>
-          <Typography variant="h6">Share Giveaway</Typography>
+          <Stack
+            sx={{ width: '100%' }}
+            direction={'row'}
+            justifyContent={'space-between'}
+          >
+            <Button
+              className="share-giveaway-btn"
+              variant="contained"
+              disableElevation
+            >
+              Copy link
+            </Button>
+            <DownloadButton giveaway={giveaway} qrDataURL={qrDataURL} />
+          </Stack>
         </Stack>
       )}
     </div>
