@@ -22,7 +22,6 @@
   width: 605px;
   max-width: 95%;
   padding-left: 80px;
-  padding-top: 70px;
 
   @include mobile {
     padding-left: 10px;
@@ -73,6 +72,17 @@
   border-radius: 10px;
 }
 
+.qr-share-container {
+  width: 100%;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+
+  @include mobile {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
 .share-giveaway-btn {
   width: 290px;
   height: 40px;
@@ -80,6 +90,7 @@
   border-radius: 10px !important;
   font-size: 18px !important;
   font-weight: bold !important;
+  margin: 10px !important;
 }
 
 .qr-share-icon {
@@ -90,4 +101,20 @@
   color: $dark-color;
   font-size: 18px;
   margin-left: 38px;
+}
+
+.participation-btn-container {
+  width: 100%;
+  align-items: end !important;
+
+  @include tablet {
+    margin-top: 30px;
+    margin-left: 80px;
+    align-items: start !important;
+  }
+
+  @include mobile {
+    margin-top: 30px;
+    align-items: center !important;
+  }
 }

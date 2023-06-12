@@ -49,13 +49,16 @@ const GiveawayAsideContent = () => {
   return (
     <div>
       {!isAdmin && (
-        <Stack sx={{ width: '100%' }} alignItems={'end'}>
+        <Stack className="participation-btn-container">
           <div style={{ width: '290px' }}>
             <ParticipationButton {...giveaway} />
           </div>
         </Stack>
       )}
-      <div className="giveaway-aside-info">
+      <div
+        className="giveaway-aside-info"
+        style={{ paddingTop: isAdmin ? '70px' : '20px' }}
+      >
         {giveaway.rules && (
           <Stack sx={{ marginBottom: '41px' }}>
             <Typography className="aside-title">Rules</Typography>
@@ -77,11 +80,7 @@ const GiveawayAsideContent = () => {
                 value={`${Constants.FRONTEND_URI}/giveaways/${giveaway._id}`}
               />
             </div>
-            <Stack
-              sx={{ width: '100%' }}
-              direction={'row'}
-              justifyContent={'space-between'}
-            >
+            <Stack className="qr-share-container">
               <Button
                 className="share-giveaway-btn"
                 variant="contained"
