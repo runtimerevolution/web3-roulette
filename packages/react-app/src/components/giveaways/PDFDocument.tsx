@@ -18,18 +18,19 @@ import { Giveaway } from '../../lib/types';
 
 const styles = StyleSheet.create({
   section: {
-    margin: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
+    marginTop: 30,
+    marginBottom: 30,
+    paddingLeft: 30,
+    paddingRight: 30,
   },
   center: {
     display: 'flex',
     alignItems: 'center',
   },
   title: {
-    fontSize: '25px',
+    fontSize: '35px',
     color: '#303136',
-    paddingBottom: 10,
+    paddingBottom: 20,
   },
   subtitle: {
     fontSize: '20px',
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
   image: {
     width: '350px',
     borderRadius: '16px',
-    marginBottom: 10,
+    marginBottom: 30,
     objectFit: 'contain',
   },
   icon: {
@@ -53,6 +54,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: '16px',
+    marginBottom: 20,
   },
   info: {
     fontSize: '16px',
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 5,
+    paddingBottom: 10,
   },
 });
 
@@ -82,30 +84,32 @@ const GiveawayPDFDocument = ({
     <Document>
       <Page size="A4">
         <View style={styles.section}>
-          <Text style={styles.title}>{giveaway.title}</Text>
           <View style={styles.center}>
+            <Text style={styles.title}>{giveaway.title}</Text>
             <Image src={giveaway.image} style={styles.image} />
           </View>
           <Text style={styles.description}>{giveaway.description}</Text>
+          {giveaway.rules && (
+            <View>
+              <Text style={styles.subtitle}>Rules</Text>
+              <Text style={styles.description}>{giveaway.rules}</Text>
+            </View>
+          )}
         </View>
-        <View style={styles.section}>
-          <View style={styles.infoContainer}>
-            <Image style={styles.icon} src={TrophyIcon} />
-            <Text style={styles.info}>{giveaway.prize}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Image style={styles.icon} src={CalendarIcon} />
-            <Text style={styles.info}>
-              {format(giveaway.endTime, 'MMMM d, yyyy')}
-            </Text>
+        <View style={(styles.section, styles.center)}>
+          <View>
+            <View style={styles.infoContainer}>
+              <Image style={styles.icon} src={TrophyIcon} />
+              <Text style={styles.info}>{giveaway.prize}</Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Image style={styles.icon} src={CalendarIcon} />
+              <Text style={styles.info}>
+                {format(giveaway.endTime, 'MMMM d, yyyy')}
+              </Text>
+            </View>
           </View>
         </View>
-        {giveaway.rules && (
-          <View style={styles.section}>
-            <Text style={styles.subtitle}>Rules</Text>
-            <Text style={styles.description}>{giveaway.rules}</Text>
-          </View>
-        )}
         <View style={{ ...styles.section, ...styles.center }}>
           <Image style={styles.qr} src={qrDataURL} />
         </View>
