@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ErrorIcon from '@mui/icons-material/Error';
@@ -17,6 +17,11 @@ const GiveawayMainContent = () => {
 
   const nrParticipants = giveaway.nrConfirmedParticipants;
   const nrPending = giveaway.nrPendingParticipants;
+
+  const winningChance = useMemo(() => {
+    if (!nrParticipants || nrParticipants === 0) return 100;
+    return Math.floor((1 / nrParticipants) * 100);
+  }, [nrParticipants]);
 
   const manageParticipants = () => {
     navigate(`/giveaways/${giveaway._id}/participants`);
@@ -76,18 +81,23 @@ const GiveawayMainContent = () => {
             justifyContent: { xs: 'start', lg: 'space-between' },
           }}
         >
-          <Typography sx={{ fontSize: '18px', color: '#303136' }}>
-            <>
-              <span
-                className="giveaway-info-icon"
-                role="img"
-                aria-label="calendar"
-              >
-                👥
-              </span>{' '}
-              {`${nrParticipants} participants`}
-            </>
-          </Typography>
+          <div>
+            <Typography sx={{ fontSize: '18px', color: '#303136' }}>
+              <>
+                <span
+                  className="giveaway-info-icon"
+                  role="img"
+                  aria-label="calendar"
+                >
+                  👥
+                </span>{' '}
+                {`${nrParticipants} participants`}
+              </>
+            </Typography>
+            {!isAdmin && nrParticipants !== undefined && (
+              <span className="winning-chance">{`You have a ${winningChance}% chance of winning`}</span>
+            )}
+          </div>
           {isAdmin && nrPending !== undefined && nrPending > 0 && (
             <Button
               className="pending-alert-button"
