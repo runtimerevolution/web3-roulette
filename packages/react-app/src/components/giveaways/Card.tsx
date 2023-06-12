@@ -113,7 +113,8 @@ const GiveawayCard = ({
         borderRadius: '1.2rem',
         boxShadow: 0,
         backgroundColor:
-          participationState === ParticipationState.NOT_ALLOWED
+          participationState === ParticipationState.NOT_ALLOWED &&
+          giveaway.endTime > new Date()
             ? '#D9D9D9'
             : 'white',
       }}

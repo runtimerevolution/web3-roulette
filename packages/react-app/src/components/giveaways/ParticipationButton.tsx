@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { Snackbar } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+
 import useUserInfo from '../../hooks/useUserInfo';
 import { Giveaway, ParticipationState } from '../../lib/types';
 import ParticipationService from '../../services/giveawayparticipation';
@@ -9,6 +12,7 @@ const ParticipationButton = (giveaway: Giveaway) => {
   const userInfo = useUserInfo();
   const [participationState, setParticipationState] =
     useState<ParticipationState>(ParticipationState.CHECKING);
+  const [error, setError] = useState(false);
 
   const updateParticipationState = useCallback(() => {
     ParticipationService.getParticipationState(
@@ -31,6 +35,7 @@ const ParticipationButton = (giveaway: Giveaway) => {
           updateParticipationState();
         },
         errorCallback: () => {
+          setError(true);
           updateParticipationState();
         },
       };
@@ -48,7 +53,20 @@ const ParticipationButton = (giveaway: Giveaway) => {
     updateParticipationState();
   }, [updateParticipationState]);
 
-  return ActionButton;
+  const closeError = () => {
+    setError(false);
+  };
+
+  return (
+    <div>
+      <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
+        <MuiAlert severity="error" onClose={closeError}>
+          Oops, something went wrong! Please try again later.
+        </MuiAlert>
+      </Snackbar>
+      {ActionButton}
+    </div>
+  );
 };
 
 export default ParticipationButton;
