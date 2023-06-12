@@ -3,6 +3,7 @@ import {
   Participant,
   ParticipationState,
   UserInfo,
+  UserRole,
 } from '../lib/types';
 import FrontendApiClient from './backend';
 import GeolocationService from './geolocation';
@@ -29,10 +30,15 @@ const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {
 
 const getParticipationState = async (
   giveaway: Giveaway,
-  participants: Participant[],
+  participants?: Participant[],
   userInfo?: UserInfo
 ): Promise<ParticipationState> => {
-  if (!userInfo) return ParticipationState.NOT_ALLOWED;
+  if (!userInfo || new Date() > giveaway.endTime)
+    return ParticipationState.NOT_ALLOWED;
+  if (userInfo.role === UserRole.ADMIN) return ParticipationState.MANAGE;
+
+  if (!participants)
+    participants = await FrontendApiClient.getParticipants(giveaway._id);
   const registeredUser = participants.find((p) => p.id === userInfo.email);
 
   if (registeredUser) {

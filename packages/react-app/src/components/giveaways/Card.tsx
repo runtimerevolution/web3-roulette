@@ -9,25 +9,8 @@ import useUserInfo from '../../hooks/useUserInfo';
 import { GetParticipants } from '../../lib/queryClient';
 import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
 import ParticipationService from '../../services/giveawayparticipation';
-import {
-  ApprovalPendingButton,
-  CheckingButton,
-  ManageButton,
-  NotAllowedButton,
-  ParticipateButton,
-  ParticipatingButton,
-} from './ActionButtons';
+import { ActionButtonComponents } from './ActionButtons';
 import { PendingLocationModal } from './StatusModals';
-
-const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
-  manage: ManageButton,
-  participating: ParticipatingButton,
-  pending: ApprovalPendingButton,
-  allowed: ParticipateButton,
-  notAllowed: NotAllowedButton,
-  checking: CheckingButton,
-  rejected: NotAllowedButton,
-};
 
 type GiveawayCardProps = {
   giveaway: Giveaway;
