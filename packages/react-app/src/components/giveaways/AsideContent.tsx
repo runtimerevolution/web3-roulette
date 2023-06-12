@@ -2,7 +2,9 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 
 import { Button, Stack, Typography } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
 
+import LinkIcon from '../../assets/Link.png';
 import useUserInfo from '../../hooks/useUserInfo';
 import { Giveaway, UserRole } from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
@@ -15,6 +17,7 @@ const GiveawayAsideContent = () => {
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const qrContainerRef = useRef<HTMLDivElement>(null);
   const [qrDataURL, setQrDataURL] = useState<string>();
+  const [copyClipboardCheck, setCopyClipboardCheck] = useState(false);
   const isAdmin = userInfo?.role === UserRole.ADMIN;
 
   useEffect(() => {
@@ -31,6 +34,16 @@ const GiveawayAsideContent = () => {
       );
     }
   }, [isAdmin, qrDataURL]);
+
+  const copyToClipboard = async () => {
+    const giveawayLink = `${Constants.FRONTEND_URI}/giveaways/${giveaway._id}`;
+    await navigator.clipboard.writeText(giveawayLink);
+
+    setCopyClipboardCheck(true);
+    setTimeout(() => {
+      setCopyClipboardCheck(false);
+    }, 1000);
+  };
 
   return (
     <div className="giveaway-aside-info">
@@ -63,9 +76,17 @@ const GiveawayAsideContent = () => {
             <Button
               className="share-giveaway-btn"
               variant="contained"
+              onClick={copyToClipboard}
+              startIcon={
+                copyClipboardCheck ? (
+                  <CheckIcon />
+                ) : (
+                  <img className="qr-share-icon" src={LinkIcon} alt="Link" />
+                )
+              }
               disableElevation
             >
-              Copy link
+              {!copyClipboardCheck && 'Copy link'}
             </Button>
             <DownloadButton giveaway={giveaway} qrDataURL={qrDataURL} />
           </Stack>

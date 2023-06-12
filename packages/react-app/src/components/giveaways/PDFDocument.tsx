@@ -12,6 +12,7 @@ import {
 } from '@react-pdf/renderer';
 
 import CalendarIcon from '../../assets/CalendarIcon.png';
+import DownloadIcon from '../../assets/Download.png';
 import TrophyIcon from '../../assets/TrophyIcon.png';
 import { Giveaway } from '../../lib/types';
 
@@ -118,6 +119,9 @@ const DownloadButton = ({ giveaway, qrDataURL }: DownloadProps) => {
     <Button
       className="share-giveaway-btn"
       variant="contained"
+      startIcon={
+        <img className="qr-share-icon" src={DownloadIcon} alt="Link" />
+      }
       disableElevation
       disabled={qrDataURL === undefined}
     >
