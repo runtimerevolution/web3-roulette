@@ -91,27 +91,13 @@ const meetRequirements = async (
   return true;
 };
 
-const nextGiveaway = async (giveaways: Giveaway[], userInfo?: UserInfo) => {
-  if (!userInfo) return;
+const nextGiveaway = async (giveaways: Giveaway[]) => {
+  const activeGiveaways = giveaways.filter(
+    (g) => g.startTime < new Date() || new Date() < g.endTime
+  );
+  if (activeGiveaways.length === 0) return;
 
-  const participatingGiveaways = [];
-  let state, participants;
-
-  for (const giveaway of giveaways) {
-    if (giveaway.startTime > new Date() || new Date() > giveaway.endTime)
-      continue;
-
-    participants = await FrontendApiClient.getParticipants(giveaway._id);
-    state = await getParticipationState(giveaway, participants, userInfo);
-
-    if (state === ParticipationState.PARTICIPATING) {
-      participatingGiveaways.push(giveaway);
-    }
-  }
-
-  if (participatingGiveaways.length === 0) return;
-
-  return participatingGiveaways.reduce((prev, curr) =>
+  return activeGiveaways.reduce((prev, curr) =>
     prev.endTime < curr.endTime ? prev : curr
   );
 };
