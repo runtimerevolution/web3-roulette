@@ -6,14 +6,20 @@ import { Button, Stack, Typography } from '@mui/material';
 
 import LinkIcon from '../../assets/Link.png';
 import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway, UserRole } from '../../lib/types';
+import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
 import Constants from '../../utils/Constants';
 import SvgHelper from '../../utils/SvgHelper';
 import ParticipationButton from './ParticipationButton';
 import { DownloadButton } from './PDFDocument';
 
-const GiveawayAsideContent = () => {
+type GiveawayAsideContentProps = {
+  onParticipationChange: (newState: ParticipationState) => void;
+};
+
+const GiveawayAsideContent = ({
+  onParticipationChange,
+}: GiveawayAsideContentProps) => {
   const userInfo = useUserInfo();
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const qrContainerRef = useRef<HTMLDivElement>(null);
@@ -51,7 +57,10 @@ const GiveawayAsideContent = () => {
       {!isAdmin && (
         <Stack className="participation-btn-container">
           <div style={{ width: '290px' }}>
-            <ParticipationButton giveaway={giveaway} />
+            <ParticipationButton
+              giveaway={giveaway}
+              onStateChange={onParticipationChange}
+            />
           </div>
         </Stack>
       )}

@@ -6,15 +6,17 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Stack, Typography } from '@mui/material';
 
 import useUserInfo from '../../hooks/useUserInfo';
-import { GetParticipants } from '../../lib/queryClient';
-import { Giveaway, UserRole } from '../../lib/types';
+import { Giveaway, Participant, UserRole } from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
 
-const GiveawayMainContent = () => {
+type GiveawayMainContentProps = {
+  participants: Participant[];
+};
+
+const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const giveaway = useContext(GiveawayContext) as Giveaway;
-  const { data: participants } = GetParticipants(giveaway._id);
   const isAdmin = userInfo?.role === UserRole.ADMIN;
 
   const nrParticipants = giveaway.nrConfirmedParticipants;
