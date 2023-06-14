@@ -116,25 +116,22 @@ const nextGiveaway = async (giveaways: Giveaway[], userInfo?: UserInfo) => {
   );
 };
 
-const getWinnerNotifications = async (
-  giveaways: Giveaway[],
-  userInfo: UserInfo
-): Promise<Giveaway[]> => {
-  const wonGiveaways = giveaways.filter((g) =>
-    g.winners.find((w) => w.id === userInfo.email)
-  );
+const shouldNotifyWinner = async (
+  giveaway: Giveaway,
+  userInfo?: UserInfo
+): Promise<boolean> => {
+  if (!userInfo) return false;
 
-  const giveawaysToNotify = [];
-  for (const giveaway of wonGiveaways) {
+  if (giveaway.winners.some((w) => w.id === userInfo.email)) {
     const participants = await FrontendApiClient.getParticipants(giveaway._id);
     const userObj = participants.find((p) => p.id === userInfo.email);
 
     if (userObj && !userObj.notified) {
-      giveawaysToNotify.push(giveaway);
+      return true;
     }
   }
 
-  return giveawaysToNotify;
+  return false;
 };
 
 const ParticipationService = {
@@ -142,7 +139,7 @@ const ParticipationService = {
   meetRequirements,
   submitParticipation,
   nextGiveaway,
-  getWinnerNotifications,
+  shouldNotifyWinner,
   wonGiveaway,
 };
 export default ParticipationService;

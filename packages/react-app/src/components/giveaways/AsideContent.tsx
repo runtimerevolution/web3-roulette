@@ -51,7 +51,7 @@ const GiveawayAsideContent = () => {
       {!isAdmin && (
         <Stack className="participation-btn-container">
           <div style={{ width: '290px' }}>
-            <ParticipationButton {...giveaway} />
+            <ParticipationButton giveaway={giveaway} />
           </div>
         </Stack>
       )}
