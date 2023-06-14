@@ -6,22 +6,32 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Stack, Typography } from '@mui/material';
 
 import useUserInfo from '../../hooks/useUserInfo';
-import { GiveawayContext } from '../../pages/details';
+import { GetParticipants } from '../../lib/queryClient';
 import { Giveaway, UserRole } from '../../lib/types';
+import { GiveawayContext } from '../../pages/details';
 
 const GiveawayMainContent = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const giveaway = useContext(GiveawayContext) as Giveaway;
+  const { data: participants } = GetParticipants(giveaway._id);
   const isAdmin = userInfo?.role === UserRole.ADMIN;
 
   const nrParticipants = giveaway.nrConfirmedParticipants;
   const nrPending = giveaway.nrPendingParticipants;
 
   const winningChance = useMemo(() => {
+    if (!participants) return;
     if (!nrParticipants || nrParticipants === 0) return 100;
-    return Math.floor((1 / nrParticipants) * 100);
-  }, [nrParticipants]);
+
+    const participantObj = participants.find((p) => p.id === userInfo?.email);
+    let total = nrParticipants;
+    if (!participantObj || participantObj.state !== 'confirmed') {
+      total++;
+    }
+
+    return Math.floor((1 / total) * 100);
+  }, [participants, nrParticipants, userInfo]);
 
   const manageParticipants = () => {
     navigate(`/giveaways/${giveaway._id}/participants`);
@@ -108,7 +118,7 @@ const GiveawayMainContent = () => {
                 {`${nrParticipants} participants`}
               </>
             </Typography>
-            {!isAdmin && nrParticipants !== undefined && (
+            {!isAdmin && participants && nrParticipants !== undefined && (
               <span className="winning-chance">{`You have a ${winningChance}% chance of winning`}</span>
             )}
           </div>
