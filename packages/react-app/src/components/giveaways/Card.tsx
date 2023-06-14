@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
@@ -7,60 +7,16 @@ import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 import Trophy from '../../assets/Trophy.png';
 import useUserInfo from '../../hooks/useUserInfo';
 import { GetParticipants } from '../../lib/queryClient';
-import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
+import { Giveaway, ParticipationState } from '../../lib/types';
 import ParticipationService from '../../services/giveawayparticipation';
-import { ActionButtonComponents } from './ActionButtons';
-import { PendingLocationModal } from './StatusModals';
+import ParticipationButton from './ParticipationButton';
 
-type GiveawayCardProps = {
-  giveaway: Giveaway;
-  onParticipationError: () => void;
-  onRejection?: () => Promise<void>;
-};
-
-const GiveawayCard = ({
-  giveaway,
-  onParticipationError,
-  onRejection,
-}: GiveawayCardProps) => {
+const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
-  const { data: participants, refetch } = GetParticipants(giveaway._id);
-  const [showPendingModal, setShowPendingModal] = useState(false);
-  const participationAction = useRef(false);
-  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const { data: participants } = GetParticipants(giveaway._id);
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
-
-  const [participationState, setParticipationState] =
-    useState<ParticipationState>(
-      isAdmin ? ParticipationState.MANAGE : ParticipationState.CHECKING
-    );
-
-  const ActionButton: React.ReactNode = useMemo(() => {
-    let props = {};
-
-    if (participationState === ParticipationState.ALLOWED) {
-      props = {
-        giveaway: giveaway,
-        userInfo: userInfo,
-        successCallback: () => {
-          refetch();
-          participationAction.current = true;
-        },
-        errorCallback: () => {
-          refetch();
-          onParticipationError();
-        },
-      };
-    } else if (participationState === ParticipationState.MANAGE) {
-      props = { giveaway: giveaway };
-    }
-
-    return React.createElement(
-      ActionButtonComponents[participationState],
-      props
-    );
-  }, [participationState, giveaway, onParticipationError, userInfo, refetch]);
+  const [isAllowed, setIsAllowed] = useState(true);
 
   const getWinnerStr = () => {
     const winners = giveaway.winners;
@@ -78,33 +34,12 @@ const GiveawayCard = ({
     }
   };
 
-  useEffect(() => {
-    if (!isAdmin && participants) {
-      ParticipationService.getParticipationState(
-        giveaway,
-        participants,
-        userInfo
-      ).then((state) => {
-        if (state === ParticipationState.REJECTED) {
-          onRejection?.().then(() => {
-            refetch();
-          });
-        } else if (
-          participationAction.current &&
-          state === ParticipationState.PENDING
-        ) {
-          participationAction.current = false;
-          setShowPendingModal(true);
-        }
-        setParticipationState(state);
-      });
-    } else {
-      setParticipationState(ParticipationState.MANAGE);
-    }
-  }, [giveaway, onRejection, userInfo, isAdmin, participants, refetch]);
-
   const navigateDetails = () => {
     navigate(`/giveaways/${giveaway._id}`);
+  };
+
+  const onStateChange = (newState: ParticipationState) => {
+    setIsAllowed(newState !== ParticipationState.NOT_ALLOWED);
   };
 
   return (
@@ -113,18 +48,9 @@ const GiveawayCard = ({
         borderRadius: '1.2rem',
         boxShadow: 0,
         backgroundColor:
-          participationState === ParticipationState.NOT_ALLOWED &&
-          giveaway.endTime > new Date()
-            ? '#D9D9D9'
-            : 'white',
+          !isAllowed && giveaway.endTime > new Date() ? '#D9D9D9' : 'white',
       }}
     >
-      <div>
-        <PendingLocationModal
-          open={showPendingModal}
-          onClose={() => setShowPendingModal(false)}
-        />
-      </div>
       <div className="card-media clickable" onClick={navigateDetails}>
         <img className="img" src={giveaway.image} alt="Giveaway thumb" />
         {isWinner && (
@@ -178,7 +104,12 @@ const GiveawayCard = ({
             } participants`}
           </Typography>
         )}
-        {giveaway.endTime > new Date() && ActionButton}
+        {giveaway.endTime > new Date() && (
+          <ParticipationButton
+            giveaway={giveaway}
+            onStateChange={onStateChange}
+          />
+        )}
       </CardContent>
     </Card>
   );
