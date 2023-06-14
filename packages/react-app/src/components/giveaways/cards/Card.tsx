@@ -15,8 +15,8 @@ const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const { data: participants } = GetParticipants(giveaway._id);
+  const [participation, setParticipation] = useState<ParticipationState>();
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
-  const [isAllowed, setIsAllowed] = useState(true);
 
   const getWinnerStr = () => {
     const winners = giveaway.winners;
@@ -39,7 +39,7 @@ const GiveawayCard = (giveaway: Giveaway) => {
   };
 
   const onStateChange = (newState: ParticipationState) => {
-    setIsAllowed(newState !== ParticipationState.NOT_ALLOWED);
+    setParticipation(newState);
   };
 
   return (
@@ -48,7 +48,10 @@ const GiveawayCard = (giveaway: Giveaway) => {
         borderRadius: '1.2rem',
         boxShadow: 0,
         backgroundColor:
-          !isAllowed && giveaway.endTime > new Date() ? '#D9D9D9' : 'white',
+          participation === ParticipationState.NOT_ALLOWED &&
+          giveaway.endTime > new Date()
+            ? '#D9D9D9'
+            : 'white',
       }}
     >
       <div className="card-media clickable" onClick={navigateDetails}>
@@ -94,17 +97,20 @@ const GiveawayCard = (giveaway: Giveaway) => {
             {getWinnerStr()}
           </Typography>
         )}
-        {giveaway.endTime < new Date() && (
-          <Typography className="participants" gutterBottom>
-            <span role="img" aria-label="people">
-              👥
-            </span>{' '}
-            {`${
-              participants?.filter((p) => p.state === 'confirmed').length
-            } participants`}
-          </Typography>
-        )}
-        {giveaway.endTime > new Date() && (
+        {giveaway.endTime < new Date() &&
+          participation !== ParticipationState.PENDING_WINNERS && (
+            <Typography className="participants" gutterBottom>
+              <span role="img" aria-label="people">
+                👥
+              </span>{' '}
+              {`${
+                participants?.filter((p) => p.state === 'confirmed').length
+              } participants`}
+            </Typography>
+          )}
+        {(!participation ||
+          giveaway.endTime > new Date() ||
+          participation === ParticipationState.PENDING_WINNERS) && (
           <ParticipationButton
             giveaway={giveaway}
             onStateChange={onStateChange}

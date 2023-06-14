@@ -11,7 +11,7 @@ import ParticipationService from '../../../services/giveawayparticipation';
 
 const ButtonBaseStyle = {
   width: '100%',
-  height: '35px',
+  height: '40px',
   textTransform: 'none',
   marginTop: '17px',
   borderRadius: '10px',
@@ -41,16 +41,33 @@ const ManageButton = ({ giveaway }: ManageProps) => {
   return (
     <Button
       className="card-action-btn"
-      variant="outlined"
+      variant="contained"
       sx={{
         ...ButtonBaseStyle,
-        backgroundColor: 'white',
-        color: '#6D6DF0',
+        backgroundColor: '#6D6DF0',
+        color: 'white',
       }}
       onClick={manageGiveaway}
       disableElevation
     >
       Manage
+    </Button>
+  );
+};
+
+const GenerateWinnersButton = () => {
+  return (
+    <Button
+      className="card-action-btn"
+      variant="contained"
+      sx={{
+        ...ButtonBaseStyle,
+        backgroundColor: '#DBDBFB',
+        color: '#6D6DF0',
+      }}
+      disableElevation
+    >
+      Generate a winner
     </Button>
   );
 };
@@ -205,6 +222,7 @@ const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
   notAllowed: NotAllowedButton,
   checking: CheckingButton,
   rejected: NotAllowedButton,
+  pendingWinners: GenerateWinnersButton,
 };
 
 export {

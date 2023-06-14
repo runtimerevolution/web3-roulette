@@ -6,11 +6,11 @@ import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
 import CreateNewButton from '../components/CreateNewButton';
-import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
 } from '../components/giveaways/cards/Card';
 import GiveawayCountdownCard from '../components/giveaways/cards/CountdownCard';
+import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
 import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
 import useUserInfo from '../hooks/useUserInfo';
@@ -32,6 +32,8 @@ const Manage = () => {
 
   const giveaways = useMemo(() => {
     return data?.filter((g) => {
+      if (!userInfo) return [];
+
       const now = new Date();
       const giveawayStartDate = new Date(g.startTime);
       const giveawayEndDate = new Date(g.endTime);
@@ -43,6 +45,9 @@ const Manage = () => {
       if (g._id === countdownGiveaway?._id) {
         return false;
       }
+
+      if (ParticipationService.hasPendingWinners(g, userInfo))
+        return activeTab === Tabs.Active;
 
       return activeTab === Tabs.Active
         ? isAfter(giveawayEndDate, now)
