@@ -57,19 +57,15 @@ const Manage = () => {
 
     if (data && userInfo) {
       if (userInfo.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
-        ParticipationService.nextGiveaway(data, userInfo).then(
-          (nextGiveaway) => {
-            if (nextGiveaway) {
-              const giveawayTime = nextGiveaway.endTime.getTime();
-              const timeLeft = splitTimeLeft(
-                giveawayTime - new Date().getTime()
-              );
-              setCountdownGiveaway(timeLeft[0] >= 100 ? null : nextGiveaway);
-            } else {
-              setCountdownGiveaway(null);
-            }
+        ParticipationService.nextGiveaway(data).then((nextGiveaway) => {
+          if (nextGiveaway) {
+            const giveawayTime = nextGiveaway.endTime.getTime();
+            const timeLeft = splitTimeLeft(giveawayTime - new Date().getTime());
+            setCountdownGiveaway(timeLeft[0] >= 100 ? null : nextGiveaway);
+          } else {
+            setCountdownGiveaway(null);
           }
-        );
+        });
       } else if (userInfo.role === UserRole.ADMIN) {
         setCountdownGiveaway(null);
       }
@@ -80,12 +76,17 @@ const Manage = () => {
     setError(false);
   };
 
-  if (data?.length === 0) {
-    return userInfo?.role === UserRole.ADMIN ? (
-      <AdminEmptyState />
-    ) : (
-      <UserEmptyState />
-    );
+  if (
+    userInfo?.role === UserRole.USER &&
+    giveaways?.length === 0 &&
+    !countdownGiveaway &&
+    activeTab === Tabs.Active
+  ) {
+    return <UserEmptyState />;
+  }
+
+  if (userInfo?.role === UserRole.ADMIN && data?.length === 0) {
+    return <AdminEmptyState />;
   }
 
   return (
