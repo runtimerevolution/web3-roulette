@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
-import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway, ParticipationState } from '../../lib/types';
-import FrontendApiClient from '../../services/backend';
-import ParticipationService from '../../services/giveawayparticipation';
+import useUserInfo from '../../../hooks/useUserInfo';
+import { Giveaway, ParticipationState } from '../../../lib/types';
+import FrontendApiClient from '../../../services/backend';
+import ParticipationService from '../../../services/giveawayparticipation';
 import { ActionButtonComponents } from './ActionButtons';
 import {
   PendingLocationModal,

@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { googleLogout } from '@react-oauth/google';
 import useUserInfo from '../hooks/useUserInfo';
-import logo from './../assets/Logo.svg';
+import logo from '../assets/Logo.svg';
 import GoogleAuthClient from '../services/googleauthclient';
 
 function ResponsiveAppBar() {

@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 
 import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
-import Trophy from '../../assets/Trophy.png';
-import useUserInfo from '../../hooks/useUserInfo';
-import { GetParticipants } from '../../lib/queryClient';
-import { Giveaway, ParticipationState } from '../../lib/types';
-import ParticipationService from '../../services/giveawayparticipation';
-import ParticipationButton from './ParticipationButton';
+import Trophy from '../../../assets/Trophy.png';
+import useUserInfo from '../../../hooks/useUserInfo';
+import { GetParticipants } from '../../../lib/queryClient';
+import { Giveaway, ParticipationState } from '../../../lib/types';
+import ParticipationService from '../../../services/giveawayparticipation';
+import ParticipationButton from '../participation/ParticipationButton';
 
 const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();

@@ -6,12 +6,12 @@ import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
 import CreateNewButton from '../components/CreateNewButton';
-import AdminEmptyState from '../components/giveaways/AdminEmptyState';
+import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
-} from '../components/giveaways/Card';
-import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
-import UserEmptyState from '../components/giveaways/UserEmptyState';
+} from '../components/giveaways/cards/Card';
+import GiveawayCountdownCard from '../components/giveaways/cards/CountdownCard';
+import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
 import useUserInfo from '../hooks/useUserInfo';
 import { GetGiveaways } from '../lib/queryClient';
