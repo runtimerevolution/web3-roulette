@@ -11,7 +11,12 @@ import { Giveaway, ParticipationState } from '../../../lib/types';
 import ParticipationService from '../../../services/giveawayparticipation';
 import ParticipationButton from '../participation/ParticipationButton';
 
-const GiveawayCard = (giveaway: Giveaway) => {
+type GiveawayCardProps = {
+  giveaway: Giveaway;
+  onWinnersGeneration: () => void;
+};
+
+const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const { data: participants } = GetParticipants(giveaway._id);
@@ -39,6 +44,12 @@ const GiveawayCard = (giveaway: Giveaway) => {
   };
 
   const onStateChange = (newState: ParticipationState) => {
+    if (
+      participation === ParticipationState.PENDING_WINNERS &&
+      newState === ParticipationState.MANAGE
+    ) {
+      onWinnersGeneration();
+    }
     setParticipation(newState);
   };
 

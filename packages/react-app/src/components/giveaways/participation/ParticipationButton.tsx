@@ -99,6 +99,16 @@ const ParticipationButton = ({
       };
     } else if (participationState === ParticipationState.MANAGE) {
       props = { giveaway: giveaway };
+    } else if (participationState === ParticipationState.PENDING_WINNERS) {
+      props = {
+        giveaway: giveaway,
+        successCallback: () => {
+          onStateChange?.(ParticipationState.MANAGE);
+        },
+        errorCallback: () => {
+          setError(true);
+        },
+      };
     }
 
     return React.createElement(

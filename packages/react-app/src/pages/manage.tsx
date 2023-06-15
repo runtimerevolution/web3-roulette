@@ -25,7 +25,7 @@ const Tabs = {
 
 const Manage = () => {
   const userInfo = useUserInfo();
-  const { isLoading, data } = GetGiveaways();
+  const { isLoading, data, refetch } = GetGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [error, setError] = useState(false);
@@ -76,6 +76,12 @@ const Manage = () => {
       }
     }
   }, [data, isLoading]);
+
+  const handleWinners = () => {
+    refetch().then(() => {
+      setActiveTab(Tabs.Archived);
+    });
+  };
 
   const closeError = () => {
     setError(false);
@@ -187,7 +193,10 @@ const Manage = () => {
                   sx={{ minWidth: { xs: '100%', sm: '300px' } }}
                   key={g._id}
                 >
-                  <GiveawayCard {...g} />
+                  <GiveawayCard
+                    giveaway={g}
+                    onWinnersGeneration={handleWinners}
+                  />
                 </Grid>
               ))
             )}

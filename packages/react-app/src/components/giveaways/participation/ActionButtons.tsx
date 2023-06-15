@@ -7,6 +7,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 
 import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
+import FrontendApiClient from '../../../services/backend';
 import ParticipationService from '../../../services/giveawayparticipation';
 
 const ButtonBaseStyle = {
@@ -27,6 +28,12 @@ type ManageProps = {
 type ParticipationProps = {
   giveaway: Giveaway;
   userInfo: UserInfo;
+  successCallback: () => void;
+  errorCallback: () => void;
+};
+
+type GenerateWinnersProps = {
+  giveaway: Giveaway;
   successCallback: () => void;
   errorCallback: () => void;
 };
@@ -55,7 +62,20 @@ const ManageButton = ({ giveaway }: ManageProps) => {
   );
 };
 
-const GenerateWinnersButton = () => {
+const GenerateWinnersButton = ({
+  giveaway,
+  successCallback,
+  errorCallback,
+}: GenerateWinnersProps) => {
+  const generateWinners = () => {
+    FrontendApiClient.generateWinners(giveaway._id)
+      .then((_) => successCallback())
+      .catch((err) => {
+        console.log(`problems generating winners: ${err}`);
+        errorCallback();
+      });
+  };
+
   return (
     <Button
       className="card-action-btn"
@@ -65,6 +85,7 @@ const GenerateWinnersButton = () => {
         backgroundColor: '#DBDBFB',
         color: '#6D6DF0',
       }}
+      onClick={generateWinners}
       disableElevation
     >
       Generate a winner
