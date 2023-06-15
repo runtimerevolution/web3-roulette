@@ -1,41 +1,52 @@
 import axios, { AxiosInstance } from 'axios';
 
-import { UserInfo } from '../lib/types';
+import { Unit, UserInfo, UserRole } from '../lib/types';
 import Constants from '../utils/Constants';
 
 const googleAuthInstance: AxiosInstance = axios.create({
   baseURL: Constants.GOOGLE_OAUTH_URI,
 });
 
-const getUserInfo = async (tokenType: string, accessToken: string) => {
+const getUserInfo = async () => {
+  const tokens = readTokens();
+  if (!tokens) return;
+
   const res = await googleAuthInstance.get('/userinfo', {
     headers: {
-      Authorization: `${tokenType} ${accessToken}`,
+      Authorization: `${tokens.tokenType} ${tokens.accessToken}`,
       Accept: 'application/json',
     },
   });
 
   if (res.status === 200) {
-    return res.data;
+    const user = res.data as UserInfo;
+
+    // todo: information from own api
+    user.unit = Unit.NODE;
+    user.role = UserRole.ADMIN;
+
+    return user;
   }
 
   console.log(`error fetching user info: ${res.status} ${res.data}`);
 };
 
-const saveUser = (userObj: UserInfo) => {
-  localStorage.setItem('user', JSON.stringify(userObj));
+const saveTokens = (tokenType: string, accessToken: string) => {
+  localStorage.setItem('tokenType', tokenType);
+  localStorage.setItem('accessToken', accessToken);
 };
 
-const getUser = (): UserInfo | undefined => {
-  const userData: string | null = localStorage.getItem('user');
-  if (userData) {
-    return JSON.parse(userData) as UserInfo;
-  }
+const readTokens = () => {
+  const tokenType = localStorage.getItem('tokenType');
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!tokenType || !accessToken) return;
+
+  return {
+    tokenType,
+    accessToken,
+  };
 };
 
-const removeUser = () => {
-  localStorage.removeItem('user');
-};
-
-const GoogleAuthClient = { getUserInfo, saveUser, getUser, removeUser };
-export default GoogleAuthClient;
+const AuthClient = { getUserInfo, saveTokens, readTokens };
+export default AuthClient;
