@@ -9,10 +9,7 @@ const googleAuthInstance: AxiosInstance = axios.create({
 
 const getUserInfo = async () => {
   const tokens = readTokens();
-  if (!tokens) {
-    console.log('no tokens');
-    return;
-  }
+  if (!tokens) return;
 
   const res = await googleAuthInstance.get('/userinfo', {
     headers: {
@@ -26,7 +23,7 @@ const getUserInfo = async () => {
 
     // todo: information from own api
     user.unit = Unit.NODE;
-    user.role = UserRole.ADMIN;
+    user.role = UserRole.USER;
 
     return user;
   }
