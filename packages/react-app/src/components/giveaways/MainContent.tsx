@@ -67,37 +67,27 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
       </Typography>
       <Stack mt="14px" spacing="12px">
         <Typography sx={{ fontSize: '18px', color: '#303136' }}>
-          <>
-            <span className="giveaway-info-icon" role="img" aria-label="trophy">
-              🏆
-            </span>{' '}
-            {giveaway.prize}
-          </>
+          <span className="giveaway-info-icon" role="img" aria-label="trophy">
+            🏆
+          </span>{' '}
+          {giveaway.prize}
         </Typography>
         <Typography sx={{ fontSize: '18px', color: '#303136' }}>
-          <>
-            <span
-              className="giveaway-info-icon"
-              role="img"
-              aria-label="calendar"
-            >
-              🗓️
-            </span>{' '}
-            {format(giveaway.endTime, 'MMMM d, yyyy')}
-          </>
+          <span className="giveaway-info-icon" role="img" aria-label="calendar">
+            🗓️
+          </span>{' '}
+          {format(giveaway.endTime, 'MMMM d, yyyy')}
         </Typography>
         {giveaway.winners && giveaway.winners.length > 0 && (
           <Typography sx={{ fontSize: '18px', color: '#303136' }}>
-            <>
-              <span
-                className="giveaway-info-icon"
-                role="img"
-                aria-label="Party emoji"
-              >
-                🥳
-              </span>{' '}
-              {giveaway.winners.map((winner) => winner.name).join(', ')}
-            </>
+            <span
+              className="giveaway-info-icon"
+              role="img"
+              aria-label="Party emoji"
+            >
+              🥳
+            </span>{' '}
+            {giveaway.winners.map((winner) => winner.name).join(', ')}
           </Typography>
         )}
         <Stack
@@ -109,16 +99,14 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
         >
           <div>
             <Typography sx={{ fontSize: '18px', color: '#303136' }}>
-              <>
-                <span
-                  className="giveaway-info-icon"
-                  role="img"
-                  aria-label="calendar"
-                >
-                  👥
-                </span>{' '}
-                {`${nrParticipants} participants`}
-              </>
+              <span
+                className="giveaway-info-icon"
+                role="img"
+                aria-label="calendar"
+              >
+                👥
+              </span>{' '}
+              {`${nrParticipants} participants`}
             </Typography>
             {!isAdmin && participants && nrParticipants !== undefined && (
               <span className="winning-chance">{`You have a ${winningChance}% chance of winning`}</span>

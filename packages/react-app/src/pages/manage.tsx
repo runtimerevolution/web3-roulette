@@ -78,7 +78,7 @@ const Manage = () => {
 
   if (
     userInfo?.role === UserRole.USER &&
-    !data?.some((g) => g.startTime > new Date())
+    !data?.some((g) => g.startTime < new Date())
   ) {
     return <UserEmptyState />;
   }
