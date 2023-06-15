@@ -10,6 +10,7 @@ import { GetParticipants } from '../../../lib/queryClient';
 import { Giveaway, ParticipationState } from '../../../lib/types';
 import ParticipationService from '../../../services/giveawayparticipation';
 import ParticipationButton from '../participation/ParticipationButton';
+import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
 type GiveawayCardProps = {
   giveaway: Giveaway;
@@ -22,6 +23,7 @@ const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
   const { data: participants } = GetParticipants(giveaway._id);
   const [participation, setParticipation] = useState<ParticipationState>();
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
+  const nrPending = giveaway.nrPendingParticipants;
 
   const getWinnerStr = () => {
     const winners = giveaway.winners;
@@ -55,16 +57,21 @@ const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
 
   return (
     <Card
+      className="card-container"
       sx={{
-        borderRadius: '1.2rem',
-        boxShadow: 0,
         backgroundColor:
           participation === ParticipationState.NOT_ALLOWED &&
           giveaway.endTime > new Date()
             ? '#D9D9D9'
             : 'white',
       }}
+      elevation={0}
     >
+      {nrPending !== undefined && nrPending > 0 && (
+        <div className="card-pending-approvals">
+          <PendingApprovalBanner giveaway={giveaway} nrPending={nrPending} />
+        </div>
+      )}
       <div className="card-media clickable" onClick={navigateDetails}>
         <img className="img" src={giveaway.image} alt="Giveaway thumb" />
         {isWinner && (
