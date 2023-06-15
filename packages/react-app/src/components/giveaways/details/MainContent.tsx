@@ -87,7 +87,7 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
           </>
         </Typography>
         {giveaway.winners && giveaway.winners.length > 0 && (
-          <Typography sx={{ fontSize: '18px', color: '#303136' }}>
+          <Typography className="winners-text">
             <>
               <span
                 className="giveaway-info-icon"
