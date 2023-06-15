@@ -1,20 +1,18 @@
 import { format } from 'date-fns';
 import { useContext, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 
 import useUserInfo from '../../../hooks/useUserInfo';
 import { Giveaway, Participant, UserRole } from '../../../lib/types';
 import { GiveawayContext } from '../../../pages/details';
+import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
 type GiveawayMainContentProps = {
   participants: Participant[];
 };
 
 const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
-  const navigate = useNavigate();
   const userInfo = useUserInfo();
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const isAdmin = userInfo?.role === UserRole.ADMIN;
@@ -34,10 +32,6 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
 
     return Math.floor((1 / total) * 100);
   }, [participants, nrParticipants, userInfo]);
-
-  const manageParticipants = () => {
-    navigate(`/giveaways/${giveaway._id}/participants`);
-  };
 
   return (
     <Stack sx={{ paddingLeft: { sm: '80px', lg: '0px' } }}>
@@ -125,13 +119,7 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
             )}
           </div>
           {isAdmin && nrPending !== undefined && nrPending > 0 && (
-            <Button
-              className="pending-alert-button"
-              variant="contained"
-              startIcon={<ErrorIcon />}
-              onClick={manageParticipants}
-              disableElevation
-            >{`${nrPending} waiting for approval`}</Button>
+            <PendingApprovalBanner giveaway={giveaway} nrPending={nrPending} />
           )}
         </Stack>
       </Stack>
