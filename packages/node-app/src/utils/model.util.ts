@@ -1,5 +1,4 @@
 import fs from 'fs';
-import { omit } from 'lodash';
 import { Error as MongooseError } from 'mongoose';
 
 import { ParticipantState } from '../models/giveaway.model';
@@ -29,32 +28,36 @@ export const getDefinedFields = (
   return definedFields;
 };
 
-export const setParticipantsStats = (giveaway: any) => {
-  const nrConfirmedParticipants = giveaway.participants.filter(
-    (p) => p.state === ParticipantState.CONFIRMED
-  ).length;
-  const nrPendingParticipants = giveaway.participants.filter(
-    (p) => p.state === ParticipantState.PENDING
-  ).length;
-
-  return {
-    ...omit(giveaway, ['participants']),
-    nrConfirmedParticipants,
-    nrPendingParticipants,
+export const giveawayStats = (giveaway: any) => {
+  const initialStats = {
+    nrConfirmedParticipants: 0,
+    nrPendingParticipants: 0,
   };
+
+  for (const participant of giveaway.participants) {
+    if (participant.state === ParticipantState.CONFIRMED) {
+      initialStats.nrConfirmedParticipants++;
+    } else if (participant.state === ParticipantState.PENDING) {
+      initialStats.nrPendingParticipants++;
+    }
+  }
+
+  return initialStats;
 };
 
-export const includeWinnersName = (giveaway: any) => {
-  const winners = giveaway.winners.map((winner) => {
-    const participantObj = giveaway.participants.find(
-      (p) => p.id === winner.id
-    );
-    return {
-      ...winner,
-      name: participantObj.name,
-    };
-  });
-  return { ...omit(giveaway, ['winners']), winners };
+export const giveawayWinners = (giveaway: any) => {
+  const participantMap = new Map<string, string>();
+
+  for (const participant of giveaway.participants) {
+    participantMap.set(participant.id, participant.name);
+  }
+
+  const winners = giveaway.winners.map((winner) => ({
+    ...winner,
+    name: participantMap.get(winner.id),
+  }));
+
+  return winners;
 };
 
 export const handleError = (error: Error): APIError => {

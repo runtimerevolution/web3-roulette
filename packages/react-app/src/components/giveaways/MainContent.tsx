@@ -19,8 +19,8 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const isAdmin = userInfo?.role === UserRole.ADMIN;
 
-  const nrParticipants = giveaway.nrConfirmedParticipants;
-  const nrPending = giveaway.nrPendingParticipants;
+  const nrParticipants = giveaway.stats?.nrConfirmedParticipants;
+  const nrPending = giveaway.stats?.nrPendingParticipants;
 
   const winningChance = useMemo(() => {
     if (!participants) return;

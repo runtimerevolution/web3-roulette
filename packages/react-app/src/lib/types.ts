@@ -12,8 +12,7 @@ type Giveaway = {
   image: string;
   prize: string;
   manual?: boolean;
-  nrConfirmedParticipants?: number;
-  nrPendingParticipants?: number;
+  stats?: Stats;
 };
 
 type UserInfo = {
@@ -65,6 +64,11 @@ enum Unit {
   RAILS = 'rails',
   PYTHON = 'python',
 }
+
+type Stats = {
+  nrConfirmedParticipants: number;
+  nrPendingParticipants: number;
+};
 
 enum ParticipationState {
   CHECKING = 'checking',
