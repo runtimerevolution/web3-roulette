@@ -5,9 +5,14 @@ import CheckIcon from '@mui/icons-material/Check';
 import { Button, Stack, Typography } from '@mui/material';
 
 import LinkIcon from '../../assets/Link.png';
-import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
+import {
+  Giveaway,
+  ParticipationState,
+  UserInfo,
+  UserRole,
+} from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
+import { UserContext } from '../../routes/AuthRoute';
 import Constants from '../../utils/Constants';
 import SvgHelper from '../../utils/SvgHelper';
 import ParticipationButton from './ParticipationButton';
@@ -20,12 +25,12 @@ type GiveawayAsideContentProps = {
 const GiveawayAsideContent = ({
   onParticipationChange,
 }: GiveawayAsideContentProps) => {
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const qrContainerRef = useRef<HTMLDivElement>(null);
   const [qrDataURL, setQrDataURL] = useState<string>();
   const [copyClipboardCheck, setCopyClipboardCheck] = useState(false);
-  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const isAdmin = userInfo.role === UserRole.ADMIN;
 
   useEffect(() => {
     if (!isAdmin) return;

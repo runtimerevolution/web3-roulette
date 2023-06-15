@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Navigate, useLoaderData, useParams } from 'react-router-dom';
 
 import { Divider, Snackbar, Stack, Typography } from '@mui/material';
@@ -6,8 +6,8 @@ import MuiAlert from '@mui/material/Alert';
 
 import ParticipantEntry from '../components/giveaways/ParticipantEntry';
 import SubHeader from '../components/SubHeader';
-import useUserInfo from '../hooks/useUserInfo';
-import { Giveaway, Participant, UserRole } from '../lib/types';
+import { Giveaway, Participant, UserInfo, UserRole } from '../lib/types';
+import { UserContext } from '../routes/AuthRoute';
 import FrontendApiClient from '../services/backend';
 
 const loader = async ({ params }: any) => {
@@ -21,7 +21,7 @@ const loader = async ({ params }: any) => {
 };
 
 const ParticipantsManagerPage = () => {
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const participantsData = useLoaderData() as Participant[];
   const { giveawayId } = useParams();
   const [giveaway, setGiveaway] = useState<Giveaway>();
@@ -65,7 +65,7 @@ const ParticipantsManagerPage = () => {
     setError(false);
   };
 
-  if (userInfo?.role !== UserRole.ADMIN) {
+  if (userInfo.role !== UserRole.ADMIN) {
     return <Navigate to={`/giveaways/${giveawayId}`} />;
   }
 

@@ -23,8 +23,7 @@ const submitParticipation = (
   ).catch((err) => console.log(`problems submitting participation`));
 };
 
-const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {
-  if (!userInfo) return false;
+const wonGiveaway = (giveaway: Giveaway, userInfo: UserInfo) => {
   return giveaway.winners.some((winner) => winner.id === userInfo.email);
 };
 
@@ -60,15 +59,14 @@ const getParticipationState = async (
 
 const meetRequirements = async (
   giveaway: Giveaway,
-  userInfo?: UserInfo
+  userInfo: UserInfo
 ): Promise<boolean> => {
-  if (!userInfo) return false;
   if (!giveaway.requirements) return true;
 
   const unit = giveaway.requirements.unit;
   const locationId = giveaway.requirements.location;
 
-  if (unit && userInfo?.unit !== unit) {
+  if (unit && userInfo.unit !== unit) {
     return false;
   }
 
@@ -104,10 +102,8 @@ const nextGiveaway = async (giveaways: Giveaway[]) => {
 
 const shouldNotifyWinner = async (
   giveaway: Giveaway,
-  userInfo?: UserInfo
+  userInfo: UserInfo
 ): Promise<boolean> => {
-  if (!userInfo) return false;
-
   if (giveaway.winners.some((w) => w.id === userInfo.email)) {
     const participants = await FrontendApiClient.getParticipants(giveaway._id);
     const userObj = participants.find((p) => p.id === userInfo.email);

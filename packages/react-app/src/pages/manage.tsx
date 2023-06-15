@@ -1,5 +1,5 @@
 import { isAfter, isBefore } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
@@ -13,9 +13,9 @@ import GiveawayCard, {
 import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
 import UserEmptyState from '../components/giveaways/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
-import useUserInfo from '../hooks/useUserInfo';
 import { GetGiveaways } from '../lib/queryClient';
-import { Giveaway, UserRole } from '../lib/types';
+import { Giveaway, UserInfo, UserRole } from '../lib/types';
+import { UserContext } from '../routes/AuthRoute';
 import ParticipationService from '../services/giveawayparticipation';
 
 const Tabs = {
@@ -24,7 +24,7 @@ const Tabs = {
 };
 
 const Manage = () => {
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const { isLoading, data } = GetGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
@@ -36,7 +36,7 @@ const Manage = () => {
       const giveawayStartDate = new Date(g.startTime);
       const giveawayEndDate = new Date(g.endTime);
 
-      if (userInfo?.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
+      if (userInfo.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
         return false;
       }
 
@@ -55,7 +55,7 @@ const Manage = () => {
       setError(true);
     }
 
-    if (data && userInfo) {
+    if (data) {
       if (userInfo.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
         ParticipationService.nextGiveaway(data).then((nextGiveaway) => {
           if (nextGiveaway) {
@@ -78,13 +78,13 @@ const Manage = () => {
 
   if (
     !isLoading &&
-    userInfo?.role === UserRole.USER &&
+    userInfo.role === UserRole.USER &&
     !data?.some((g) => g.startTime < new Date())
   ) {
     return <UserEmptyState />;
   }
 
-  if (!isLoading && userInfo?.role === UserRole.ADMIN && data?.length === 0) {
+  if (!isLoading && userInfo.role === UserRole.ADMIN && data?.length === 0) {
     return <AdminEmptyState />;
   }
 
@@ -100,7 +100,7 @@ const Manage = () => {
           <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
           </Typography>
-          {userInfo?.role === UserRole.ADMIN && <CreateNewButton />}
+          {userInfo.role === UserRole.ADMIN && <CreateNewButton />}
         </Box>
 
         <Button

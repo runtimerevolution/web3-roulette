@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Stack, Typography } from '@mui/material';
 
-import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway, Participant, UserRole } from '../../lib/types';
+import { Giveaway, Participant, UserInfo, UserRole } from '../../lib/types';
 import { GiveawayContext } from '../../pages/details';
+import { UserContext } from '../../routes/AuthRoute';
 
 type GiveawayMainContentProps = {
   participants: Participant[];
@@ -15,9 +15,9 @@ type GiveawayMainContentProps = {
 
 const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
   const navigate = useNavigate();
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useContext(GiveawayContext) as Giveaway;
-  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const isAdmin = userInfo.role === UserRole.ADMIN;
 
   const nrParticipants = giveaway.stats?.nrConfirmedParticipants;
   const nrPending = giveaway.stats?.nrPendingParticipants;
@@ -26,7 +26,7 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
     if (!participants) return;
     if (!nrParticipants || nrParticipants === 0) return 100;
 
-    const participantObj = participants.find((p) => p.id === userInfo?.email);
+    const participantObj = participants.find((p) => p.id === userInfo.email);
     let total = nrParticipants;
     if (!participantObj || participantObj.state !== 'confirmed') {
       total++;
