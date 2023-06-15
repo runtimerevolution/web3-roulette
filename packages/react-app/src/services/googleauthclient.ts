@@ -48,5 +48,10 @@ const readTokens = () => {
   };
 };
 
-const AuthClient = { getUserInfo, saveTokens, readTokens };
+const cleanupTokens = () => {
+  localStorage.removeItem('tokenType');
+  localStorage.removeItem('accessToken');
+};
+
+const AuthClient = { getUserInfo, saveTokens, readTokens, cleanupTokens };
 export default AuthClient;

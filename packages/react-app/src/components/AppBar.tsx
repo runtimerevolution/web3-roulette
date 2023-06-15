@@ -16,7 +16,7 @@ import { googleLogout } from '@react-oauth/google';
 import logo from '../assets/Logo.svg';
 import { UserInfo } from '../lib/types';
 import { UserContext } from '../routes/AuthRoute';
-import GoogleAuthClient from '../services/googleauthclient';
+import AuthClient from '../services/googleauthclient';
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -34,7 +34,7 @@ function ResponsiveAppBar() {
   const logout = () => {
     handleCloseUserMenu();
     googleLogout();
-    GoogleAuthClient.removeUser();
+    AuthClient.cleanupTokens();
     navigate('/login');
   };
 
