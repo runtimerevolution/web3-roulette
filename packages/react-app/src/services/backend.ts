@@ -54,10 +54,8 @@ class BackendService {
     if (params && method !== 'GET') {
       axiosRequestConfig.data = params;
     }
-    if (headers) {
-      axiosRequestConfig.headers = headers;
-    }
 
+    axiosRequestConfig.headers = { ...headers, 'Cache-Control': 'no-cache' };
     return instance.request(axiosRequestConfig);
   }
 
