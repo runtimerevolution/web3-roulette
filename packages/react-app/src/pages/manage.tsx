@@ -77,13 +77,14 @@ const Manage = () => {
   };
 
   if (
+    !isLoading &&
     userInfo?.role === UserRole.USER &&
     !data?.some((g) => g.startTime < new Date())
   ) {
     return <UserEmptyState />;
   }
 
-  if (userInfo?.role === UserRole.ADMIN && data?.length === 0) {
+  if (!isLoading && userInfo?.role === UserRole.ADMIN && data?.length === 0) {
     return <AdminEmptyState />;
   }
 

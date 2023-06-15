@@ -125,31 +125,44 @@ const ParticipationButton = ({
     updateParticipationState();
   }, [updateParticipationState]);
 
-  const closeError = () => {
-    setError(false);
-  };
-
   return (
     <div>
-      <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
-        <MuiAlert severity="error" onClose={closeError}>
+      <Snackbar
+        open={error}
+        autoHideDuration={6000}
+        onClose={() => {
+          setError(false);
+        }}
+      >
+        <MuiAlert
+          severity="error"
+          onClose={() => {
+            setError(false);
+          }}
+        >
           Oops, something went wrong! Please try again later.
         </MuiAlert>
       </Snackbar>
-      <PendingLocationModal
-        open={showPendingModal}
-        onClose={() => setShowPendingModal(false)}
-      />
-      <RejectionModal
-        giveaway={giveaway}
-        open={showRejectedModal}
-        onClose={() => setShowRejectedModal(false)}
-      />
-      <WinnerModal
-        giveaway={giveaway}
-        open={showWinnerModal}
-        onClose={() => setShowWinnerModal(false)}
-      />
+      {showPendingModal && (
+        <PendingLocationModal
+          open={true}
+          onClose={() => setShowPendingModal(false)}
+        />
+      )}
+      {showRejectedModal && (
+        <RejectionModal
+          giveaway={giveaway}
+          open={true}
+          onClose={() => setShowRejectedModal(false)}
+        />
+      )}
+      {showWinnerModal && (
+        <WinnerModal
+          giveaway={giveaway}
+          open={showWinnerModal}
+          onClose={() => setShowWinnerModal(false)}
+        />
+      )}
       {ActionButton}
     </div>
   );
