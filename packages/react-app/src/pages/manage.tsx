@@ -1,5 +1,6 @@
 import { isAfter, isBefore } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
+import Confetti from 'react-confetti';
 
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
@@ -28,6 +29,7 @@ const Manage = () => {
   const { isLoading, data, refetch } = GetGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
+  const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
 
   const giveaways = useMemo(() => {
@@ -78,9 +80,17 @@ const Manage = () => {
   }, [data, isLoading]);
 
   const handleWinners = () => {
+    animateConfettis();
     refetch().then(() => {
       setActiveTab(Tabs.Archived);
     });
+  };
+
+  const animateConfettis = () => {
+    setShowConfettis(true);
+    setTimeout(() => {
+      setShowConfettis(false);
+    }, 4000);
   };
 
   const closeError = () => {
@@ -102,6 +112,7 @@ const Manage = () => {
 
   return (
     <Container maxWidth={false}>
+      {showConfettis && <Confetti />}
       <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
         <MuiAlert severity="error" onClose={closeError}>
           Oops, something went wrong! Please try again later.
