@@ -7,7 +7,14 @@ import useUserInfo from '../../hooks/useUserInfo';
 import { Giveaway, ParticipationState } from '../../lib/types';
 import FrontendApiClient from '../../services/backend';
 import ParticipationService from '../../services/giveawayparticipation';
-import { ActionButtonComponents } from './ActionButtons';
+import {
+  ApprovalPendingButton,
+  CheckingButton,
+  ManageButton,
+  NotAllowedButton,
+  ParticipateButton,
+  ParticipatingButton,
+} from './ActionButtons';
 import {
   PendingLocationModal,
   RejectionModal,
@@ -83,28 +90,35 @@ const ParticipationButton = ({
   );
 
   const ActionButton: React.ReactNode = useMemo(() => {
-    let props = {};
-
-    if (participationState === ParticipationState.ALLOWED) {
-      props = {
-        giveaway: giveaway,
-        userInfo: userInfo,
-        successCallback: () => {
-          updateParticipationState(true);
-        },
-        errorCallback: () => {
-          setError(true);
-          updateParticipationState(true);
-        },
-      };
-    } else if (participationState === ParticipationState.MANAGE) {
-      props = { giveaway: giveaway };
+    if (!userInfo) return;
+    switch (participationState) {
+      case ParticipationState.MANAGE:
+        return <ManageButton giveaway={giveaway} />;
+      case ParticipationState.PARTICIPATING:
+        return <ParticipatingButton />;
+      case ParticipationState.PENDING:
+        return <ApprovalPendingButton />;
+      case ParticipationState.ALLOWED:
+        return (
+          <ParticipateButton
+            giveaway={giveaway}
+            userInfo={userInfo}
+            successCallback={() => {
+              updateParticipationState(true);
+            }}
+            errorCallback={() => {
+              setError(true);
+              updateParticipationState(true);
+            }}
+          />
+        );
+      case ParticipationState.NOT_ALLOWED:
+        return <NotAllowedButton />;
+      case ParticipationState.CHECKING:
+        return <CheckingButton />;
+      case ParticipationState.REJECTED:
+        return <NotAllowedButton />;
     }
-
-    return React.createElement(
-      ActionButtonComponents[participationState],
-      props
-    );
   }, [participationState, giveaway, userInfo, updateParticipationState]);
 
   useEffect(() => {
