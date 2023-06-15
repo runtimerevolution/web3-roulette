@@ -4,7 +4,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 import ResponsiveAppBar from '../components/AppBar';
 import { UserInfo } from '../lib/types';
-import AuthClient from '../services/googleauthclient';
+import AuthClient from '../services/authclient';
 
 const UserContext = createContext<UserInfo | null>(null);
 

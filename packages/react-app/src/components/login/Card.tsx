@@ -6,7 +6,7 @@ import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
 
 import google from '../../assets/google.svg';
 import logo from '../../assets/Logo.svg';
-import AuthClient from '../../services/googleauthclient';
+import AuthClient from '../../services/authclient';
 
 const GoogleAuthButton = styled(Button)({
   color: '#171717',
