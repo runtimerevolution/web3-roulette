@@ -78,9 +78,7 @@ const Manage = () => {
 
   if (
     userInfo?.role === UserRole.USER &&
-    giveaways?.length === 0 &&
-    !countdownGiveaway &&
-    activeTab === Tabs.Active
+    !data?.some((g) => g.startTime > new Date())
   ) {
     return <UserEmptyState />;
   }
