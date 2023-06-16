@@ -69,7 +69,7 @@ const GenerateWinnersButton = ({
 }: GenerateWinnersProps) => {
   const generateWinners = () => {
     FrontendApiClient.generateWinners(giveaway._id)
-      .then((_) => successCallback())
+      .then(() => successCallback())
       .catch((err) => {
         console.log(`problems generating winners: ${err}`);
         errorCallback();

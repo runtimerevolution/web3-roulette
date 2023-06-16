@@ -23,7 +23,8 @@ const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
   const { data: participants } = GetParticipants(giveaway._id);
   const [participation, setParticipation] = useState<ParticipationState>();
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
-  const nrPending = giveaway.nrPendingParticipants;
+  const nrConfirmedParticipants = giveaway.nrConfirmedParticipants;
+  const nrPendingParticipants = giveaway.nrPendingParticipants;
 
   const getWinnerStr = () => {
     const winners = giveaway.winners;
@@ -67,9 +68,12 @@ const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
       }}
       elevation={0}
     >
-      {nrPending !== undefined && nrPending > 0 && (
+      {nrPendingParticipants !== undefined && nrPendingParticipants > 0 && (
         <div className="card-pending-approvals">
-          <PendingApprovalBanner giveaway={giveaway} nrPending={nrPending} />
+          <PendingApprovalBanner
+            giveaway={giveaway}
+            nrPending={nrPendingParticipants}
+          />
         </div>
       )}
       <div className="card-media clickable" onClick={navigateDetails}>
@@ -121,9 +125,7 @@ const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
               <span role="img" aria-label="people">
                 👥
               </span>{' '}
-              {`${
-                participants?.filter((p) => p.state === 'confirmed').length
-              } participants`}
+              {`${nrConfirmedParticipants} participants`}
             </Typography>
           )}
         {(!participation ||
