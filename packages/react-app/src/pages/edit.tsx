@@ -224,7 +224,7 @@ const EditGiveaway = () => {
           <Typography className="new-giveaway-title">New Giveaway</Typography>
         </div>
         <Grid container spacing={10}>
-          <Grid item xs={5}>
+          <Grid item xs={12} sm={5}>
             <Box sx={{ mb: '1.5rem' }}>
               <Typography className="field-label">Name</Typography>
               <TextField
@@ -416,7 +416,7 @@ const EditGiveaway = () => {
               )}
             </Box>
           </Grid>
-          <Grid item xs={7}>
+          <Grid item xs={12} sm={7}>
             <Box sx={{ mb: '1.5rem' }}>
               <Typography className="field-label">Description</Typography>
               <TextField
