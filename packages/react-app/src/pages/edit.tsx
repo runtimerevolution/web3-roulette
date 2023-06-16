@@ -156,6 +156,22 @@ const EditGiveaway = () => {
     GiveawayCondition[]
   >([]);
 
+  const handleNewCondition = () => {
+    const newConditions = [...giveawayConditions];
+
+    if (giveawayConditions.length) {
+      if (giveawayConditions[0].type === 'unit') {
+        newConditions.push({ type: 'location', value: '' });
+      } else {
+        newConditions.push({ type: 'unit', value: Unit.NODE });
+      }
+    } else {
+      newConditions.push({ type: 'unit', value: Unit.NODE });
+    }
+
+    setGiveawayConditions(newConditions);
+  };
+
   const handleConditionTypeChange = (index: number, value: ConditionType) => {
     const newGiveawayConditions = [...giveawayConditions];
     newGiveawayConditions.splice(index, 1, {
@@ -444,7 +460,7 @@ const EditGiveaway = () => {
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography className="field-label">
+              <Typography className="field-label conditions-title">
                 Who is eligible to participate?
               </Typography>
               {giveawayConditions.map((value, index) => (
@@ -516,29 +532,17 @@ const EditGiveaway = () => {
                   )}
                 </Box>
               ))}
-            </Box>
 
-            {!giveawayId && giveawayConditions.length < 2 && (
-              <Button
-                onClick={() => {
-                  const newConditions = [...giveawayConditions];
-                  if (giveawayConditions.length) {
-                    if (giveawayConditions[0].type === 'unit') {
-                      newConditions.push({ type: 'location', value: '' });
-                    } else {
-                      newConditions.push({ type: 'unit', value: Unit.NODE });
-                    }
-                  } else {
-                    newConditions.push({ type: 'unit', value: Unit.NODE });
-                  }
-                  setGiveawayConditions(newConditions);
-                }}
-                sx={{ textTransform: 'capitalize', px: '1rem' }}
-                disabled={!!giveawayId}
-              >
-                + Add condition
-              </Button>
-            )}
+              {!giveawayId && giveawayConditions.length < 2 && (
+                <Button
+                  className="add-condition-btn"
+                  onClick={handleNewCondition}
+                  disabled={!!giveawayId}
+                >
+                  + Add condition
+                </Button>
+              )}
+            </Box>
 
             <Box>
               <FormControlLabel
