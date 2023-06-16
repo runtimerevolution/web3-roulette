@@ -20,7 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import uploadIcon from '../assets/CloudUpload.png';
@@ -47,6 +47,7 @@ const textInputStyle = {
     },
   },
 };
+
 const datePickerStyle = {
   backgroundColor: 'white',
   borderRadius: '8px',
@@ -57,6 +58,7 @@ const datePickerStyle = {
     },
   },
 };
+
 const selectInputStyle = {
   '& .MuiInputBase-input': {
     backgroundColor: 'white',
@@ -65,9 +67,11 @@ const selectInputStyle = {
   },
   mr: '1rem',
 };
+
 const fieldLabelStyle = {
   color: '#000000',
 };
+
 const fieldErrorDescriptionStyle = {
   color: '#FF0000',
 };
@@ -338,10 +342,10 @@ const EditGiveaway = () => {
                   fieldState,
                 }) => (
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker
+                    <DateTimePicker
                       {...field}
                       sx={datePickerStyle}
-                      format="dd/MM/yyyy"
+                      format="dd/MM/yyyy hh:mm a"
                       inputRef={ref}
                       slotProps={{
                         textField: {
@@ -373,10 +377,10 @@ const EditGiveaway = () => {
                   fieldState,
                 }) => (
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker
+                    <DateTimePicker
                       {...field}
                       sx={datePickerStyle}
-                      format="dd/MM/yyyy"
+                      format="dd/MM/yyyy hh:mm a"
                       inputRef={ref}
                       slotProps={{
                         textField: {
