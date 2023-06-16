@@ -5,7 +5,7 @@ import { useMutation } from 'react-query';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import {
   Box,
   Button,
@@ -262,7 +262,7 @@ const EditGiveaway = () => {
                     right: 0,
                   }}
                 >
-                  <DeleteIcon />
+                  <DeleteIcon className="delete-icon" />
                 </Button>
                 <Box {...getRootProps()}>
                   <img
@@ -527,7 +527,7 @@ const EditGiveaway = () => {
                       sx={{ textTransform: 'capitalize', px: '1rem' }}
                       disabled={!!giveawayId}
                     >
-                      <DeleteIcon />
+                      <DeleteIcon className="delete-icon" />
                     </Button>
                   )}
                 </Box>
