@@ -1,0 +1,40 @@
+.text-input {
+  .MuiInputBase-root {
+    background-color: white;
+    border-radius: 8px;
+
+    fieldset {
+      border-color: #e1e6ef;
+    }
+  }
+}
+
+.datepicker {
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+
+  .MuiInputBase-root {
+    fieldset {
+      border-color: #e1e6ef;
+    }
+  }
+}
+
+.condition-select {
+  margin-right: 1rem;
+
+  .MuiInputBase-input {
+    background-color: white;
+    border-radius: 8px;
+    min-width: 100px;
+  }
+}
+
+.field-label {
+  color: black;
+}
+
+.error-description {
+  color: #ff0000;
+}

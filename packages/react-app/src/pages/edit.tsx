@@ -38,44 +38,6 @@ import {
 } from '../lib/types';
 import API from '../services/backend';
 
-const textInputStyle = {
-  '& .MuiInputBase-root': {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    '& fieldset': {
-      borderColor: '#E1E6EF',
-    },
-  },
-};
-
-const datePickerStyle = {
-  backgroundColor: 'white',
-  borderRadius: '8px',
-  width: '100%',
-  '& .MuiInputBase-root': {
-    '& fieldset': {
-      borderColor: '#E1E6EF',
-    },
-  },
-};
-
-const selectInputStyle = {
-  '& .MuiInputBase-input': {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    minWidth: '100px',
-  },
-  mr: '1rem',
-};
-
-const fieldLabelStyle = {
-  color: '#000000',
-};
-
-const fieldErrorDescriptionStyle = {
-  color: '#FF0000',
-};
-
 const EditGiveaway = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
@@ -250,17 +212,17 @@ const EditGiveaway = () => {
         <Grid container spacing={10}>
           <Grid item xs={5}>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Name</Typography>
+              <Typography className="field-label">Name</Typography>
               <TextField
                 id="title"
+                className="text-input"
                 fullWidth
                 size="small"
-                sx={textInputStyle}
                 {...register('title', { required: 'Name is required!' })}
                 error={formState.errors.title ? true : false}
               />
               {formState.errors.title && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.title.message}
                 </Typography>
               )}
@@ -332,7 +294,7 @@ const EditGiveaway = () => {
               </>
             )}
             <Box sx={{ my: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Start date</Typography>
+              <Typography className="field-label">Start date</Typography>
               <Controller
                 control={control}
                 defaultValue={data?.startTime || new Date()}
@@ -343,8 +305,8 @@ const EditGiveaway = () => {
                 }) => (
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DateTimePicker
+                      className="datepicker"
                       {...field}
-                      sx={datePickerStyle}
                       format="dd/MM/yyyy hh:mm a"
                       inputRef={ref}
                       slotProps={{
@@ -361,13 +323,13 @@ const EditGiveaway = () => {
                 )}
               />
               {formState.errors.startTime && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.startTime?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>End date</Typography>
+              <Typography className="field-label">End date</Typography>
               <Controller
                 control={control}
                 name="endTime"
@@ -378,8 +340,8 @@ const EditGiveaway = () => {
                 }) => (
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DateTimePicker
+                      className="datepicker"
                       {...field}
-                      sx={datePickerStyle}
                       format="dd/MM/yyyy hh:mm a"
                       inputRef={ref}
                       slotProps={{
@@ -396,32 +358,33 @@ const EditGiveaway = () => {
                 )}
               />
               {formState.errors.endTime && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.endTime?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Prize</Typography>
+              <Typography className="field-label">Prize</Typography>
               <TextField
                 id="prize"
+                className="text-input"
                 variant="outlined"
                 fullWidth
                 size="small"
                 {...register('prize', { required: 'Prize is required!' })}
                 error={formState.errors.prize ? true : false}
-                sx={textInputStyle}
               />
               {formState.errors.prize && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.prize?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Number of winners</Typography>
+              <Typography className="field-label">Number of winners</Typography>
               <TextField
                 id="numberOfWinners"
+                className="text-input"
                 variant="outlined"
                 fullWidth
                 size="small"
@@ -430,11 +393,10 @@ const EditGiveaway = () => {
                   required: 'Number of winners is required!',
                 })}
                 error={formState.errors.numberOfWinners ? true : false}
-                sx={textInputStyle}
                 disabled={!!giveawayId}
               />
               {formState.errors.numberOfWinners && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.numberOfWinners?.message}
                 </Typography>
               )}
@@ -442,9 +404,10 @@ const EditGiveaway = () => {
           </Grid>
           <Grid item xs={7}>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Description</Typography>
+              <Typography className="field-label">Description</Typography>
               <TextField
                 id="description"
+                className="text-input"
                 variant="outlined"
                 minRows={4}
                 fullWidth
@@ -454,18 +417,18 @@ const EditGiveaway = () => {
                   required: 'Description is required!',
                 })}
                 error={formState.errors.description ? true : false}
-                sx={textInputStyle}
               />
               {formState.errors.description && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.description?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Rules</Typography>
+              <Typography className="field-label">Rules</Typography>
               <TextField
                 id="rules"
+                className="text-input"
                 variant="outlined"
                 minRows={4}
                 fullWidth
@@ -473,16 +436,15 @@ const EditGiveaway = () => {
                 size="small"
                 {...register('rules')}
                 error={formState.errors.rules ? true : false}
-                sx={textInputStyle}
               />
               {formState.errors.rules && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.rules?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>
+              <Typography className="field-label">
                 Who is eligible to participate?
               </Typography>
               {giveawayConditions.map((value, index) => (
@@ -491,6 +453,7 @@ const EditGiveaway = () => {
                   sx={{ display: 'flex', alignItems: 'center', mt: '1rem' }}
                 >
                   <Select
+                    className="condition-select"
                     value={value.type}
                     onChange={(e) =>
                       handleConditionTypeChange(
@@ -499,7 +462,6 @@ const EditGiveaway = () => {
                       )
                     }
                     size="small"
-                    sx={selectInputStyle}
                     disabled={!!giveawayId}
                   >
                     <MenuItem value={'unit'}>Unit</MenuItem>
@@ -508,12 +470,12 @@ const EditGiveaway = () => {
 
                   {value.type === 'unit' ? (
                     <Select
+                      className="condition-select"
                       value={value.value || ''}
                       onChange={(e) =>
                         handleConditionValueChange(index, e.target.value)
                       }
                       size="small"
-                      sx={selectInputStyle}
                       disabled={!!giveawayId}
                     >
                       {Object.values(Unit).map((unit) => (
@@ -524,12 +486,12 @@ const EditGiveaway = () => {
                     </Select>
                   ) : (
                     <Select
+                      className="condition-select"
                       value={value.value || ''}
                       onChange={(e) =>
                         handleConditionValueChange(index, e.target.value)
                       }
                       size="small"
-                      sx={selectInputStyle}
                       disabled={!!giveawayId}
                     >
                       {locations.data?.map((loc) => (
