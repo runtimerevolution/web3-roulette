@@ -563,41 +563,20 @@ const EditGiveaway = () => {
                 disabled={!!giveawayId}
               />
             </Box>
-            <Box
-              sx={{ display: 'flex', mt: '2rem', justifyContent: 'flex-end' }}
-            >
-              <Box
-                sx={{
-                  borderRadius: '0.6rem',
-                  borderColor: '#6D6DF0',
-                  borderWidth: '3px',
-                  borderStyle: 'solid',
-                }}
-              >
-                <Button
-                  onClick={() => navigate(-1)}
-                  sx={{
-                    textTransform: 'capitalize',
-                    color: '#6D6DF0',
-                    fontWeight: 600,
-                    px: '1rem',
-                  }}
-                >
-                  Cancel
-                </Button>
-              </Box>
+            <Box className="cancel-save-container">
               <Button
-                sx={{
-                  ml: '1rem',
-                  textTransform: 'capitalize',
-                  backgroundColor: '#6D6DF0',
-                  ':hover': {
-                    bgcolor: '#6D6DF0',
-                  },
-                  borderRadius: '0.6rem',
-                }}
+                className="cancel-btn"
+                variant="outlined"
+                onClick={() => navigate(-1)}
+                disableElevation
+              >
+                Cancel
+              </Button>
+              <Button
+                className="save-btn"
                 variant="contained"
                 onClick={handleSubmit(saveGiveaway)}
+                disableElevation
               >
                 Save
               </Button>

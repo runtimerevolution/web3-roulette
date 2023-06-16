@@ -73,3 +73,30 @@
   font-weight: bold !important;
   margin-bottom: 25px !important;
 }
+
+.cancel-save-container {
+  display: flex;
+  margin-top: 2rem;
+  justify-content: end;
+
+  .cancel-btn {
+    width: 99px;
+    height: 44px;
+    border-color: $primary-color !important;
+    border-radius: 10px !important;
+    border-width: 3px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    text-transform: none !important;
+  }
+
+  .save-btn {
+    width: 85px;
+    height: 44px;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    text-transform: none !important;
+    margin-left: 15px !important;
+  }
+}
