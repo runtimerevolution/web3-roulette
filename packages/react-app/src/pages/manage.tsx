@@ -14,7 +14,7 @@ import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
 import UserEmptyState from '../components/giveaways/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
 import useUserInfo from '../hooks/useUserInfo';
-import { GetGiveaways } from '../lib/queryClient';
+import { useGiveaways } from '../lib/queryClient';
 import { Giveaway, UserRole } from '../lib/types';
 import ParticipationService from '../services/giveawayparticipation';
 
@@ -25,7 +25,7 @@ const Tabs = {
 
 const Manage = () => {
   const userInfo = useUserInfo();
-  const { isLoading, data } = GetGiveaways();
+  const { isLoading, data } = useGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [error, setError] = useState(false);

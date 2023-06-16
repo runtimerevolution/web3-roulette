@@ -6,7 +6,7 @@ import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
 import Trophy from '../../assets/Trophy.png';
 import useUserInfo from '../../hooks/useUserInfo';
-import { GetParticipants } from '../../lib/queryClient';
+import { useParticipants } from '../../lib/queryClient';
 import { Giveaway, ParticipationState } from '../../lib/types';
 import ParticipationService from '../../services/giveawayparticipation';
 import ParticipationButton from './ParticipationButton';
@@ -14,7 +14,7 @@ import ParticipationButton from './ParticipationButton';
 const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
-  const { data: participants } = GetParticipants(giveaway._id);
+  const { data: participants } = useParticipants(giveaway._id);
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
   const [isAllowed, setIsAllowed] = useState(true);
 
