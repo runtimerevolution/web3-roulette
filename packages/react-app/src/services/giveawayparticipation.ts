@@ -28,15 +28,13 @@ const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {
   return giveaway.winners.some((winner) => winner.id === userInfo.email);
 };
 
-const hasPendingWinners = (giveaway: Giveaway, userInfo: UserInfo) => {
-  if (userInfo.role === UserRole.ADMIN) {
-    if (
-      giveaway.manual &&
-      new Date() > giveaway.endTime &&
-      giveaway.winners.length === 0
-    ) {
-      return true;
-    }
+const hasPendingWinners = (giveaway: Giveaway) => {
+  if (
+    giveaway.manual &&
+    new Date() > giveaway.endTime &&
+    giveaway.winners.length === 0
+  ) {
+    return true;
   }
   return false;
 };
@@ -48,7 +46,7 @@ const getParticipationState = async (
 ): Promise<ParticipationState> => {
   if (!userInfo) return ParticipationState.NOT_ALLOWED;
 
-  if (hasPendingWinners(giveaway, userInfo))
+  if (userInfo.role === UserRole.ADMIN && hasPendingWinners(giveaway))
     return ParticipationState.PENDING_WINNERS;
 
   if (new Date() > giveaway.endTime) return ParticipationState.NOT_ALLOWED;

@@ -48,7 +48,10 @@ const Manage = () => {
         return false;
       }
 
-      if (ParticipationService.hasPendingWinners(g, userInfo))
+      if (
+        userInfo.role === UserRole.ADMIN &&
+        ParticipationService.hasPendingWinners(g)
+      )
         return activeTab === Tabs.Active;
 
       return activeTab === Tabs.Active
