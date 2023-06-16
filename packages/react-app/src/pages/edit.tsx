@@ -209,22 +209,20 @@ const EditGiveaway = () => {
           {errorMessage}
         </MuiAlert>
       </Snackbar>
-      <Box sx={{ px: '5rem', py: '2rem' }}>
-        <Button
-          sx={{
-            color: 'black',
-            px: 0,
-            textTransform: 'capitalize',
-            mb: '1rem',
-          }}
-          variant="text"
-          startIcon={<ChevronLeftIcon />}
-          onClick={() => {
-            navigate(-1);
-          }}
-        >
-          Back
-        </Button>
+      <Box className="form-container">
+        <div>
+          <Button
+            className="back"
+            variant="text"
+            startIcon={<ChevronLeftIcon />}
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            Back
+          </Button>
+          <Typography className="new-giveaway-title">New Giveaway</Typography>
+        </div>
         <Grid container spacing={10}>
           <Grid item xs={5}>
             <Box sx={{ mb: '1.5rem' }}>

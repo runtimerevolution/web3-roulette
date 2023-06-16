@@ -1,3 +1,7 @@
+.form-container {
+  padding: 1rem 3.5rem;
+}
+
 .text-input {
   .MuiInputBase-root {
     background-color: white;
@@ -55,4 +59,17 @@
 
 .delete-icon {
   color: #cc6161;
+}
+
+.back {
+  font-size: 18px !important;
+  text-transform: none !important;
+  color: black !important;
+  margin-bottom: 23px !important;
+}
+
+.new-giveaway-title {
+  font-size: 22px !important;
+  font-weight: bold !important;
+  margin-bottom: 25px !important;
 }
