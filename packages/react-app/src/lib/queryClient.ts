@@ -12,20 +12,27 @@ const queryClient = new QueryClient({
   },
 });
 
-const useGiveaways = () => useQuery('active', API.getGiveaways);
+const useGiveaways = () =>
+  useQuery('active', API.getGiveaways, { refetchOnMount: 'always' });
 
 const useGiveawayDetails = (id?: string) =>
-  useQuery<Giveaway | undefined>(['details', id], () =>
-    id ? API.getGiveaway(id) : undefined
+  useQuery<Giveaway | undefined>(
+    ['details', id],
+    () => (id ? API.getGiveaway(id) : undefined),
+    { refetchOnMount: 'always' }
   );
 
 const useLocations = () => {
-  return useQuery<Location[] | undefined>('locations', API.getLocations);
+  return useQuery<Location[] | undefined>('locations', API.getLocations, {
+    refetchOnMount: 'always',
+  });
 };
 
 const useParticipants = (giveawayId: string) => {
-  return useQuery(['participants', giveawayId], () =>
-    API.getParticipants(giveawayId)
+  return useQuery(
+    ['participants', giveawayId],
+    () => API.getParticipants(giveawayId),
+    { refetchOnMount: 'always' }
   );
 };
 
