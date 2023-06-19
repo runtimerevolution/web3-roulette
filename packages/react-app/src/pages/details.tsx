@@ -1,13 +1,13 @@
-import { createContext } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { createContext, useRef } from 'react';
+import { useLoaderData, useRevalidator } from 'react-router-dom';
 
 import { Stack } from '@mui/material';
 
 import GiveawayAsideContent from '../components/giveaways/AsideContent';
 import GiveawayMainContent from '../components/giveaways/MainContent';
 import SubHeader from '../components/SubHeader';
-import useUserInfo from '../hooks/useUserInfo';
-import { Giveaway, UserRole } from '../lib/types';
+import { useParticipants } from '../lib/queryClient';
+import { Giveaway, ParticipationState } from '../lib/types';
 import FrontendApiClient from '../services/backend';
 
 const GiveawayContext = createContext<Giveaway | null>(null);
@@ -21,8 +21,20 @@ const loader = async ({ params }: any) => {
 };
 
 const GiveawayDetailsPage = () => {
-  const userInfo = useUserInfo();
   const giveaway = useLoaderData() as Giveaway;
+  const revalidator = useRevalidator();
+  const { data: participants, refetch } = useParticipants(giveaway._id);
+  const participationState = useRef<ParticipationState>();
+
+  const onParticipationChange = (newState: ParticipationState) => {
+    if (newState !== participationState.current) {
+      if (participationState.current) {
+        refetch();
+        revalidator.revalidate();
+      }
+      participationState.current = newState;
+    }
+  };
 
   return (
     <GiveawayContext.Provider value={giveaway}>
@@ -31,10 +43,8 @@ const GiveawayDetailsPage = () => {
         justifyContent="center"
         sx={{ flexDirection: { xs: 'column', md: 'row' } }}
       >
-        <GiveawayMainContent />
-        {(giveaway.rules || userInfo?.role === UserRole.ADMIN) && (
-          <GiveawayAsideContent />
-        )}
+        {participants && <GiveawayMainContent participants={participants} />}
+        <GiveawayAsideContent onParticipationChange={onParticipationChange} />
       </Stack>
     </GiveawayContext.Provider>
   );

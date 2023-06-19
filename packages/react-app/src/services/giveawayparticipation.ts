@@ -3,6 +3,7 @@ import {
   Participant,
   ParticipationState,
   UserInfo,
+  UserRole,
 } from '../lib/types';
 import FrontendApiClient from './backend';
 import GeolocationService from './geolocation';
@@ -29,10 +30,15 @@ const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {
 
 const getParticipationState = async (
   giveaway: Giveaway,
-  participants: Participant[],
+  participants?: Participant[],
   userInfo?: UserInfo
 ): Promise<ParticipationState> => {
-  if (!userInfo) return ParticipationState.NOT_ALLOWED;
+  if (!userInfo || new Date() > giveaway.endTime)
+    return ParticipationState.NOT_ALLOWED;
+  if (userInfo.role === UserRole.ADMIN) return ParticipationState.MANAGE;
+
+  if (!participants)
+    participants = await FrontendApiClient.getParticipants(giveaway._id);
   const registeredUser = participants.find((p) => p.id === userInfo.email);
 
   if (registeredUser) {
@@ -85,50 +91,33 @@ const meetRequirements = async (
   return true;
 };
 
-const nextGiveaway = async (giveaways: Giveaway[], userInfo?: UserInfo) => {
-  if (!userInfo) return;
+const nextGiveaway = async (giveaways: Giveaway[]) => {
+  const activeGiveaways = giveaways.filter(
+    (g) => g.startTime < new Date() && new Date() < g.endTime
+  );
+  if (activeGiveaways.length === 0) return;
 
-  const participatingGiveaways = [];
-  let state, participants;
-
-  for (const giveaway of giveaways) {
-    if (giveaway.startTime > new Date() || new Date() > giveaway.endTime)
-      continue;
-
-    participants = await FrontendApiClient.getParticipants(giveaway._id);
-    state = await getParticipationState(giveaway, participants, userInfo);
-
-    if (state === ParticipationState.PARTICIPATING) {
-      participatingGiveaways.push(giveaway);
-    }
-  }
-
-  if (participatingGiveaways.length === 0) return;
-
-  return participatingGiveaways.reduce((prev, curr) =>
+  return activeGiveaways.reduce((prev, curr) =>
     prev.endTime < curr.endTime ? prev : curr
   );
 };
 
-const getWinnerNotifications = async (
-  giveaways: Giveaway[],
-  userInfo: UserInfo
-): Promise<Giveaway[]> => {
-  const wonGiveaways = giveaways.filter((g) =>
-    g.winners.find((w) => w.id === userInfo.email)
-  );
+const shouldNotifyWinner = async (
+  giveaway: Giveaway,
+  userInfo?: UserInfo
+): Promise<boolean> => {
+  if (!userInfo) return false;
 
-  const giveawaysToNotify = [];
-  for (const giveaway of wonGiveaways) {
+  if (giveaway.winners.some((w) => w.id === userInfo.email)) {
     const participants = await FrontendApiClient.getParticipants(giveaway._id);
     const userObj = participants.find((p) => p.id === userInfo.email);
 
     if (userObj && !userObj.notified) {
-      giveawaysToNotify.push(giveaway);
+      return true;
     }
   }
 
-  return giveawaysToNotify;
+  return false;
 };
 
 const ParticipationService = {
@@ -136,7 +125,7 @@ const ParticipationService = {
   meetRequirements,
   submitParticipation,
   nextGiveaway,
-  getWinnerNotifications,
+  shouldNotifyWinner,
   wonGiveaway,
 };
 export default ParticipationService;
