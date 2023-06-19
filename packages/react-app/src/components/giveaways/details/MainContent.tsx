@@ -27,7 +27,7 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
     if (nrParticipants === 0) return 100;
 
     const isRegistered = participants.some(
-      (p) => p.id === userInfo?.email && p.state === 'confirmed'
+      (p) => p.id === userInfo.email && p.state === 'confirmed'
     );
     const totalParticipants = isRegistered
       ? nrParticipants
