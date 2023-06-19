@@ -7,11 +7,12 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 
 import { Giveaway, UserInfo } from '../../../lib/types';
+import FrontendApiClient from '../../../services/backend';
 import ParticipationService from '../../../services/giveawayparticipation';
 
 const ButtonBaseStyle = {
   width: '100%',
-  height: '35px',
+  height: '40px',
   textTransform: 'none',
   marginTop: '17px',
   borderRadius: '10px',
@@ -31,6 +32,12 @@ type ParticipationProps = {
   errorCallback: () => void;
 };
 
+type GenerateWinnersProps = {
+  giveaway: Giveaway;
+  successCallback: () => void;
+  errorCallback: () => void;
+};
+
 const ManageButton = ({ giveaway }: ManageProps) => {
   const navigate = useNavigate();
 
@@ -41,16 +48,47 @@ const ManageButton = ({ giveaway }: ManageProps) => {
   return (
     <Button
       className="card-action-btn"
-      variant="outlined"
+      variant="contained"
       sx={{
         ...ButtonBaseStyle,
-        backgroundColor: 'white',
-        color: '#6D6DF0',
+        backgroundColor: '#6D6DF0',
+        color: 'white',
       }}
       onClick={manageGiveaway}
       disableElevation
     >
       Manage
+    </Button>
+  );
+};
+
+const GenerateWinnersButton = ({
+  giveaway,
+  successCallback,
+  errorCallback,
+}: GenerateWinnersProps) => {
+  const generateWinners = () => {
+    FrontendApiClient.generateWinners(giveaway._id)
+      .then(() => successCallback())
+      .catch((err) => {
+        console.log(`problems generating winners: ${err}`);
+        errorCallback();
+      });
+  };
+
+  return (
+    <Button
+      className="card-action-btn"
+      variant="contained"
+      sx={{
+        ...ButtonBaseStyle,
+        backgroundColor: '#DBDBFB',
+        color: '#6D6DF0',
+      }}
+      onClick={generateWinners}
+      disableElevation
+    >
+      Generate a winner
     </Button>
   );
 };
@@ -204,4 +242,5 @@ export {
   ParticipateButton,
   NotAllowedButton,
   CheckingButton,
+  GenerateWinnersButton,
 };

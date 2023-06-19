@@ -32,16 +32,6 @@ class BackendService {
     };
 
     const errorResponseInterceptor = (error: AxiosError) => {
-      if (
-        error?.response?.status === 401 &&
-        error?.request?.headers?.AUTHORIZATION
-      ) {
-        sessionStorage.removeItem('token');
-        window.location.href = `/login?referrer=${encodeURIComponent(
-          window.location.href
-        )}`;
-      }
-
       errorCallback?.();
       return Promise.reject(error.response);
     };
@@ -64,10 +54,8 @@ class BackendService {
     if (params && method !== 'GET') {
       axiosRequestConfig.data = params;
     }
-    if (headers) {
-      axiosRequestConfig.headers = headers;
-    }
 
+    axiosRequestConfig.headers = { ...headers, 'Cache-Control': 'no-cache' };
     return instance.request(axiosRequestConfig);
   }
 
@@ -182,6 +170,13 @@ class BackendService {
       'PUT',
       undefined,
       body
+    );
+  };
+
+  generateWinners = async (giveawayId: string) => {
+    return await this.makeRequest(
+      `/giveaways/${giveawayId}/generate-winners`,
+      'GET'
     );
   };
 }

@@ -10,13 +10,21 @@ import { UserContext } from '../../../routes/AuthRoute';
 import ParticipationService from '../../../services/giveawayparticipation';
 import Trophy from '../../assets/Trophy.png';
 import ParticipationButton from '../participation/ParticipationButton';
+import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
-const GiveawayCard = (giveaway: Giveaway) => {
+type GiveawayCardProps = {
+  giveaway: Giveaway;
+  onWinnersGeneration: () => void;
+};
+
+const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useContext(UserContext) as UserInfo;
   const { data: participants } = useParticipants(giveaway._id);
+  const [participation, setParticipation] = useState<ParticipationState>();
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
-  const [isAllowed, setIsAllowed] = useState(true);
+  const nrConfirmedParticipants = giveaway.stats?.nrConfirmedParticipants;
+  const nrPendingParticipants = giveaway.stats?.nrPendingParticipants;
 
   const getWinnerStr = () => {
     const winners = giveaway.winners;
@@ -39,18 +47,35 @@ const GiveawayCard = (giveaway: Giveaway) => {
   };
 
   const onStateChange = (newState: ParticipationState) => {
-    setIsAllowed(newState !== ParticipationState.NOT_ALLOWED);
+    if (
+      participation === ParticipationState.PENDING_WINNERS &&
+      newState === ParticipationState.MANAGE
+    ) {
+      onWinnersGeneration();
+    }
+    setParticipation(newState);
   };
 
   return (
     <Card
+      className="card-container"
       sx={{
-        borderRadius: '1.2rem',
-        boxShadow: 0,
         backgroundColor:
-          !isAllowed && giveaway.endTime > new Date() ? '#D9D9D9' : 'white',
+          participation === ParticipationState.NOT_ALLOWED &&
+          giveaway.endTime > new Date()
+            ? '#D9D9D9'
+            : 'white',
       }}
+      elevation={0}
     >
+      {nrPendingParticipants !== undefined && nrPendingParticipants > 0 && (
+        <div className="card-pending-approvals">
+          <PendingApprovalBanner
+            giveaway={giveaway}
+            nrPending={nrPendingParticipants}
+          />
+        </div>
+      )}
       <div className="card-media clickable" onClick={navigateDetails}>
         <img className="img" src={giveaway.image} alt="Giveaway thumb" />
         {isWinner && (
@@ -94,17 +119,18 @@ const GiveawayCard = (giveaway: Giveaway) => {
             {getWinnerStr()}
           </Typography>
         )}
-        {giveaway.endTime < new Date() && (
-          <Typography className="participants" gutterBottom>
-            <span role="img" aria-label="people">
-              👥
-            </span>{' '}
-            {`${
-              participants?.filter((p) => p.state === 'confirmed').length
-            } participants`}
-          </Typography>
-        )}
-        {giveaway.endTime > new Date() && (
+        {giveaway.endTime < new Date() &&
+          participation !== ParticipationState.PENDING_WINNERS && (
+            <Typography className="participants" gutterBottom>
+              <span role="img" aria-label="people">
+                👥
+              </span>{' '}
+              {`${nrConfirmedParticipants} participants`}
+            </Typography>
+          )}
+        {(!participation ||
+          giveaway.endTime > new Date() ||
+          participation === ParticipationState.PENDING_WINNERS) && (
           <ParticipationButton
             giveaway={giveaway}
             onStateChange={onStateChange}

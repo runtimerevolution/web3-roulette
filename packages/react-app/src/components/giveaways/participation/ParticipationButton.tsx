@@ -20,6 +20,7 @@ import {
   NotAllowedButton,
   ParticipateButton,
   ParticipatingButton,
+  GenerateWinnersButton,
 } from './ActionButtons';
 import {
   PendingLocationModal,
@@ -121,6 +122,18 @@ const ParticipationButton = ({
         return <CheckingButton />;
       case ParticipationState.REJECTED:
         return <NotAllowedButton />;
+      case ParticipationState.PENDING_WINNERS:
+        return (
+          <GenerateWinnersButton
+            giveaway={giveaway}
+            successCallback={() => {
+              onStateChange?.(ParticipationState.MANAGE);
+            }}
+            errorCallback={() => {
+              setError(true);
+            }}
+          />
+        );
     }
   }, [participationState, giveaway, userInfo, updateParticipationState]);
 

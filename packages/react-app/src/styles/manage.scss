@@ -94,6 +94,12 @@
   }
 }
 
+.card-container {
+  border-radius: 1.2rem !important;
+  box-shadow: 0 !important;
+  position: relative !important;
+}
+
 .card-media {
   position: relative;
 
@@ -277,4 +283,11 @@
   @include mobile {
     margin-bottom: 0 !important;
   }
+}
+
+.card-pending-approvals {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 999999;
 }

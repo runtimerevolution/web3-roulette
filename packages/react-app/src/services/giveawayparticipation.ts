@@ -27,13 +27,28 @@ const wonGiveaway = (giveaway: Giveaway, userInfo: UserInfo) => {
   return giveaway.winners.some((winner) => winner.id === userInfo.email);
 };
 
+const hasPendingWinners = (giveaway: Giveaway) => {
+  if (
+    giveaway.manual &&
+    new Date() > giveaway.endTime &&
+    giveaway.winners.length === 0
+  ) {
+    return true;
+  }
+  return false;
+};
+
 const getParticipationState = async (
   giveaway: Giveaway,
   participants?: Participant[],
   userInfo?: UserInfo
 ): Promise<ParticipationState> => {
-  if (!userInfo || new Date() > giveaway.endTime)
-    return ParticipationState.NOT_ALLOWED;
+  if (!userInfo) return ParticipationState.NOT_ALLOWED;
+
+  if (userInfo.role === UserRole.ADMIN && hasPendingWinners(giveaway))
+    return ParticipationState.PENDING_WINNERS;
+
+  if (new Date() > giveaway.endTime) return ParticipationState.NOT_ALLOWED;
   if (userInfo.role === UserRole.ADMIN) return ParticipationState.MANAGE;
 
   if (!participants)
@@ -123,5 +138,6 @@ const ParticipationService = {
   nextGiveaway,
   shouldNotifyWinner,
   wonGiveaway,
+  hasPendingWinners,
 };
 export default ParticipationService;

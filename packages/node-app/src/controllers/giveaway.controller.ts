@@ -20,7 +20,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
   try {
     let giveaways = await Giveaway.find()
       .select(
-        'title description startTime endTime winners requirements prize image participants'
+        'title description startTime endTime winners requirements prize image participants manual'
       )
       .lean();
 

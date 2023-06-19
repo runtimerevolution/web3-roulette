@@ -1,5 +1,6 @@
 import { isAfter, isBefore } from 'date-fns';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import Confetti from 'react-confetti';
 
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
@@ -25,9 +26,10 @@ const Tabs = {
 
 const Manage = () => {
   const userInfo = useContext(UserContext) as UserInfo;
-  const { isLoading, data } = useGiveaways();
+  const { isLoading, data, refetch } = useGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
+  const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
 
   const giveaways = useMemo(() => {
@@ -43,6 +45,12 @@ const Manage = () => {
       if (g._id === countdownGiveaway?._id) {
         return false;
       }
+
+      if (
+        userInfo.role === UserRole.ADMIN &&
+        ParticipationService.hasPendingWinners(g)
+      )
+        return activeTab === Tabs.Active;
 
       return activeTab === Tabs.Active
         ? isAfter(giveawayEndDate, now)
@@ -72,6 +80,20 @@ const Manage = () => {
     }
   }, [data, isLoading]);
 
+  const handleWinners = () => {
+    animateConfettis();
+    refetch().then(() => {
+      setActiveTab(Tabs.Archived);
+    });
+  };
+
+  const animateConfettis = () => {
+    setShowConfettis(true);
+    setTimeout(() => {
+      setShowConfettis(false);
+    }, 4000);
+  };
+
   const closeError = () => {
     setError(false);
   };
@@ -90,6 +112,7 @@ const Manage = () => {
 
   return (
     <Container maxWidth={false}>
+      {showConfettis && <Confetti />}
       <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
         <MuiAlert severity="error" onClose={closeError}>
           Oops, something went wrong! Please try again later.
@@ -181,7 +204,10 @@ const Manage = () => {
                   sx={{ minWidth: { xs: '100%', sm: '300px' } }}
                   key={g._id}
                 >
-                  <GiveawayCard {...g} />
+                  <GiveawayCard
+                    giveaway={g}
+                    onWinnersGeneration={handleWinners}
+                  />
                 </Grid>
               ))
             )}
