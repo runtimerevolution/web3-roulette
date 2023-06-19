@@ -23,8 +23,7 @@ const submitParticipation = (
   ).catch((err) => console.log(`problems submitting participation`));
 };
 
-const wonGiveaway = (giveaway: Giveaway, userInfo?: UserInfo) => {
-  if (!userInfo) return false;
+const wonGiveaway = (giveaway: Giveaway, userInfo: UserInfo) => {
   return giveaway.winners.some((winner) => winner.id === userInfo.email);
 };
 
@@ -50,6 +49,7 @@ const getParticipationState = async (
     return ParticipationState.PENDING_WINNERS;
 
   if (new Date() > giveaway.endTime) return ParticipationState.NOT_ALLOWED;
+  if (userInfo.role === UserRole.ADMIN) return ParticipationState.MANAGE;
 
   if (!participants)
     participants = await FrontendApiClient.getParticipants(giveaway._id);
@@ -74,15 +74,14 @@ const getParticipationState = async (
 
 const meetRequirements = async (
   giveaway: Giveaway,
-  userInfo?: UserInfo
+  userInfo: UserInfo
 ): Promise<boolean> => {
-  if (!userInfo) return false;
   if (!giveaway.requirements) return true;
 
   const unit = giveaway.requirements.unit;
   const locationId = giveaway.requirements.location;
 
-  if (unit && userInfo?.unit !== unit) {
+  if (unit && userInfo.unit !== unit) {
     return false;
   }
 
@@ -107,7 +106,7 @@ const meetRequirements = async (
 
 const nextGiveaway = async (giveaways: Giveaway[]) => {
   const activeGiveaways = giveaways.filter(
-    (g) => g.startTime < new Date() || new Date() < g.endTime
+    (g) => g.startTime < new Date() && new Date() < g.endTime
   );
   if (activeGiveaways.length === 0) return;
 
@@ -118,10 +117,8 @@ const nextGiveaway = async (giveaways: Giveaway[]) => {
 
 const shouldNotifyWinner = async (
   giveaway: Giveaway,
-  userInfo?: UserInfo
+  userInfo: UserInfo
 ): Promise<boolean> => {
-  if (!userInfo) return false;
-
   if (giveaway.winners.some((w) => w.id === userInfo.email)) {
     const participants = await FrontendApiClient.getParticipants(giveaway._id);
     const userObj = participants.find((p) => p.id === userInfo.email);

@@ -1,5 +1,5 @@
 import { isAfter, isBefore } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import Confetti from 'react-confetti';
 
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
@@ -14,9 +14,9 @@ import GiveawayCountdownCard from '../components/giveaways/cards/CountdownCard';
 import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
 import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
-import useUserInfo from '../hooks/useUserInfo';
-import { GetGiveaways } from '../lib/queryClient';
-import { Giveaway, UserRole } from '../lib/types';
+import { useGiveaways } from '../lib/queryClient';
+import { Giveaway, UserInfo, UserRole } from '../lib/types';
+import { UserContext } from '../routes/AuthRoute';
 import ParticipationService from '../services/giveawayparticipation';
 
 const Tabs = {
@@ -25,8 +25,8 @@ const Tabs = {
 };
 
 const Manage = () => {
-  const userInfo = useUserInfo();
-  const { isLoading, data, refetch } = GetGiveaways();
+  const userInfo = useContext(UserContext) as UserInfo;
+  const { isLoading, data, refetch } = useGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [showConfettis, setShowConfettis] = useState(false);
@@ -34,13 +34,11 @@ const Manage = () => {
 
   const giveaways = useMemo(() => {
     return data?.filter((g) => {
-      if (!userInfo) return [];
-
       const now = new Date();
       const giveawayStartDate = new Date(g.startTime);
       const giveawayEndDate = new Date(g.endTime);
 
-      if (userInfo?.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
+      if (userInfo.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
         return false;
       }
 
@@ -65,7 +63,7 @@ const Manage = () => {
       setError(true);
     }
 
-    if (data && userInfo) {
+    if (data) {
       if (userInfo.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
         ParticipationService.nextGiveaway(data).then((nextGiveaway) => {
           if (nextGiveaway) {
@@ -101,15 +99,14 @@ const Manage = () => {
   };
 
   if (
-    userInfo?.role === UserRole.USER &&
-    giveaways?.length === 0 &&
-    !countdownGiveaway &&
-    activeTab === Tabs.Active
+    !isLoading &&
+    userInfo.role === UserRole.USER &&
+    !data?.some((g) => g.startTime < new Date())
   ) {
     return <UserEmptyState />;
   }
 
-  if (userInfo?.role === UserRole.ADMIN && data?.length === 0) {
+  if (!isLoading && userInfo.role === UserRole.ADMIN && data?.length === 0) {
     return <AdminEmptyState />;
   }
 
@@ -126,7 +123,7 @@ const Manage = () => {
           <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
           </Typography>
-          {userInfo?.role === UserRole.ADMIN && <CreateNewButton />}
+          {userInfo.role === UserRole.ADMIN && <CreateNewButton />}
         </Box>
 
         <Button

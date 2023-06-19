@@ -12,31 +12,22 @@ const queryClient = new QueryClient({
   },
 });
 
-const GetGiveaways = () => {
-  return useQuery('active', API.getGiveaways, { refetchOnMount: 'always' });
-};
+const useGiveaways = () => useQuery('active', API.getGiveaways);
 
-const GetGiveawayDetails = (id?: string) => {
-  return useQuery<Giveaway | undefined>(
-    ['details', id],
-    () => (id ? API.getGiveaway(id) : undefined),
-    { refetchOnMount: 'always' }
+const useGiveawayDetails = (id?: string) =>
+  useQuery<Giveaway | undefined>(['details', id], () =>
+    id ? API.getGiveaway(id) : undefined
   );
+
+const useLocations = () => {
+  return useQuery<Location[] | undefined>('locations', API.getLocations);
 };
 
-const GetLocations = () => {
-  return useQuery<Location[] | undefined>('locations', API.getLocations, {
-    refetchOnMount: 'always',
-  });
-};
-
-const GetParticipants = (giveawayId: string) => {
-  return useQuery(
-    ['participants', giveawayId],
-    () => API.getParticipants(giveawayId),
-    { refetchOnMount: 'always' }
+const useParticipants = (giveawayId: string) => {
+  return useQuery(['participants', giveawayId], () =>
+    API.getParticipants(giveawayId)
   );
 };
 
 export default queryClient;
-export { GetGiveaways, GetGiveawayDetails, GetLocations, GetParticipants };
+export { useGiveaways, useGiveawayDetails, useLocations, useParticipants };

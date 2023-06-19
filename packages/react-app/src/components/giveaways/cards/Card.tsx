@@ -1,14 +1,14 @@
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
-import Trophy from '../../../assets/Trophy.png';
-import useUserInfo from '../../../hooks/useUserInfo';
-import { GetParticipants } from '../../../lib/queryClient';
-import { Giveaway, ParticipationState } from '../../../lib/types';
+import { useParticipants } from '../../../lib/queryClient';
+import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
+import { UserContext } from '../../../routes/AuthRoute';
 import ParticipationService from '../../../services/giveawayparticipation';
+import Trophy from '../../assets/Trophy.png';
 import ParticipationButton from '../participation/ParticipationButton';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
@@ -19,12 +19,12 @@ type GiveawayCardProps = {
 
 const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
   const navigate = useNavigate();
-  const userInfo = useUserInfo();
-  const { data: participants } = GetParticipants(giveaway._id);
+  const userInfo = useContext(UserContext) as UserInfo;
+  const { data: participants } = useParticipants(giveaway._id);
   const [participation, setParticipation] = useState<ParticipationState>();
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
-  const nrConfirmedParticipants = giveaway.nrConfirmedParticipants;
-  const nrPendingParticipants = giveaway.nrPendingParticipants;
+  const nrConfirmedParticipants = giveaway.stats?.nrConfirmedParticipants;
+  const nrPendingParticipants = giveaway.stats?.nrPendingParticipants;
 
   const getWinnerStr = () => {
     const winners = giveaway.winners;

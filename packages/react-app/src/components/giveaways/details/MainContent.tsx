@@ -1,10 +1,10 @@
 import { format } from 'date-fns';
+import { UserContext } from '../../../routes/AuthRoute';
 import { useContext, useMemo } from 'react';
 
 import { Stack, Typography } from '@mui/material';
 
-import useUserInfo from '../../../hooks/useUserInfo';
-import { Giveaway, Participant, UserRole } from '../../../lib/types';
+import { Giveaway, Participant, UserInfo, UserRole } from '../../../lib/types';
 import { GiveawayContext } from '../../../pages/details';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
@@ -13,25 +13,29 @@ type GiveawayMainContentProps = {
 };
 
 const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useContext(GiveawayContext) as Giveaway;
-  const isAdmin = userInfo?.role === UserRole.ADMIN;
+  const isAdmin = userInfo.role === UserRole.ADMIN;
 
-  const nrParticipants = giveaway.nrConfirmedParticipants;
-  const nrPending = giveaway.nrPendingParticipants;
+  const nrParticipants = giveaway.stats?.nrConfirmedParticipants;
+  const nrPending = giveaway.stats?.nrPendingParticipants;
 
   const winningChance = useMemo(() => {
-    if (!participants) return;
-    if (!nrParticipants || nrParticipants === 0) return 100;
+    if (nrParticipants === undefined) return;
+    if (nrParticipants === 0) return 100;
 
-    const participantObj = participants.find((p) => p.id === userInfo?.email);
-    let total = nrParticipants;
-    if (!participantObj || participantObj.state !== 'confirmed') {
-      total++;
-    }
+    const isRegistered = participants.some(
+      (p) => p.id === userInfo.email && p.state === 'confirmed'
+    );
+    const totalParticipants = isRegistered
+      ? nrParticipants
+      : nrParticipants + 1;
+    const winningChance = Math.floor(
+      (giveaway.numberOfWinners / totalParticipants) * 100
+    );
 
-    return Math.floor((1 / total) * 100);
-  }, [participants, nrParticipants, userInfo]);
+    return Math.min(winningChance, 100);
+  }, [giveaway, nrParticipants, participants, userInfo]);
 
   return (
     <Stack sx={{ paddingLeft: { sm: '80px', lg: '0px' } }}>
@@ -61,37 +65,27 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
       </Typography>
       <Stack mt="14px" spacing="12px">
         <Typography sx={{ fontSize: '18px', color: '#303136' }}>
-          <>
-            <span className="giveaway-info-icon" role="img" aria-label="trophy">
-              🏆
-            </span>{' '}
-            {giveaway.prize}
-          </>
+          <span className="giveaway-info-icon" role="img" aria-label="trophy">
+            🏆
+          </span>{' '}
+          {giveaway.prize}
         </Typography>
         <Typography sx={{ fontSize: '18px', color: '#303136' }}>
-          <>
+          <span className="giveaway-info-icon" role="img" aria-label="calendar">
+            🗓️
+          </span>{' '}
+          {format(giveaway.endTime, 'MMMM d, yyyy')}
+        </Typography>
+        {giveaway.winners && giveaway.winners.length > 0 && (
+          <Typography sx={{ fontSize: '18px', color: '#303136' }}>
             <span
               className="giveaway-info-icon"
               role="img"
-              aria-label="calendar"
+              aria-label="Party emoji"
             >
-              🗓️
+              🥳
             </span>{' '}
-            {format(giveaway.endTime, 'MMMM d, yyyy')}
-          </>
-        </Typography>
-        {giveaway.winners && giveaway.winners.length > 0 && (
-          <Typography className="winners-text">
-            <>
-              <span
-                className="giveaway-info-icon"
-                role="img"
-                aria-label="Party emoji"
-              >
-                🥳
-              </span>{' '}
-              {giveaway.winners.map((winner) => winner.name).join(', ')}
-            </>
+            {giveaway.winners.map((winner) => winner.name).join(', ')}
           </Typography>
         )}
         <Stack
@@ -103,16 +97,14 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
         >
           <div>
             <Typography sx={{ fontSize: '18px', color: '#303136' }}>
-              <>
-                <span
-                  className="giveaway-info-icon"
-                  role="img"
-                  aria-label="calendar"
-                >
-                  👥
-                </span>{' '}
-                {`${nrParticipants} participants`}
-              </>
+              <span
+                className="giveaway-info-icon"
+                role="img"
+                aria-label="calendar"
+              >
+                👥
+              </span>{' '}
+              {`${nrParticipants} participants`}
             </Typography>
             {!isAdmin && participants && nrParticipants !== undefined && (
               <span className="winning-chance">{`You have a ${winningChance}% chance of winning`}</span>

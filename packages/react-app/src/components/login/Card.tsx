@@ -6,8 +6,7 @@ import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
 
 import google from '../../assets/google.svg';
 import logo from '../../assets/Logo.svg';
-import { Unit, UserRole } from '../../lib/types';
-import GoogleAuthClient from '../../services/googleauthclient';
+import AuthClient from '../../services/authclient';
 
 const GoogleAuthButton = styled(Button)({
   color: '#171717',
@@ -30,21 +29,8 @@ const LoginCard = ({ handleAuthError }: LoginCardProps) => {
   const handleSuccess = async (
     res: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'>
   ) => {
-    const userInfo = await GoogleAuthClient.getUserInfo(
-      res.token_type,
-      res.access_token
-    );
-
-    if (userInfo) {
-      // todo: api login - for test purposes ONLY
-      userInfo.role = UserRole.USER;
-      userInfo.unit = Unit.NODE;
-
-      GoogleAuthClient.saveUser(userInfo);
-      navigate('/');
-    } else {
-      handleAuthError();
-    }
+    AuthClient.saveTokens(res.token_type, res.access_token);
+    navigate('/');
   };
 
   const handleError = (
