@@ -1,10 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
-import useUserInfo from '../../../hooks/useUserInfo';
-import { Giveaway, ParticipationState } from '../../../lib/types';
+import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
+import { UserContext } from '../../../routes/AuthRoute';
 import FrontendApiClient from '../../../services/backend';
 import ParticipationService from '../../../services/giveawayparticipation';
 import {
@@ -33,14 +39,13 @@ const ParticipationButton = ({
   const [participationState, setParticipationState] =
     useState<ParticipationState>(ParticipationState.CHECKING);
 
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const [error, setError] = useState(false);
   const [showPendingModal, setShowPendingModal] = useState(false);
   const [showRejectedModal, setShowRejectedModal] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
 
   const notifyRejection = useCallback(async () => {
-    if (!userInfo) return;
     await FrontendApiClient.setNotifiedParticipant(
       giveaway._id,
       userInfo.email
@@ -49,7 +54,6 @@ const ParticipationButton = ({
   }, [giveaway, userInfo]);
 
   const notifyWinner = useCallback(async () => {
-    if (!userInfo) return;
     await FrontendApiClient.setNotifiedParticipant(
       giveaway._id,
       userInfo.email
@@ -90,7 +94,6 @@ const ParticipationButton = ({
   );
 
   const ActionButton: React.ReactNode = useMemo(() => {
-    if (!userInfo) return;
     switch (participationState) {
       case ParticipationState.MANAGE:
         return <ManageButton giveaway={giveaway} />;
