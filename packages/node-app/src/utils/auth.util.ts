@@ -1,10 +1,6 @@
 import axios from 'axios';
-import { Unit } from '../models/giveaway.model';
 
-enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { Unit, UserRole } from '../models/user.model';
 
 const googleAuthInstance = axios.create({
   baseURL: process.env.GOOGLE_OAUTH_URI,

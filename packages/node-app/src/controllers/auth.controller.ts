@@ -1,32 +1,49 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import _ from 'lodash';
 
+import { User } from '../models/user.model';
 import { getUserInfo } from '../utils/auth.util';
-import { encrypt } from '../utils/web3.util';
+import { handleError } from '../utils/model.util';
 
 export const login = async (req: Request, res: Response) => {
-  const { tokenType, accessToken } = req.body;
-  if (!tokenType || !accessToken) {
-    return res
-      .status(400)
-      .json({ error: 'Token type and access token are required' });
-  }
-
-  const userInfo = await getUserInfo(tokenType, accessToken);
-  if (!userInfo) {
-    return res.status(400).json({ error: 'Invalid tokens' });
-  }
-
-  const encryptedUser = encrypt(JSON.stringify(userInfo));
-  const token = jwt.sign(
-    {
-      user: encryptedUser,
-    },
-    process.env.ENCRYPTION_KEY,
-    {
-      expiresIn: '2h',
+  try {
+    const { tokenType, accessToken } = req.body;
+    if (!tokenType || !accessToken) {
+      return res
+        .status(400)
+        .json({ error: 'Token type and access token are required' });
     }
-  );
 
-  res.status(200).json({ token });
+    let userInfo = await getUserInfo(tokenType, accessToken);
+    if (!userInfo) {
+      return res.status(400).json({ error: 'Invalid tokens' });
+    }
+
+    userInfo = _.pick(userInfo, ['email', 'name', 'picture', 'role', 'unit']);
+    const user = await User.findOneAndUpdate(
+      { email: userInfo.email },
+      userInfo,
+      {
+        new: true,
+        upsert: true,
+      }
+    );
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+      },
+      process.env.ENCRYPTION_KEY,
+      {
+        expiresIn: '2h',
+      }
+    );
+
+    res.status(200).json({ token });
+  } catch (error) {
+    const { code, message } = handleError(error);
+    res.status(code).json({ error: message });
+  }
 };
