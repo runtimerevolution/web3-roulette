@@ -1,6 +1,6 @@
 import { Button, Stack, Typography } from '@mui/material';
 
-import { Participant } from '../../lib/types';
+import { Participant } from '../../../lib/types';
 
 type ParticipantEntryProps = {
   participant: Participant;

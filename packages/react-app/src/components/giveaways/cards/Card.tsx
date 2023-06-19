@@ -4,17 +4,17 @@ import { useNavigate } from 'react-router-dom';
 
 import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
+import { useParticipants } from '../../../lib/queryClient';
+import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
+import { UserContext } from '../../../routes/AuthRoute';
+import ParticipationService from '../../../services/giveawayparticipation';
 import Trophy from '../../assets/Trophy.png';
-import { GetParticipants } from '../../lib/queryClient';
-import { Giveaway, ParticipationState, UserInfo } from '../../lib/types';
-import { UserContext } from '../../routes/AuthRoute';
-import ParticipationService from '../../services/giveawayparticipation';
-import ParticipationButton from './ParticipationButton';
+import ParticipationButton from '../participation/ParticipationButton';
 
 const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
   const userInfo = useContext(UserContext) as UserInfo;
-  const { data: participants } = GetParticipants(giveaway._id);
+  const { data: participants } = useParticipants(giveaway._id);
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
   const [isAllowed, setIsAllowed] = useState(true);
 

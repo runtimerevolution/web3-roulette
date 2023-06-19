@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Stack, Typography } from '@mui/material';
 
-import { Giveaway } from '../../lib/types';
+import { Giveaway } from '../../../lib/types';
 import GiveawayCountdownBox from './CountdownBox';
 
 const GiveawayCountdownCard = (giveaway: Giveaway) => {

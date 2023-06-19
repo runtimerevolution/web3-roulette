@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 
-import { Giveaway, UserInfo } from '../../lib/types';
-import { UserContext } from '../../routes/AuthRoute';
-import Resources from '../../utils/Resources';
-import OverlayModal from '../OverlayModal';
+import { Giveaway, UserInfo } from '../../../lib/types';
+import { UserContext } from '../../../routes/AuthRoute';
+import Resources from '../../../utils/Resources';
+import OverlayModal from '../../OverlayModal';
 
 type PendingLocationModalProps = {
   open: boolean;

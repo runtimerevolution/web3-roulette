@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Stack, Typography } from '@mui/material';
 
-import { Giveaway, Participant, UserInfo, UserRole } from '../../lib/types';
-import { GiveawayContext } from '../../pages/details';
-import { UserContext } from '../../routes/AuthRoute';
+import { Giveaway, Participant, UserInfo, UserRole } from '../../../lib/types';
+import { GiveawayContext } from '../../../pages/details';
+import { UserContext } from '../../../routes/AuthRoute';
 
 type GiveawayMainContentProps = {
   participants: Participant[];
@@ -23,17 +23,21 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
   const nrPending = giveaway.stats?.nrPendingParticipants;
 
   const winningChance = useMemo(() => {
-    if (!participants) return;
-    if (!nrParticipants || nrParticipants === 0) return 100;
+    if (nrParticipants === undefined) return;
+    if (nrParticipants === 0) return 100;
 
-    const participantObj = participants.find((p) => p.id === userInfo.email);
-    let total = nrParticipants;
-    if (!participantObj || participantObj.state !== 'confirmed') {
-      total++;
-    }
+    const isRegistered = participants.some(
+      (p) => p.id === userInfo?.email && p.state === 'confirmed'
+    );
+    const totalParticipants = isRegistered
+      ? nrParticipants
+      : nrParticipants + 1;
+    const winningChance = Math.floor(
+      (giveaway.numberOfWinners / totalParticipants) * 100
+    );
 
-    return Math.floor((1 / total) * 100);
-  }, [participants, nrParticipants, userInfo]);
+    return Math.min(winningChance, 100);
+  }, [giveaway, nrParticipants, participants, userInfo]);
 
   const manageParticipants = () => {
     navigate(`/giveaways/${giveaway._id}/participants`);

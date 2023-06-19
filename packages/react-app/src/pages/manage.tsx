@@ -6,14 +6,14 @@ import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
 import CreateNewButton from '../components/CreateNewButton';
-import AdminEmptyState from '../components/giveaways/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
-} from '../components/giveaways/Card';
-import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
-import UserEmptyState from '../components/giveaways/UserEmptyState';
+} from '../components/giveaways/cards/Card';
+import GiveawayCountdownCard from '../components/giveaways/cards/CountdownCard';
+import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
+import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
-import { GetGiveaways } from '../lib/queryClient';
+import { useGiveaways } from '../lib/queryClient';
 import { Giveaway, UserInfo, UserRole } from '../lib/types';
 import { UserContext } from '../routes/AuthRoute';
 import ParticipationService from '../services/giveawayparticipation';
@@ -25,7 +25,7 @@ const Tabs = {
 
 const Manage = () => {
   const userInfo = useContext(UserContext) as UserInfo;
-  const { isLoading, data } = GetGiveaways();
+  const { isLoading, data } = useGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [error, setError] = useState(false);

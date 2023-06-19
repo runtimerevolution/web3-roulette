@@ -12,20 +12,22 @@ const queryClient = new QueryClient({
   },
 });
 
-const GetGiveaways = () => useQuery('active', API.getGiveaways);
-const GetGiveawayDetails = (id?: string) =>
+const useGiveaways = () => useQuery('active', API.getGiveaways);
+
+const useGiveawayDetails = (id?: string) =>
   useQuery<Giveaway | undefined>(['details', id], () =>
     id ? API.getGiveaway(id) : undefined
   );
 
-const GetLocations = () =>
-  useQuery<Location[] | undefined>('locations', API.getLocations);
+const useLocations = () => {
+  return useQuery<Location[] | undefined>('locations', API.getLocations);
+};
 
-const GetParticipants = (giveawayId: string) => {
+const useParticipants = (giveawayId: string) => {
   return useQuery(['participants', giveawayId], () =>
     API.getParticipants(giveawayId)
   );
 };
 
 export default queryClient;
-export { GetGiveaways, GetGiveawayDetails, GetLocations, GetParticipants };
+export { useGiveaways, useGiveawayDetails, useLocations, useParticipants };

@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@mui/material';
-import Confetti from '../../assets/Confetti.png';
-import CreateNewButton from '../CreateNewButton';
+import Confetti from '../../../assets/Confetti.png';
+import CreateNewButton from '../../CreateNewButton';
 
 const AdminEmptyState = () => {
   return (

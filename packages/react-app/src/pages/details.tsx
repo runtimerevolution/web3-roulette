@@ -3,10 +3,10 @@ import { useLoaderData, useRevalidator } from 'react-router-dom';
 
 import { Stack } from '@mui/material';
 
-import GiveawayAsideContent from '../components/giveaways/AsideContent';
-import GiveawayMainContent from '../components/giveaways/MainContent';
+import GiveawayAsideContent from '../components/giveaways/details/AsideContent';
+import GiveawayMainContent from '../components/giveaways/details/MainContent';
 import SubHeader from '../components/SubHeader';
-import { GetParticipants } from '../lib/queryClient';
+import { useParticipants } from '../lib/queryClient';
 import { Giveaway, ParticipationState } from '../lib/types';
 import FrontendApiClient from '../services/backend';
 
@@ -23,7 +23,7 @@ const loader = async ({ params }: any) => {
 const GiveawayDetailsPage = () => {
   const giveaway = useLoaderData() as Giveaway;
   const revalidator = useRevalidator();
-  const { data: participants, refetch } = GetParticipants(giveaway._id);
+  const { data: participants, refetch } = useParticipants(giveaway._id);
   const participationState = useRef<ParticipationState>();
 
   const onParticipationChange = (newState: ParticipationState) => {

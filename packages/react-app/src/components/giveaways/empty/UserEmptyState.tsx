@@ -1,5 +1,5 @@
 import { Stack, Typography } from '@mui/material';
-import HappyFace from '../../assets/HappyFace.png';
+import HappyFace from '../../../assets/HappyFace.png';
 
 const UserEmptyState = () => {
   return (
