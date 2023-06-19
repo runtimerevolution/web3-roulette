@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
@@ -24,7 +24,6 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import uploadIcon from '../assets/CloudUpload.png';
-import useUserInfo from '../hooks/useUserInfo';
 import queryClient, {
   useGiveawayDetails,
   useLocations,
@@ -34,8 +33,10 @@ import {
   Giveaway,
   GiveawayCondition,
   Unit,
+  UserInfo,
   UserRole,
 } from '../lib/types';
+import { UserContext } from '../routes/AuthRoute';
 import API from '../services/backend';
 
 const textInputStyle = {
@@ -74,7 +75,7 @@ const fieldErrorDescriptionStyle = {
 
 const EditGiveaway = () => {
   const navigate = useNavigate();
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const { giveawayId } = useParams();
   const { data } = useGiveawayDetails(giveawayId);
   const locations = useLocations();
@@ -215,7 +216,7 @@ const EditGiveaway = () => {
     undefined
   );
 
-  return userInfo?.role === UserRole.ADMIN ? (
+  return userInfo.role === UserRole.ADMIN ? (
     <Container maxWidth={false}>
       <Snackbar
         open={!!errorMessage}

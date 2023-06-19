@@ -1,19 +1,19 @@
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
-import Trophy from '../../assets/Trophy.png';
-import useUserInfo from '../../../hooks/useUserInfo';
 import { useParticipants } from '../../../lib/queryClient';
-import { Giveaway, ParticipationState } from '../../../lib/types';
+import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
+import { UserContext } from '../../../routes/AuthRoute';
 import ParticipationService from '../../../services/giveawayparticipation';
+import Trophy from '../../assets/Trophy.png';
 import ParticipationButton from '../participation/ParticipationButton';
 
 const GiveawayCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
   const { data: participants } = useParticipants(giveaway._id);
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
   const [isAllowed, setIsAllowed] = useState(true);
