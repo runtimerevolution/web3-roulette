@@ -6,7 +6,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 
-import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
+import { Giveaway, UserInfo } from '../../../lib/types';
 import ParticipationService from '../../../services/giveawayparticipation';
 
 const ButtonBaseStyle = {
@@ -197,18 +197,7 @@ const CheckingButton = () => {
   );
 };
 
-const ActionButtonComponents: { [K in ParticipationState]: React.FC<any> } = {
-  manage: ManageButton,
-  participating: ParticipatingButton,
-  pending: ApprovalPendingButton,
-  allowed: ParticipateButton,
-  notAllowed: NotAllowedButton,
-  checking: CheckingButton,
-  rejected: NotAllowedButton,
-};
-
 export {
-  ActionButtonComponents,
   ManageButton,
   ParticipatingButton,
   ApprovalPendingButton,
