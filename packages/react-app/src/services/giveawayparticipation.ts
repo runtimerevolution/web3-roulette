@@ -93,7 +93,7 @@ const meetRequirements = async (
 
 const nextGiveaway = async (giveaways: Giveaway[]) => {
   const activeGiveaways = giveaways.filter(
-    (g) => g.startTime < new Date() || new Date() < g.endTime
+    (g) => g.startTime < new Date() && new Date() < g.endTime
   );
   if (activeGiveaways.length === 0) return;
 

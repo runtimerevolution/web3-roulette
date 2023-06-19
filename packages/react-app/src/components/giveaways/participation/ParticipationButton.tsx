@@ -7,7 +7,14 @@ import useUserInfo from '../../../hooks/useUserInfo';
 import { Giveaway, ParticipationState } from '../../../lib/types';
 import FrontendApiClient from '../../../services/backend';
 import ParticipationService from '../../../services/giveawayparticipation';
-import { ActionButtonComponents } from './ActionButtons';
+import {
+  ApprovalPendingButton,
+  CheckingButton,
+  ManageButton,
+  NotAllowedButton,
+  ParticipateButton,
+  ParticipatingButton,
+} from './ActionButtons';
 import {
   PendingLocationModal,
   RejectionModal,
@@ -83,59 +90,79 @@ const ParticipationButton = ({
   );
 
   const ActionButton: React.ReactNode = useMemo(() => {
-    let props = {};
-
-    if (participationState === ParticipationState.ALLOWED) {
-      props = {
-        giveaway: giveaway,
-        userInfo: userInfo,
-        successCallback: () => {
-          updateParticipationState(true);
-        },
-        errorCallback: () => {
-          setError(true);
-          updateParticipationState(true);
-        },
-      };
-    } else if (participationState === ParticipationState.MANAGE) {
-      props = { giveaway: giveaway };
+    if (!userInfo) return;
+    switch (participationState) {
+      case ParticipationState.MANAGE:
+        return <ManageButton giveaway={giveaway} />;
+      case ParticipationState.PARTICIPATING:
+        return <ParticipatingButton />;
+      case ParticipationState.PENDING:
+        return <ApprovalPendingButton />;
+      case ParticipationState.ALLOWED:
+        return (
+          <ParticipateButton
+            giveaway={giveaway}
+            userInfo={userInfo}
+            successCallback={() => {
+              updateParticipationState(true);
+            }}
+            errorCallback={() => {
+              setError(true);
+              updateParticipationState(true);
+            }}
+          />
+        );
+      case ParticipationState.NOT_ALLOWED:
+        return <NotAllowedButton />;
+      case ParticipationState.CHECKING:
+        return <CheckingButton />;
+      case ParticipationState.REJECTED:
+        return <NotAllowedButton />;
     }
-
-    return React.createElement(
-      ActionButtonComponents[participationState],
-      props
-    );
   }, [participationState, giveaway, userInfo, updateParticipationState]);
 
   useEffect(() => {
     updateParticipationState();
   }, [updateParticipationState]);
 
-  const closeError = () => {
-    setError(false);
-  };
-
   return (
     <div>
-      <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
-        <MuiAlert severity="error" onClose={closeError}>
+      <Snackbar
+        open={error}
+        autoHideDuration={6000}
+        onClose={() => {
+          setError(false);
+        }}
+      >
+        <MuiAlert
+          severity="error"
+          onClose={() => {
+            setError(false);
+          }}
+        >
           Oops, something went wrong! Please try again later.
         </MuiAlert>
       </Snackbar>
-      <PendingLocationModal
-        open={showPendingModal}
-        onClose={() => setShowPendingModal(false)}
-      />
-      <RejectionModal
-        giveaway={giveaway}
-        open={showRejectedModal}
-        onClose={() => setShowRejectedModal(false)}
-      />
-      <WinnerModal
-        giveaway={giveaway}
-        open={showWinnerModal}
-        onClose={() => setShowWinnerModal(false)}
-      />
+      {showPendingModal && (
+        <PendingLocationModal
+          open={true}
+          onClose={() => setShowPendingModal(false)}
+        />
+      )}
+      {showRejectedModal && (
+        <RejectionModal
+          giveaway={giveaway}
+          open={true}
+          onClose={() => setShowRejectedModal(false)}
+        />
+      )}
+      {showWinnerModal && (
+        <WinnerModal
+          giveaway={giveaway}
+          open={showWinnerModal}
+          onClose={() => setShowWinnerModal(false)}
+        />
+      )}
       {ActionButton}
     </div>
   );

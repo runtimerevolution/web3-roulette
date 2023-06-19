@@ -26,8 +26,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import uploadIcon from '../assets/CloudUpload.png';
 import useUserInfo from '../hooks/useUserInfo';
 import queryClient, {
-  GetGiveawayDetails,
-  GetLocations,
+  useGiveawayDetails,
+  useLocations,
 } from '../lib/queryClient';
 import {
   ConditionType,
@@ -76,8 +76,8 @@ const EditGiveaway = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfo();
   const { giveawayId } = useParams();
-  const { data } = GetGiveawayDetails(giveawayId);
-  const locations = GetLocations();
+  const { data } = useGiveawayDetails(giveawayId);
+  const locations = useLocations();
   const { handleSubmit, register, reset, control, formState, setError } =
     useForm<Giveaway>({
       defaultValues: useMemo(() => data, [data]),
