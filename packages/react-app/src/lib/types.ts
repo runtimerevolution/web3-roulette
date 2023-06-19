@@ -12,8 +12,7 @@ type Giveaway = {
   image: string;
   prize: string;
   manual?: boolean;
-  nrConfirmedParticipants?: number;
-  nrPendingParticipants?: number;
+  stats?: Stats;
 };
 
 type UserInfo = {
@@ -39,6 +38,7 @@ type Participant = {
 
 type Winner = {
   id: string;
+  name: string;
 };
 
 type Requirements = {
@@ -65,6 +65,11 @@ enum Unit {
   PYTHON = 'python',
 }
 
+type Stats = {
+  nrConfirmedParticipants: number;
+  nrPendingParticipants: number;
+};
+
 enum ParticipationState {
   CHECKING = 'checking',
   MANAGE = 'manage',
@@ -73,6 +78,7 @@ enum ParticipationState {
   ALLOWED = 'allowed',
   NOT_ALLOWED = 'notAllowed',
   REJECTED = 'rejected',
+  PENDING_WINNERS = 'pendingWinners',
 }
 
 type ConditionType = 'unit' | 'location';

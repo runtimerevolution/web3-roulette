@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import {
   Avatar,
   Box,
@@ -11,14 +12,16 @@ import {
   Typography,
 } from '@mui/material';
 import { googleLogout } from '@react-oauth/google';
-import useUserInfo from '../hooks/useUserInfo';
-import logo from './../assets/Logo.svg';
-import GoogleAuthClient from '../services/googleauthclient';
+
+import logo from '../assets/Logo.svg';
+import { UserInfo } from '../lib/types';
+import { UserContext } from '../routes/AuthRoute';
+import AuthClient from '../services/authclient';
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -31,7 +34,7 @@ function ResponsiveAppBar() {
   const logout = () => {
     handleCloseUserMenu();
     googleLogout();
-    GoogleAuthClient.removeUser();
+    AuthClient.cleanupTokens();
     navigate('/login');
   };
 
@@ -49,10 +52,7 @@ function ResponsiveAppBar() {
       <Box className="profile-menu-container">
         <Stack direction="row" alignItems="center" spacing="8px">
           <IconButton onClick={handleOpenUserMenu}>
-            <Avatar
-              src={userInfo?.picture ? userInfo?.picture : ''}
-              alt={userInfo?.name}
-            />
+            <Avatar src={userInfo.picture} alt={userInfo.name} />
           </IconButton>
           <Typography
             sx={{
@@ -61,7 +61,7 @@ function ResponsiveAppBar() {
               display: { xs: 'none', sm: 'initial' },
             }}
           >
-            {userInfo?.name}
+            {userInfo.name}
           </Typography>
         </Stack>
         <Menu

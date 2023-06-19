@@ -1,7 +1,9 @@
-import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway } from '../../lib/types';
-import Resources from '../../utils/Resources';
-import OverlayModal from '../OverlayModal';
+import { useContext } from 'react';
+
+import { Giveaway, UserInfo } from '../../../lib/types';
+import { UserContext } from '../../../routes/AuthRoute';
+import Resources from '../../../utils/Resources';
+import OverlayModal from '../../OverlayModal';
 
 type PendingLocationModalProps = {
   open: boolean;
@@ -49,7 +51,7 @@ const WinnerModal = ({
   onClose,
   darkBackground = true,
 }: GiveawayModalProps) => {
-  const userInfo = useUserInfo();
+  const userInfo = useContext(UserContext) as UserInfo;
 
   if (!open || !giveaway) {
     return null;
@@ -59,7 +61,7 @@ const WinnerModal = ({
     <div>
       <OverlayModal
         img={Resources.TrophyImg}
-        title={`Congratulations ${userInfo?.name} !`}
+        title={`Congratulations ${userInfo.name} !`}
         description={
           <p>
             {`For winning ${giveaway.title} giveaway contest, you won a 

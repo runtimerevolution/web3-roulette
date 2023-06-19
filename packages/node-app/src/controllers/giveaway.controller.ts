@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
+import { omit } from 'lodash';
 
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
@@ -9,8 +10,9 @@ import { getParticipant, validateParticipant } from '../utils/inside.util';
 import {
   fileToBase64,
   getDefinedFields,
+  giveawayStats,
+  giveawayWinners,
   handleError,
-  setParticipantsStats,
 } from '../utils/model.util';
 import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
 
@@ -18,10 +20,16 @@ export const listGiveaways = async (req: Request, res: Response) => {
   try {
     let giveaways = await Giveaway.find()
       .select(
-        'title description startTime endTime winners requirements prize image participants'
+        'title description startTime endTime winners requirements prize image participants manual'
       )
       .lean();
-    giveaways = giveaways.map((giveaway) => setParticipantsStats(giveaway));
+
+    giveaways = giveaways.map((giveaway) => ({
+      ...omit(giveaway, ['participants']),
+      winners: giveawayWinners(giveaway),
+      stats: giveawayStats(giveaway),
+    }));
+
     res.status(200).json(giveaways);
   } catch (error) {
     const { code, message } = handleError(error);
@@ -32,7 +40,11 @@ export const listGiveaways = async (req: Request, res: Response) => {
 export const getGiveaway = async (req: Request, res: Response) => {
   try {
     let giveaway = await Giveaway.findById(req.params.id).lean();
-    giveaway = setParticipantsStats(giveaway);
+    giveaway = {
+      ...omit(giveaway, ['participants']),
+      winners: giveawayWinners(giveaway),
+      stats: giveawayStats(giveaway),
+    };
     res.status(200).json(giveaway);
   } catch (error) {
     const { code, message } = handleError(error);

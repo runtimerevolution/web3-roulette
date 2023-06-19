@@ -1,27 +1,23 @@
 import { isAfter, isBefore } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import Confetti from 'react-confetti';
 
 import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
 import CreateNewButton from '../components/CreateNewButton';
-import AdminEmptyState from '../components/giveaways/AdminEmptyState';
 import GiveawayCard, {
   GiveawayCardSkeleton,
-} from '../components/giveaways/Card';
-import {
-  RejectionModal,
-  WinnerModal,
-} from '../components/giveaways/StatusModals';
-import UserEmptyState from '../components/giveaways/UserEmptyState';
-import useUserInfo from '../hooks/useUserInfo';
-import { GetGiveaways } from '../lib/queryClient';
-import { Giveaway, UserRole } from '../lib/types';
-import FrontendApiClient from '../services/backend';
-import ParticipationService from '../services/giveawayparticipation';
-import GiveawayCountdownCard from '../components/giveaways/CountdownCard';
+} from '../components/giveaways/cards/Card';
+import GiveawayCountdownCard from '../components/giveaways/cards/CountdownCard';
+import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
+import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
+import { useGiveaways } from '../lib/queryClient';
+import { Giveaway, UserInfo, UserRole } from '../lib/types';
+import { UserContext } from '../routes/AuthRoute';
+import ParticipationService from '../services/giveawayparticipation';
 
 const Tabs = {
   Active: 0,
@@ -29,12 +25,11 @@ const Tabs = {
 };
 
 const Manage = () => {
-  const userInfo = useUserInfo();
-  const { isLoading, data } = GetGiveaways();
+  const userInfo = useContext(UserContext) as UserInfo;
+  const { isLoading, data, refetch } = useGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
-  const [winnerGiveaways, setWinnerGiveaways] = useState<Giveaway[]>([]);
-  const [rejectedGiveaways, setRejectedGiveaways] = useState<Giveaway[]>([]);
+  const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
 
   const giveaways = useMemo(() => {
@@ -43,13 +38,19 @@ const Manage = () => {
       const giveawayStartDate = new Date(g.startTime);
       const giveawayEndDate = new Date(g.endTime);
 
-      if (userInfo?.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
+      if (userInfo.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
         return false;
       }
 
       if (g._id === countdownGiveaway?._id) {
         return false;
       }
+
+      if (
+        userInfo.role === UserRole.ADMIN &&
+        ParticipationService.hasPendingWinners(g)
+      )
+        return activeTab === Tabs.Active;
 
       return activeTab === Tabs.Active
         ? isAfter(giveawayEndDate, now)
@@ -62,101 +63,56 @@ const Manage = () => {
       setError(true);
     }
 
-    if (data && userInfo) {
-      ParticipationService.getWinnerNotifications(data, userInfo).then(
-        (giveaways) => {
-          setWinnerGiveaways(giveaways);
-          giveaways.forEach((g) => {
-            FrontendApiClient.setNotifiedParticipant(g._id, userInfo.email);
-          });
-        }
-      );
-
+    if (data) {
       if (userInfo.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
-        ParticipationService.nextGiveaway(data, userInfo).then(
-          (nextGiveaway) => {
-            if (nextGiveaway) {
-              const giveawayTime = nextGiveaway.endTime.getTime();
-              const timeLeft = splitTimeLeft(
-                giveawayTime - new Date().getTime()
-              );
-              setCountdownGiveaway(timeLeft[0] >= 100 ? null : nextGiveaway);
-            } else {
-              setCountdownGiveaway(null);
-            }
+        ParticipationService.nextGiveaway(data).then((nextGiveaway) => {
+          if (nextGiveaway) {
+            const giveawayTime = nextGiveaway.endTime.getTime();
+            const timeLeft = splitTimeLeft(giveawayTime - new Date().getTime());
+            setCountdownGiveaway(timeLeft[0] >= 100 ? null : nextGiveaway);
+          } else {
+            setCountdownGiveaway(null);
           }
-        );
+        });
       } else if (userInfo.role === UserRole.ADMIN) {
         setCountdownGiveaway(null);
       }
     }
   }, [data, isLoading]);
 
-  const promptError = () => {
-    setError(true);
+  const handleWinners = () => {
+    animateConfettis();
+    refetch().then(() => {
+      setActiveTab(Tabs.Archived);
+    });
+  };
+
+  const animateConfettis = () => {
+    setShowConfettis(true);
+    setTimeout(() => {
+      setShowConfettis(false);
+    }, 4000);
   };
 
   const closeError = () => {
     setError(false);
   };
 
-  const notifyRejection = async (giveaway: Giveaway) => {
-    if (!userInfo) return;
-    if (!rejectedGiveaways.find((g) => g._id === giveaway._id)) {
-      setRejectedGiveaways([...rejectedGiveaways, giveaway]);
-      await FrontendApiClient.setNotifiedParticipant(
-        giveaway._id,
-        userInfo.email
-      );
-    }
-  };
+  if (
+    !isLoading &&
+    userInfo.role === UserRole.USER &&
+    !data?.some((g) => g.startTime < new Date())
+  ) {
+    return <UserEmptyState />;
+  }
 
-  const popWinnerGiveaway = (giveaway: Giveaway) => {
-    setWinnerGiveaways(
-      winnerGiveaways.filter(
-        (winnerGiveaway) => winnerGiveaway._id !== giveaway._id
-      )
-    );
-  };
-
-  const popRejectionNotification = (giveaway: Giveaway) => {
-    setRejectedGiveaways(
-      rejectedGiveaways.filter(
-        (rejectedGiveaway) => rejectedGiveaway._id !== giveaway._id
-      )
-    );
-  };
-
-  if (data?.length === 0) {
-    return userInfo?.role === UserRole.ADMIN ? (
-      <AdminEmptyState />
-    ) : (
-      <UserEmptyState />
-    );
+  if (!isLoading && userInfo.role === UserRole.ADMIN && data?.length === 0) {
+    return <AdminEmptyState />;
   }
 
   return (
     <Container maxWidth={false}>
-      <div>
-        {rejectedGiveaways.map((g, i) => (
-          <RejectionModal
-            key={g._id}
-            giveaway={g}
-            open={true}
-            darkBackground={i === 0}
-            onClose={() => popRejectionNotification(g)}
-          />
-        ))}
-        {winnerGiveaways.map((g, i) => (
-          <WinnerModal
-            key={g._id}
-            giveaway={g}
-            open={true}
-            darkBackground={rejectedGiveaways.length === 0 && i === 0}
-            onClose={() => popWinnerGiveaway(g)}
-          />
-        ))}
-      </div>
+      {showConfettis && <Confetti />}
       <Snackbar open={error} autoHideDuration={6000} onClose={closeError}>
         <MuiAlert severity="error" onClose={closeError}>
           Oops, something went wrong! Please try again later.
@@ -167,7 +123,7 @@ const Manage = () => {
           <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
           </Typography>
-          {userInfo?.role === UserRole.ADMIN && <CreateNewButton />}
+          {userInfo.role === UserRole.ADMIN && <CreateNewButton />}
         </Box>
 
         <Button
@@ -250,10 +206,7 @@ const Manage = () => {
                 >
                   <GiveawayCard
                     giveaway={g}
-                    onParticipationError={promptError}
-                    onRejection={async () => {
-                      await notifyRejection(g);
-                    }}
+                    onWinnersGeneration={handleWinners}
                   />
                 </Grid>
               ))

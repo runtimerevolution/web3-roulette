@@ -50,3 +50,78 @@
 .pending-alert-button:hover {
   opacity: 0.9;
 }
+
+.aside-title {
+  font-size: 20px !important;
+  font-weight: bold !important;
+  color: '#282655' !important;
+}
+
+.aside-text {
+  font-size: 16px !important;
+  margin-top: 5px !important;
+}
+
+.winners-text {
+  font-size: 18px !important;
+  color: $dark-color !important;
+  max-width: 500px;
+}
+
+.qr-container {
+  width: 100%;
+  height: 288px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.qr-share-container {
+  width: 100%;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+
+  @include mobile {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+.share-giveaway-btn {
+  width: 290px;
+  height: 40px;
+  text-transform: none !important;
+  border-radius: 10px !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  margin: 10px !important;
+}
+
+.qr-share-icon {
+  width: 19px;
+}
+
+.winning-chance {
+  color: $dark-color;
+  font-size: 18px;
+  margin-left: 38px;
+}
+
+.participation-btn-container {
+  width: 100%;
+  align-items: end !important;
+
+  @include tablet {
+    margin-top: 30px;
+    margin-left: 80px;
+    align-items: start !important;
+  }
+
+  @include mobile {
+    margin-top: 30px;
+    margin-left: 0;
+    align-items: center !important;
+  }
+}

@@ -260,6 +260,7 @@ describe('GET /giveaways/:id/generate-winners', () => {
 describe('PUT giveaways/:id/participants/:participantId', () => {
   const participant = {
     id: 'user',
+    name: 'user name',
     state: ParticipantState.PENDING,
   };
 
