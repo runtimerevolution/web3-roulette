@@ -8,7 +8,7 @@ import { useParticipants } from '../../../lib/queryClient';
 import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
 import { UserContext } from '../../../routes/AuthRoute';
 import ParticipationService from '../../../services/giveawayparticipation';
-import Trophy from '../../assets/Trophy.png';
+import Trophy from '../../../assets/Trophy.png';
 import ParticipationButton from '../participation/ParticipationButton';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
