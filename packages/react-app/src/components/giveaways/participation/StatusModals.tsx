@@ -1,7 +1,7 @@
-import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway } from '../../lib/types';
-import Resources from '../../utils/Resources';
-import OverlayModal from '../OverlayModal';
+import useUserInfo from '../../../hooks/useUserInfo';
+import { Giveaway } from '../../../lib/types';
+import Resources from '../../../utils/Resources';
+import OverlayModal from '../../OverlayModal';
 
 type PendingLocationModalProps = {
   open: boolean;

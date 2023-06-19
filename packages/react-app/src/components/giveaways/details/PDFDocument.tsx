@@ -13,8 +13,8 @@ import {
 import CalendarIcon from '../../assets/CalendarIcon.png';
 import DownloadIcon from '../../assets/Download.png';
 import TrophyIcon from '../../assets/TrophyIcon.png';
-import { Giveaway } from '../../lib/types';
-import PDFStyles from '../../styles/PDFStyle';
+import { Giveaway } from '../../../lib/types';
+import PDFStyles from '../../../styles/PDFStyle';
 
 type GiveawayPDFDocumentProps = {
   giveaway: Giveaway;

@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Button, Stack } from '@mui/material';
 
-import Hourglass from '../../assets/Hourglass.png';
-import useTimer from '../../hooks/useTimer';
-import { Giveaway } from '../../lib/types';
+import Hourglass from '../../../assets/Hourglass.png';
+import useTimer from '../../../hooks/useTimer';
+import { Giveaway } from '../../../lib/types';
 
 const GiveawayCountdownBox = (giveaway: Giveaway) => {
   const navigate = useNavigate();

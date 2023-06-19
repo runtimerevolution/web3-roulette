@@ -4,7 +4,7 @@ import { Navigate, useLoaderData, useParams } from 'react-router-dom';
 import { Divider, Snackbar, Stack, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
-import ParticipantEntry from '../components/giveaways/ParticipantEntry';
+import ParticipantEntry from '../components/giveaways/participation/ParticipantEntry';
 import SubHeader from '../components/SubHeader';
 import useUserInfo from '../hooks/useUserInfo';
 import { Giveaway, Participant, UserRole } from '../lib/types';

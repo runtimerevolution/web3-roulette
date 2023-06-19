@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Stack, Typography } from '@mui/material';
 
-import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway, Participant, UserRole } from '../../lib/types';
-import { GiveawayContext } from '../../pages/details';
+import useUserInfo from '../../../hooks/useUserInfo';
+import { Giveaway, Participant, UserRole } from '../../../lib/types';
+import { GiveawayContext } from '../../../pages/details';
 
 type GiveawayMainContentProps = {
   participants: Participant[];

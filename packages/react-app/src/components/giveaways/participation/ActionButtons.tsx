@@ -6,8 +6,8 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 
-import { Giveaway, UserInfo } from '../../lib/types';
-import ParticipationService from '../../services/giveawayparticipation';
+import { Giveaway, UserInfo } from '../../../lib/types';
+import ParticipationService from '../../../services/giveawayparticipation';
 
 const ButtonBaseStyle = {
   width: '100%',

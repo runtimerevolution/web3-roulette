@@ -4,13 +4,13 @@ import QRCode from 'react-qr-code';
 import CheckIcon from '@mui/icons-material/Check';
 import { Button, Stack, Typography } from '@mui/material';
 
-import LinkIcon from '../../assets/Link.png';
-import useUserInfo from '../../hooks/useUserInfo';
-import { Giveaway, ParticipationState, UserRole } from '../../lib/types';
-import { GiveawayContext } from '../../pages/details';
-import Constants from '../../utils/Constants';
-import SvgHelper from '../../utils/SvgHelper';
-import ParticipationButton from './ParticipationButton';
+import LinkIcon from '../../../assets/Link.png';
+import useUserInfo from '../../../hooks/useUserInfo';
+import { Giveaway, ParticipationState, UserRole } from '../../../lib/types';
+import { GiveawayContext } from '../../../pages/details';
+import Constants from '../../../utils/Constants';
+import SvgHelper from '../../../utils/SvgHelper';
+import ParticipationButton from '../participation/ParticipationButton';
 import { DownloadButton } from './PDFDocument';
 
 type GiveawayAsideContentProps = {
