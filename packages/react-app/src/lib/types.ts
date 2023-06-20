@@ -17,16 +17,10 @@ type Giveaway = {
 
 type UserInfo = {
   email: string;
-  familyName: string;
-  givenName: string;
-  hd: string;
-  id: string;
-  locale: string;
   name: string;
-  verifiedEmail: boolean;
+  role: UserRole;
+  unit: Unit;
   picture?: string;
-  role?: UserRole;
-  unit?: Unit;
 };
 
 type Participant = {

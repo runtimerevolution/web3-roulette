@@ -29,7 +29,16 @@ const LoginCard = ({ handleAuthError }: LoginCardProps) => {
   const handleSuccess = async (
     res: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'>
   ) => {
-    AuthClient.saveTokens(res.token_type, res.access_token);
+    const tokenType = res.token_type;
+    const accessToken = res.access_token;
+    const apiToken = await AuthClient.login(tokenType, accessToken);
+
+    if (!apiToken) {
+      handleAuthError();
+      return;
+    }
+
+    AuthClient.saveTokens(tokenType, accessToken, apiToken);
     navigate('/');
   };
 
