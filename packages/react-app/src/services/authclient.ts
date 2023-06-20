@@ -9,7 +9,7 @@ const APIClient: AxiosInstance = axios.create({
 
 const login = async (tokenType: string, accessToken: string) => {
   const res = await APIClient.post('/login', { tokenType, accessToken });
-  if (res.status === 200) {
+  if (res.status === 201) {
     return res.data.token;
   }
 };

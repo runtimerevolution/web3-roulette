@@ -29,7 +29,6 @@ jest.mock('../utils/web3.util', () => ({
 }));
 
 jest.mock('../middlewares/auth.middleware', () => ({
-  __esModule: true,
   verifyToken: (req, res, next) => {
     return next();
   },

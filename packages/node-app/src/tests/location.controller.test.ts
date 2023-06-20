@@ -4,7 +4,6 @@ import { app } from '../app';
 import { Location } from '../models/location.model';
 
 jest.mock('../middlewares/auth.middleware', () => ({
-  __esModule: true,
   verifyToken: (req, res, next) => {
     return next();
   },

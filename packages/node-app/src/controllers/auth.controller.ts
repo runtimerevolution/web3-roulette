@@ -41,7 +41,7 @@ const login = async (req: Request, res: Response) => {
       }
     );
 
-    res.status(200).json({ token });
+    res.status(201).json({ token });
   } catch (error) {
     const { code, message } = handleError(error);
     res.status(code).json({ error: message });
