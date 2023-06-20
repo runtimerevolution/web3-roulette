@@ -7,6 +7,13 @@ import { authenticated, notAuthenticated } from './__utils__/helper.utils';
 
 jest.mock('../middlewares/auth.middleware');
 
+jest.mock('../middlewares/auth.middleware', () => ({
+  __esModule: true,
+  verifyToken: (req, res, next) => {
+    return next();
+  },
+}));
+
 beforeAll(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
 });

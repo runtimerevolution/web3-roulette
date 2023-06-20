@@ -11,6 +11,7 @@ import {
   updateGiveaway,
   updateParticipant,
 } from '../controllers/giveaway.controller';
+import { verifyToken } from '../middlewares/auth.middleware';
 
 const storage = diskStorage({
   destination: (req, file, cb) => {
@@ -24,11 +25,11 @@ const upload = multer({ storage });
 
 export const router = express.Router();
 
-router.get('/', listGiveaways);
-router.post('/', upload.single('image'), createGiveaway);
-router.get('/:id', getGiveaway);
-router.put('/:id', upload.single('image'), updateGiveaway);
-router.put('/:id/participants', addParticipant);
-router.put('/:id/participants/:participantId', updateParticipant);
-router.get('/:id/participants', getParticipants);
-router.get('/:id/generate-winners', generateWinners);
+router.get('/', verifyToken, listGiveaways);
+router.post('/', verifyToken, upload.single('image'), createGiveaway);
+router.get('/:id', verifyToken, getGiveaway);
+router.put('/:id', verifyToken, upload.single('image'), updateGiveaway);
+router.put('/:id/participants', verifyToken, addParticipant);
+router.put('/:id/participants/:participantId', verifyToken, updateParticipant);
+router.get('/:id/participants', verifyToken, getParticipants);
+router.get('/:id/generate-winners', verifyToken, generateWinners);

@@ -31,6 +31,13 @@ jest.mock('../utils/web3.util', () => ({
   objectIdToBytes24: () => 'BYTES24',
 }));
 
+jest.mock('../middlewares/auth.middleware', () => ({
+  __esModule: true,
+  verifyToken: (req, res, next) => {
+    return next();
+  },
+}));
+
 beforeAll(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
 });
