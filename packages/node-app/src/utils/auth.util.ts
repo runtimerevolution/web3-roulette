@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { Unit, UserRole } from '../models/user.model';
+import { Unit } from '../models/user.model';
 
 const googleAuthInstance = axios.create({
   baseURL: process.env.GOOGLE_OAUTH_URI,
@@ -20,9 +20,6 @@ export const getUserInfo = async (tokenType, accessToken) => {
 
       // todo: connect to inside
       userInfo.unit = Unit.NODE;
-
-      // todo: manage admin accounts
-      userInfo.role = UserRole.USER;
 
       return userInfo;
     }

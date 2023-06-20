@@ -20,7 +20,7 @@ const login = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid tokens' });
     }
 
-    userInfo = _.pick(userInfo, ['email', 'name', 'picture', 'role', 'unit']);
+    userInfo = _.pick(userInfo, ['email', 'name', 'picture', 'unit']);
     const user = await User.findOneAndUpdate(
       { email: userInfo.email },
       userInfo,
