@@ -3,6 +3,13 @@ import mongoose from 'mongoose';
 import { app } from '../app';
 import { Location } from '../models/location.model';
 
+jest.mock('../middlewares/auth.middleware', () => ({
+  __esModule: true,
+  verifyToken: (req, res, next) => {
+    return next();
+  },
+}));
+
 beforeAll(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
 });

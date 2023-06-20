@@ -11,6 +11,7 @@ import { encrypt, objectIdToBytes24 } from '../utils/web3.util';
 const createGiveawayMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const addParticipantMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const generateWinnersMock = jest.fn().mockReturnValue({ send: () => ({}) });
+
 const getWinnersMock = jest
   .fn()
   .mockReturnValue({ call: () => ['WINNER_ADDRESS'] });
@@ -25,6 +26,13 @@ jest.mock('../utils/web3.util', () => ({
   decrypt: () => 'DECRYPTED_DATA',
   encrypt: () => 'ENCRYPTED_DATA',
   objectIdToBytes24: () => 'BYTES24',
+}));
+
+jest.mock('../middlewares/auth.middleware', () => ({
+  __esModule: true,
+  verifyToken: (req, res, next) => {
+    return next();
+  },
 }));
 
 beforeAll(async () => {
