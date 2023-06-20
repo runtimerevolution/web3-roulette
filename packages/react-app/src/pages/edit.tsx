@@ -137,7 +137,7 @@ const EditGiveaway = () => {
       formData.append('startTime', data?.startTime?.toISOString() || '');
       formData.append('endTime', data?.endTime?.toISOString() || '');
       formData.append('numberOfWinners', `${data?.numberOfWinners}`);
-      formData.append('isManual', `${data?.manual}`);
+      formData.append('manual', `${data?.manual ? data?.manual : false}`);
     }
     formData.append('prize', `${data?.prize}`);
     formData.append('description', data?.description || '');
@@ -552,11 +552,11 @@ const EditGiveaway = () => {
                   <Controller
                     name={'manual'}
                     control={control}
-                    defaultValue={data?.manual}
+                    defaultValue={data?.manual ? data?.manual : false}
                     render={({ field: { ref, ...field }, fieldState }) => (
                       <Checkbox
                         {...field}
-                        defaultChecked={field.value}
+                        checked={field.value}
                         inputRef={ref}
                         disabled={!!giveawayId}
                       />
