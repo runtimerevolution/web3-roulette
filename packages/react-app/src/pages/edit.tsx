@@ -115,7 +115,10 @@ const EditGiveaway = () => {
     },
     onSuccess: () => {
       navigate(-1);
-      queryClient.invalidateQueries('active');
+      queryClient.invalidateQueries('giveaways');
+      if (giveawayId) {
+        queryClient.invalidateQueries(['details', giveawayId]);
+      }
     },
   });
 

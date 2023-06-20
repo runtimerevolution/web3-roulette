@@ -6,6 +6,7 @@ import MuiAlert from '@mui/material/Alert';
 
 import ParticipantEntry from '../components/giveaways/participation/ParticipantEntry';
 import SubHeader from '../components/SubHeader';
+import queryClient from '../lib/queryClient';
 import { Giveaway, Participant, UserInfo, UserRole } from '../lib/types';
 import { UserContext } from '../routes/AuthRoute';
 import FrontendApiClient from '../services/backend';
@@ -45,10 +46,10 @@ const ParticipantsManagerPage = () => {
     return participants.filter((p) => p.state === 'pending');
   }, [participants]);
 
-  const updateParticipant = (participantId: string, newState: string) => {
+  const updateParticipant = async (participantId: string, newState: string) => {
     if (!giveawayId) return;
 
-    FrontendApiClient.manageParticipant(
+    await FrontendApiClient.manageParticipant(
       giveawayId,
       participantId,
       newState,
@@ -59,6 +60,10 @@ const ParticipantsManagerPage = () => {
         setError(true);
       }
     );
+
+    queryClient.invalidateQueries(['giveaways']);
+    queryClient.invalidateQueries(['details', giveawayId]);
+    queryClient.invalidateQueries(['participants', giveawayId]);
   };
 
   const closeError = () => {
