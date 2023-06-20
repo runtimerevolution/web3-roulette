@@ -6,7 +6,7 @@ import { User } from '../models/user.model';
 import { getUserInfo } from '../utils/auth.util';
 import { handleError } from '../utils/model.util';
 
-export const login = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
   try {
     const { tokenType, accessToken } = req.body;
     if (!tokenType || !accessToken) {
@@ -37,7 +37,7 @@ export const login = async (req: Request, res: Response) => {
       },
       process.env.ENCRYPTION_KEY,
       {
-        expiresIn: '2h',
+        expiresIn: '24h',
       }
     );
 
@@ -47,3 +47,10 @@ export const login = async (req: Request, res: Response) => {
     res.status(code).json({ error: message });
   }
 };
+
+const me = (req: Request, res: Response) => {
+  const user = req.user;
+  res.status(200).json(user);
+};
+
+export { login, me };
