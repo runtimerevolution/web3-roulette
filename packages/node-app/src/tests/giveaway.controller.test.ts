@@ -245,7 +245,7 @@ describe('GET /giveaways/:id/generate-winners', () => {
       image: 'test-image-base64',
     });
 
-    await new Promise((r) => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 1000));
 
     const response = await request(app)
       .get(`/giveaways/${giveaway._id}/generate-winners`)
