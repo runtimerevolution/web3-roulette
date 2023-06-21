@@ -231,6 +231,12 @@ export const updateParticipant = async (req: Request, res: Response) => {
     const giveaway = await Giveaway.findById(req.params.id);
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
+    // not active giveaway
+    const now = new Date();
+    if (giveaway.startTime > now || now > giveaway.endTime) {
+      return res.status(400).json({ error: 'giveaway not active' });
+    }
+
     // valid participant
     const participant = giveaway.participants.find(
       (participant) => participant.id === req.params.participantId
