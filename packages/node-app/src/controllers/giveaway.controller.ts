@@ -6,7 +6,7 @@ import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
 import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
-import { getParticipant, validateParticipant } from '../utils/inside.util';
+import { getParticipant, validateParticipant } from '../utils/validations.util';
 import {
   fileToBase64,
   getDefinedFields,
