@@ -11,6 +11,9 @@ jest.mock('../middlewares/auth.middleware', () => ({
   verifyToken: (req, res, next) => {
     return next();
   },
+  verifyAdmin: (req, res, next) => {
+    return next();
+  },
 }));
 
 beforeAll(async () => {

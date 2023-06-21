@@ -5,6 +5,7 @@ import request from 'supertest';
 import { app } from '../app';
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
+import { User, UserRole } from '../models/user.model';
 import { isoStringToSecondsTimestamp } from '../utils/date.utils';
 import { encrypt, objectIdToBytes24 } from '../utils/web3.util';
 import { authenticated, notAuthenticated } from './__utils__/helper.utils';
@@ -32,7 +33,17 @@ jest.mock('../utils/web3.util', () => ({
 }));
 
 jest.mock('../middlewares/auth.middleware', () => ({
-  verifyToken: (req, res, next) => {
+  verifyToken: async (req, res, next) => {
+    const adminUser = await User.create({
+      email: 'example@domain.com',
+      name: 'name',
+      role: UserRole.ADMIN,
+    });
+
+    req.user = adminUser;
+    return next();
+  },
+  verifyAdmin: async (req, res, next) => {
     return next();
   },
 }));
@@ -48,6 +59,7 @@ afterAll(async () => {
 
 afterEach(async () => {
   await Giveaway.deleteMany({});
+  await User.deleteMany({});
   jest.clearAllMocks();
 });
 
@@ -365,7 +377,6 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
   const giveawayData = {
     title: 'Giveaway',
     description: 'Description for giveaway',
-    startTime: Date.now() + 10000,
     endTime: Date.now() + 12000,
     numberOfWinners: 1,
     prize: 'Test prize',
