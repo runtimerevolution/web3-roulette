@@ -22,13 +22,13 @@ export interface User extends mongoose.Document {
 const userSchema = new Schema<User>({
   email: { type: String, required: true },
   name: { type: String, required: true },
-  unit: { type: String, enum: Object.values(Unit), required: true },
   role: {
     type: String,
     enum: Object.values(UserRole),
     required: true,
     default: UserRole.USER,
   },
+  unit: { type: String, enum: Object.values(Unit), required: false },
   picture: { type: String, required: false, default: '' },
 });
 
