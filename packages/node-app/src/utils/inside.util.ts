@@ -1,15 +1,24 @@
 import { getDistance } from 'geolib';
 
 import { ParticipantState } from '../models/giveaway.model';
-import { Unit } from '../models/user.model';
+import { User } from '../models/user.model';
 
-// TODO: connect to inside database and get participant data
-export const getParticipant = (data) => {
+export const getParticipant = async (data) => {
+  const email = data.id;
+
+  let unit;
+  if (email) {
+    const user = await User.findOne({ email: email });
+    if (user) {
+      unit = user.unit;
+    }
+  }
+
   return {
     id: data.id,
     name: data.name,
     location: data.location,
-    unit: Unit.NODE,
+    unit: unit,
   };
 };
 
