@@ -17,7 +17,7 @@ const login = async (req: Request, res: Response) => {
 
     let userInfo = await getUserInfo(tokenType, accessToken);
     if (!userInfo) {
-      return res.status(400).json({ error: 'Invalid tokens' });
+      return res.status(400).json({ error: 'Invalid user info' });
     }
 
     userInfo = pick(userInfo, ['email', 'name', 'picture', 'unit']);
