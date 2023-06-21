@@ -6,11 +6,11 @@ import {
   listLocations,
   updateLocation,
 } from '../controllers/location.controller';
-import { verifyToken } from '../middlewares/auth.middleware';
+import { verifyAdmin, verifyToken } from '../middlewares/auth.middleware';
 
 export const router = express.Router();
 
 router.get('/', verifyToken, listLocations);
-router.post('/', verifyToken, createLocation);
-router.put('/:id', verifyToken, updateLocation);
-router.delete('/:id', verifyToken, deleteLocation);
+router.post('/', verifyToken, verifyAdmin, createLocation);
+router.put('/:id', verifyToken, verifyAdmin, updateLocation);
+router.delete('/:id', verifyToken, verifyAdmin, deleteLocation);

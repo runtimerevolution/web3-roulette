@@ -15,6 +15,7 @@ import {
   handleError,
 } from '../utils/model.util';
 import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
+import { UserRole } from '../models/user.model';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -146,6 +147,14 @@ export const updateGiveaway = async (req: Request, res: Response) => {
 
 export const addParticipant = async (req: Request, res: Response) => {
   try {
+    // validate user
+    const participantEmail = req.body.id;
+    const user = req.user;
+
+    if (user.role !== UserRole.ADMIN && participantEmail !== user.email) {
+      return res.status(400).json({ error: 'Invalid participant' });
+    }
+
     // check if giveaway exists
     const giveaway = await Giveaway.findById(req.params.id).populate(
       'requirements.location'
@@ -153,7 +162,7 @@ export const addParticipant = async (req: Request, res: Response) => {
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
     // get participant state based on requirements and save to db
-    const participant = getParticipant(req.body);
+    const participant = await getParticipant(req.body);
 
     const participantExists =
       (await Giveaway.findOne({
