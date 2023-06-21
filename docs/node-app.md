@@ -18,6 +18,9 @@ First let's setup our development environment by running `yarn setup-node-app`. 
 - `OWNER_ACCOUNT_ADDRESS`: The address of the contract owner account on the blockchain. This value is required for the application to function and will be the first address in your Ganache instance (for more instructions on how to do that refer to the [Smart Contract Documentation](./truffle-app.md)).
 - `ENCRYPTION_KEY`: A 256 bits string (32 characters) used to encrypt any user related data before sending it to the blockchain.
 - `PRIVATE_KEY`: The private key of the account with owner access to the smart contract, used to send transactions to the blockchain without need for manual approval.
+- `TA_ORIGIN`: The URL for the Team Allocator API.
+- `TA_USER`: User to access the Team Allocator API.
+- `TA_SECRET`: Secret to access the Team Allocator API.
 
 ### Install MongoDB locally
 
