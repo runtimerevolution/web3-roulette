@@ -17,7 +17,7 @@ afterEach(async () => {
 });
 
 describe('User model', () => {
-  it('create valid user', async () => {
+  it('should create valid user', async () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',
@@ -29,11 +29,11 @@ describe('User model', () => {
     expect(user.email).toEqual(userData.email);
     expect(user.name).toEqual(userData.name);
     expect(user.unit).toEqual(Unit.NODE);
-    expect(user.picture).toEqual('');
+    expect(user.picture).toBeUndefined();
     expect(user.role).toEqual(UserRole.USER);
   });
 
-  it('create user invalid unit', async () => {
+  it('should not create user invalid unit', async () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',
@@ -48,7 +48,7 @@ describe('User model', () => {
     }
   });
 
-  it('create user invalid role', async () => {
+  it('should not create user invalid role', async () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',

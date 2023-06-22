@@ -1,4 +1,3 @@
-import fs from 'fs';
 import mongoose from 'mongoose';
 import request from 'supertest';
 
@@ -45,7 +44,7 @@ afterEach(async () => {
 });
 
 describe('POST /login', () => {
-  it('login new user', async () => {
+  it('should login new user', async () => {
     const payload = {
       tokenType: 'bearer',
       accessToken: 'ngreobgrerteqkg',
@@ -62,7 +61,7 @@ describe('POST /login', () => {
     expect(user.role).toEqual(UserRole.USER);
   });
 
-  it('login with empty tokens', async () => {
+  it('should not login with empty tokens', async () => {
     const payload = {};
 
     await request(app).post('/login').send(payload).expect(400);
@@ -71,7 +70,7 @@ describe('POST /login', () => {
     expect(user).toBeNull();
   });
 
-  it('login undefined user info', async () => {
+  it('should not login undefined user info', async () => {
     const payload = {
       tokenType: 'bearer',
       accessToken: 'ngreobgrerteqkg',
@@ -86,7 +85,7 @@ describe('POST /login', () => {
 });
 
 describe('GET /me', () => {
-  it('get user information', async () => {
+  it('should get user information', async () => {
     const payload = {
       tokenType: 'bearer',
       accessToken: 'ngreobgrerteqkg',
@@ -107,98 +106,16 @@ describe('GET /me', () => {
     expect(resUserData.body.role).toEqual(UserRole.USER);
   });
 
-  it('missing token', async () => {
+  it('should not get user information missing token', async () => {
     const res = await request(app).get('/me').expect(403);
     expect(res.body.error).toEqual('Access token is required to access');
   });
 
-  it('invalid token', async () => {
+  it('should not get user information invalid token', async () => {
     const res = await request(app)
       .get('/me')
       .set('Authorization', `Bearer invalid`)
       .expect(401);
     expect(res.body.error).toEqual('Invalid token');
-  });
-});
-
-describe('Protected /locations', () => {
-  const locationData = {
-    name: 'Test Location',
-    latitude: 40.712776,
-    longitude: -74.005974,
-    radius: 1000,
-  };
-
-  it('protected create new location', async () => {
-    const res = await request(app)
-      .post('/locations')
-      .send(locationData)
-      .expect(403);
-
-    const location = await Location.findOne({ name: locationData.name });
-    expect(location).toBeNull();
-    expect(res.body.error).toEqual('Access token is required to access');
-  });
-
-  it('protected delete location', async () => {
-    const location = await Location.create(locationData);
-
-    const res = await request(app)
-      .delete(`/locations/${location._id}`)
-      .expect(403);
-
-    const updatedLocation = await Location.findById(location._id);
-    expect(updatedLocation).not.toBeNull();
-    expect(res.body.error).toEqual('Access token is required to access');
-  });
-});
-
-describe('Protected /giveaways', () => {
-  const giveawayData = {
-    title: 'Test Giveaway',
-    description: 'This is a test giveaway',
-    numberOfWinners: 1,
-    prize: 'Test prize',
-  };
-
-  it('protected create new giveaway', async () => {
-    await request(app)
-      .post('/giveaways')
-      .set('content-type', 'multipart/form-data')
-      .field('title', giveawayData.title)
-      .field('description', giveawayData.description)
-      .field('startTime', new Date(Date.now() + 1000).toISOString())
-      .field('endTime', new Date(Date.now() + 1500).toISOString())
-      .field('numberOfWinners', giveawayData.numberOfWinners)
-      .field('prize', giveawayData.prize)
-      .attach(
-        'image',
-        fs.readFileSync(`${__dirname}/test-image.png`),
-        'tests/test-image.png'
-      )
-      .expect(403);
-
-    const giveaway = await Giveaway.findOne({ title: giveawayData.title });
-    expect(giveaway).toBeNull();
-    expect(giveawaysContract.methods.createGiveaway).not.toHaveBeenCalled();
-  });
-
-  it('protected add new participant', async () => {
-    const giveaway = await Giveaway.create({
-      ...giveawayData,
-      startTime: new Date(Date.now() + 1000).toISOString(),
-      endTime: new Date(Date.now() + 1500).toISOString(),
-      image: 'test-image',
-    });
-    const payload = { id: 'participant@example.com', name: 'participant' };
-
-    await request(app)
-      .put(`/giveaways/${giveaway._id}/participants`)
-      .send(payload)
-      .expect(403);
-
-    const updatedGiveaway = await Giveaway.findById(giveaway._id);
-    expect(updatedGiveaway.participants.length).toEqual(0);
-    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
   });
 });

@@ -4,6 +4,7 @@ import request from 'supertest';
 
 import { app } from '../app';
 import { giveawaysContract } from '../contracts';
+import { verifyToken } from '../middlewares/auth.middleware';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { isoStringToSecondsTimestamp } from '../utils/date.utils';
 import { encrypt, objectIdToBytes24 } from '../utils/web3.util';
@@ -29,9 +30,7 @@ jest.mock('../utils/web3.util', () => ({
 }));
 
 jest.mock('../middlewares/auth.middleware', () => ({
-  verifyToken: (req, res, next) => {
-    return next();
-  },
+  verifyToken: jest.fn(),
 }));
 
 beforeAll(async () => {
@@ -57,6 +56,12 @@ describe('GET /', () => {
 });
 
 describe('GET /giveaways', () => {
+  beforeEach(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should return an empty array if no giveaways exist', async () => {
     const response = await request(app).get('/giveaways');
     expect(response.status).toBe(200);
@@ -97,6 +102,12 @@ describe('GET /giveaways', () => {
 });
 
 describe('GET /giveaways/:id', () => {
+  beforeEach(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should return error when the id does not exist', async () => {
     const response = await request(app).get('/giveaways/invalid-id');
     expect(response.status).toBe(500);
@@ -124,6 +135,12 @@ describe('GET /giveaways/:id', () => {
 });
 
 describe('POST /giveaways', () => {
+  beforeEach(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should create a new giveaway and return it in the response', async () => {
     const newGiveaway = {
       title: 'Test Giveaway',
@@ -173,6 +190,12 @@ describe('POST /giveaways', () => {
 });
 
 describe('PUT /giveaways/:id', () => {
+  beforeEach(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should return error when the id does not exist', async () => {
     const response = await request(app).put('/giveaways/invalid-id');
     expect(response.status).toBe(500);
@@ -210,6 +233,12 @@ describe('PUT /giveaways/:id', () => {
 });
 
 describe('POST /giveaways/:id/participants', () => {
+  beforeEach(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should add a new participant', async () => {
     const giveaway = await Giveaway.create({
       title: 'Giveaway',
@@ -234,6 +263,12 @@ describe('POST /giveaways/:id/participants', () => {
 });
 
 describe('GET /giveaways/:id/generate-winners', () => {
+  beforeEach(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should generate and return winners', async () => {
     const giveaway = await Giveaway.create({
       title: 'Giveaway',
@@ -281,6 +316,12 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
     image: 'test-image-base64',
     participants: [participant],
   };
+
+  beforeEach(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
 
   it('should fail if invalid participant', async () => {
     const giveaway = await Giveaway.create(giveawayData);
@@ -347,6 +388,62 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
     expect(updatedGiveaway.participants[0].state).toEqual(
       ParticipantState.REJECTED
     );
+    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+  });
+});
+
+describe('Protected /giveaways', () => {
+  const giveawayData = {
+    title: 'Test Giveaway',
+    description: 'This is a test giveaway',
+    numberOfWinners: 1,
+    prize: 'Test prize',
+  };
+
+  beforeEach(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res) => {
+      return res.status(401).json({ error: 'Invalid token' });
+    });
+  });
+
+  it('should not create new giveaway', async () => {
+    await request(app)
+      .post('/giveaways')
+      .set('content-type', 'multipart/form-data')
+      .field('title', giveawayData.title)
+      .field('description', giveawayData.description)
+      .field('startTime', new Date(Date.now() + 1000).toISOString())
+      .field('endTime', new Date(Date.now() + 1500).toISOString())
+      .field('numberOfWinners', giveawayData.numberOfWinners)
+      .field('prize', giveawayData.prize)
+      .attach(
+        'image',
+        fs.readFileSync(`${__dirname}/test-image.png`),
+        'tests/test-image.png'
+      )
+      .expect(401);
+
+    const giveaway = await Giveaway.findOne({ title: giveawayData.title });
+    expect(giveaway).toBeNull();
+    expect(giveawaysContract.methods.createGiveaway).not.toHaveBeenCalled();
+  });
+
+  it('should not add new participant', async () => {
+    const giveaway = await Giveaway.create({
+      ...giveawayData,
+      startTime: new Date(Date.now() + 1000).toISOString(),
+      endTime: new Date(Date.now() + 1500).toISOString(),
+      image: 'test-image',
+    });
+    const payload = { id: 'participant@example.com', name: 'participant' };
+
+    await request(app)
+      .put(`/giveaways/${giveaway._id}/participants`)
+      .send(payload)
+      .expect(401);
+
+    const updatedGiveaway = await Giveaway.findById(giveaway._id);
+    expect(updatedGiveaway.participants.length).toEqual(0);
     expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
   });
 });

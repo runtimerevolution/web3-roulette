@@ -2,11 +2,10 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../app';
 import { Location } from '../models/location.model';
+import { verifyToken } from '../middlewares/auth.middleware';
 
 jest.mock('../middlewares/auth.middleware', () => ({
-  verifyToken: (req, res, next) => {
-    return next();
-  },
+  verifyToken: jest.fn(),
 }));
 
 beforeAll(async () => {
@@ -23,6 +22,12 @@ afterEach(async () => {
 });
 
 describe('POST /locations', () => {
+  beforeAll(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should create a new location', async () => {
     const newLocation = {
       name: 'Test Location',
@@ -44,6 +49,12 @@ describe('POST /locations', () => {
 });
 
 describe('POST /locations/:id', () => {
+  beforeAll(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should update an existing location', async () => {
     const location = await Location.create({
       name: 'Location',
@@ -71,6 +82,12 @@ describe('POST /locations/:id', () => {
 });
 
 describe('DELETE /locations/:id', () => {
+  beforeAll(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res, next) => {
+      next();
+    });
+  });
+
   it('should delete an existing location', async () => {
     const location = await Location.create({
       name: 'Location',
@@ -107,5 +124,43 @@ describe('GET /locations', () => {
     expect(response.body).toHaveLength(2);
     expect(response.body[0].name).toEqual(location1.name);
     expect(response.body[1].name).toEqual(location2.name);
+  });
+});
+
+describe('Protected /locations', () => {
+  const locationData = {
+    name: 'Test Location',
+    latitude: 40.712776,
+    longitude: -74.005974,
+    radius: 1000,
+  };
+
+  beforeAll(() => {
+    (verifyToken as jest.Mock).mockImplementation((req, res) => {
+      return res.status(401).json({ error: 'Invalid token' });
+    });
+  });
+
+  it('should not create new location', async () => {
+    const res = await request(app)
+      .post('/locations')
+      .send(locationData)
+      .expect(401);
+
+    const location = await Location.findOne({ name: locationData.name });
+    expect(location).toBeNull();
+    expect(res.body.error).toEqual('Invalid token');
+  });
+
+  it('should not delete location', async () => {
+    const location = await Location.create(locationData);
+
+    const res = await request(app)
+      .delete(`/locations/${location._id}`)
+      .expect(401);
+
+    const updatedLocation = await Location.findById(location._id);
+    expect(updatedLocation).not.toBeNull();
+    expect(res.body.error).toEqual('Invalid token');
   });
 });
