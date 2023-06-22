@@ -29,7 +29,7 @@ const userSchema = new Schema<User>({
     default: UserRole.USER,
   },
   unit: { type: String, enum: Object.values(Unit), required: false },
-  picture: { type: String, required: false, default: '' },
+  picture: { type: String, required: false },
 });
 
 export const User = mongoose.model<User>('User', userSchema);
