@@ -10,9 +10,9 @@ import {
   View,
 } from '@react-pdf/renderer';
 
-import CalendarIcon from '../../assets/CalendarIcon.png';
-import DownloadIcon from '../../assets/Download.png';
-import TrophyIcon from '../../assets/TrophyIcon.png';
+import CalendarIcon from '../../../assets/CalendarIcon.png';
+import DownloadIcon from '../../../assets/Download.png';
+import TrophyIcon from '../../../assets/TrophyIcon.png';
 import { Giveaway } from '../../../lib/types';
 import PDFStyles from '../../../styles/PDFStyle';
 

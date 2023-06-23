@@ -1,0 +1,106 @@
+.form-container {
+  padding: 1rem 3.5rem;
+
+  @include tablet {
+    padding: 1rem 0rem;
+  }
+}
+
+.text-input {
+  .MuiInputBase-root {
+    background-color: white;
+    border-radius: 8px;
+
+    fieldset {
+      border-color: #e1e6ef;
+    }
+  }
+}
+
+.datepicker {
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+
+  .MuiInputBase-root {
+    fieldset {
+      border-color: #e1e6ef;
+    }
+  }
+}
+
+.condition-select {
+  margin-right: 1rem;
+
+  .MuiInputBase-input {
+    background-color: white;
+    border-radius: 8px;
+    min-width: 100px;
+  }
+}
+
+.field-label {
+  color: black;
+  font-weight: bold !important;
+}
+
+.error-description {
+  color: #ff0000;
+}
+
+.conditions-title {
+  font-size: 20px !important;
+  font-weight: bold !important;
+}
+
+.add-condition-btn {
+  text-transform: none !important;
+  font-size: 16px !important;
+  color: #282655 !important;
+  text-decoration-line: underline !important;
+  margin-top: 16px !important;
+}
+
+.delete-icon {
+  color: #cc6161;
+}
+
+.back {
+  font-size: 18px !important;
+  text-transform: none !important;
+  color: black !important;
+  margin-bottom: 23px !important;
+}
+
+.new-giveaway-title {
+  font-size: 22px !important;
+  font-weight: bold !important;
+  margin-bottom: 25px !important;
+}
+
+.cancel-save-container {
+  display: flex;
+  margin-top: 2rem;
+  justify-content: end;
+
+  .cancel-btn {
+    width: 99px;
+    height: 44px;
+    border-color: $primary-color !important;
+    border-radius: 10px !important;
+    border-width: 3px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    text-transform: none !important;
+  }
+
+  .save-btn {
+    width: 85px;
+    height: 44px;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    text-transform: none !important;
+    margin-left: 15px !important;
+  }
+}

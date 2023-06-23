@@ -5,7 +5,7 @@ import { useMutation } from 'react-query';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import {
   Box,
   Button,
@@ -20,7 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import uploadIcon from '../assets/CloudUpload.png';
@@ -38,40 +38,6 @@ import {
 } from '../lib/types';
 import { UserContext } from '../routes/AuthRoute';
 import API from '../services/backend';
-
-const textInputStyle = {
-  '& .MuiInputBase-root': {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    '& fieldset': {
-      borderColor: '#E1E6EF',
-    },
-  },
-};
-const datePickerStyle = {
-  backgroundColor: 'white',
-  borderRadius: '8px',
-  width: '100%',
-  '& .MuiInputBase-root': {
-    '& fieldset': {
-      borderColor: '#E1E6EF',
-    },
-  },
-};
-const selectInputStyle = {
-  '& .MuiInputBase-input': {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    minWidth: '100px',
-  },
-  mr: '1rem',
-};
-const fieldLabelStyle = {
-  color: '#000000',
-};
-const fieldErrorDescriptionStyle = {
-  color: '#FF0000',
-};
 
 const EditGiveaway = () => {
   const navigate = useNavigate();
@@ -149,7 +115,10 @@ const EditGiveaway = () => {
     },
     onSuccess: () => {
       navigate(-1);
-      queryClient.invalidateQueries('active');
+      queryClient.invalidateQueries('giveaways');
+      if (giveawayId) {
+        queryClient.invalidateQueries(['details', giveawayId]);
+      }
     },
   });
 
@@ -168,7 +137,7 @@ const EditGiveaway = () => {
       formData.append('startTime', data?.startTime?.toISOString() || '');
       formData.append('endTime', data?.endTime?.toISOString() || '');
       formData.append('numberOfWinners', `${data?.numberOfWinners}`);
-      formData.append('isManual', `${data?.manual}`);
+      formData.append('manual', `${data?.manual ? data?.manual : false}`);
     }
     formData.append('prize', `${data?.prize}`);
     formData.append('description', data?.description || '');
@@ -190,6 +159,22 @@ const EditGiveaway = () => {
   const [giveawayConditions, setGiveawayConditions] = useState<
     GiveawayCondition[]
   >([]);
+
+  const handleNewCondition = () => {
+    const newConditions = [...giveawayConditions];
+
+    if (giveawayConditions.length) {
+      if (giveawayConditions[0].type === 'unit') {
+        newConditions.push({ type: 'location', value: '' });
+      } else {
+        newConditions.push({ type: 'unit', value: Unit.NODE });
+      }
+    } else {
+      newConditions.push({ type: 'unit', value: Unit.NODE });
+    }
+
+    setGiveawayConditions(newConditions);
+  };
 
   const handleConditionTypeChange = (index: number, value: ConditionType) => {
     const newGiveawayConditions = [...giveawayConditions];
@@ -228,36 +213,34 @@ const EditGiveaway = () => {
           {errorMessage}
         </MuiAlert>
       </Snackbar>
-      <Box sx={{ px: '5rem', py: '2rem' }}>
-        <Button
-          sx={{
-            color: 'black',
-            px: 0,
-            textTransform: 'capitalize',
-            mb: '1rem',
-          }}
-          variant="text"
-          startIcon={<ChevronLeftIcon />}
-          onClick={() => {
-            navigate(-1);
-          }}
-        >
-          Back
-        </Button>
+      <Box className="form-container">
+        <div>
+          <Button
+            className="back"
+            variant="text"
+            startIcon={<ChevronLeftIcon />}
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            Back
+          </Button>
+          <Typography className="new-giveaway-title">New Giveaway</Typography>
+        </div>
         <Grid container spacing={10}>
-          <Grid item xs={5}>
+          <Grid item xs={12} sm={5}>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Name</Typography>
+              <Typography className="field-label">Name</Typography>
               <TextField
                 id="title"
+                className="text-input"
                 fullWidth
                 size="small"
-                sx={textInputStyle}
                 {...register('title', { required: 'Name is required!' })}
                 error={formState.errors.title ? true : false}
               />
               {formState.errors.title && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.title.message}
                 </Typography>
               )}
@@ -281,7 +264,7 @@ const EditGiveaway = () => {
                     right: 0,
                   }}
                 >
-                  <DeleteIcon />
+                  <DeleteIcon className="delete-icon" />
                 </Button>
                 <Box {...getRootProps()}>
                   <img
@@ -329,7 +312,7 @@ const EditGiveaway = () => {
               </>
             )}
             <Box sx={{ my: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Start date</Typography>
+              <Typography className="field-label">Start date</Typography>
               <Controller
                 control={control}
                 defaultValue={data?.startTime || new Date()}
@@ -339,10 +322,10 @@ const EditGiveaway = () => {
                   fieldState,
                 }) => (
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker
+                    <DateTimePicker
+                      className="datepicker"
                       {...field}
-                      sx={datePickerStyle}
-                      format="dd/MM/yyyy"
+                      format="dd/MM/yyyy hh:mm a"
                       inputRef={ref}
                       slotProps={{
                         textField: {
@@ -358,13 +341,13 @@ const EditGiveaway = () => {
                 )}
               />
               {formState.errors.startTime && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.startTime?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>End date</Typography>
+              <Typography className="field-label">End date</Typography>
               <Controller
                 control={control}
                 name="endTime"
@@ -374,10 +357,10 @@ const EditGiveaway = () => {
                   fieldState,
                 }) => (
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker
+                    <DateTimePicker
+                      className="datepicker"
                       {...field}
-                      sx={datePickerStyle}
-                      format="dd/MM/yyyy"
+                      format="dd/MM/yyyy hh:mm a"
                       inputRef={ref}
                       slotProps={{
                         textField: {
@@ -393,32 +376,33 @@ const EditGiveaway = () => {
                 )}
               />
               {formState.errors.endTime && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.endTime?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Prize</Typography>
+              <Typography className="field-label">Prize</Typography>
               <TextField
                 id="prize"
+                className="text-input"
                 variant="outlined"
                 fullWidth
                 size="small"
                 {...register('prize', { required: 'Prize is required!' })}
                 error={formState.errors.prize ? true : false}
-                sx={textInputStyle}
               />
               {formState.errors.prize && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.prize?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Number of winners</Typography>
+              <Typography className="field-label">Number of winners</Typography>
               <TextField
                 id="numberOfWinners"
+                className="text-input"
                 variant="outlined"
                 fullWidth
                 size="small"
@@ -427,21 +411,21 @@ const EditGiveaway = () => {
                   required: 'Number of winners is required!',
                 })}
                 error={formState.errors.numberOfWinners ? true : false}
-                sx={textInputStyle}
                 disabled={!!giveawayId}
               />
               {formState.errors.numberOfWinners && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.numberOfWinners?.message}
                 </Typography>
               )}
             </Box>
           </Grid>
-          <Grid item xs={7}>
+          <Grid item xs={12} sm={7}>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Description</Typography>
+              <Typography className="field-label">Description</Typography>
               <TextField
                 id="description"
+                className="text-input"
                 variant="outlined"
                 minRows={4}
                 fullWidth
@@ -451,18 +435,18 @@ const EditGiveaway = () => {
                   required: 'Description is required!',
                 })}
                 error={formState.errors.description ? true : false}
-                sx={textInputStyle}
               />
               {formState.errors.description && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.description?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>Rules</Typography>
+              <Typography className="field-label">Rules</Typography>
               <TextField
                 id="rules"
+                className="text-input"
                 variant="outlined"
                 minRows={4}
                 fullWidth
@@ -470,16 +454,15 @@ const EditGiveaway = () => {
                 size="small"
                 {...register('rules')}
                 error={formState.errors.rules ? true : false}
-                sx={textInputStyle}
               />
               {formState.errors.rules && (
-                <Typography sx={fieldErrorDescriptionStyle}>
+                <Typography className="error-description">
                   {formState.errors.rules?.message}
                 </Typography>
               )}
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <Typography sx={fieldLabelStyle}>
+              <Typography className="field-label conditions-title">
                 Who is eligible to participate?
               </Typography>
               {giveawayConditions.map((value, index) => (
@@ -488,6 +471,7 @@ const EditGiveaway = () => {
                   sx={{ display: 'flex', alignItems: 'center', mt: '1rem' }}
                 >
                   <Select
+                    className="condition-select"
                     value={value.type}
                     onChange={(e) =>
                       handleConditionTypeChange(
@@ -496,7 +480,6 @@ const EditGiveaway = () => {
                       )
                     }
                     size="small"
-                    sx={selectInputStyle}
                     disabled={!!giveawayId}
                   >
                     <MenuItem value={'unit'}>Unit</MenuItem>
@@ -505,12 +488,12 @@ const EditGiveaway = () => {
 
                   {value.type === 'unit' ? (
                     <Select
+                      className="condition-select"
                       value={value.value || ''}
                       onChange={(e) =>
                         handleConditionValueChange(index, e.target.value)
                       }
                       size="small"
-                      sx={selectInputStyle}
                       disabled={!!giveawayId}
                     >
                       {Object.values(Unit).map((unit) => (
@@ -521,12 +504,12 @@ const EditGiveaway = () => {
                     </Select>
                   ) : (
                     <Select
+                      className="condition-select"
                       value={value.value || ''}
                       onChange={(e) =>
                         handleConditionValueChange(index, e.target.value)
                       }
                       size="small"
-                      sx={selectInputStyle}
                       disabled={!!giveawayId}
                     >
                       {locations.data?.map((loc) => (
@@ -546,34 +529,22 @@ const EditGiveaway = () => {
                       sx={{ textTransform: 'capitalize', px: '1rem' }}
                       disabled={!!giveawayId}
                     >
-                      <DeleteIcon />
+                      <DeleteIcon className="delete-icon" />
                     </Button>
                   )}
                 </Box>
               ))}
-            </Box>
 
-            {!giveawayId && giveawayConditions.length < 2 && (
-              <Button
-                onClick={() => {
-                  const newConditions = [...giveawayConditions];
-                  if (giveawayConditions.length) {
-                    if (giveawayConditions[0].type === 'unit') {
-                      newConditions.push({ type: 'location', value: '' });
-                    } else {
-                      newConditions.push({ type: 'unit', value: Unit.NODE });
-                    }
-                  } else {
-                    newConditions.push({ type: 'unit', value: Unit.NODE });
-                  }
-                  setGiveawayConditions(newConditions);
-                }}
-                sx={{ textTransform: 'capitalize', px: '1rem' }}
-                disabled={!!giveawayId}
-              >
-                + Add condition
-              </Button>
-            )}
+              {!giveawayId && giveawayConditions.length < 2 && (
+                <Button
+                  className="add-condition-btn"
+                  onClick={handleNewCondition}
+                  disabled={!!giveawayId}
+                >
+                  + Add condition
+                </Button>
+              )}
+            </Box>
 
             <Box>
               <FormControlLabel
@@ -581,11 +552,11 @@ const EditGiveaway = () => {
                   <Controller
                     name={'manual'}
                     control={control}
-                    defaultValue={data?.manual}
+                    defaultValue={data?.manual ? data?.manual : false}
                     render={({ field: { ref, ...field }, fieldState }) => (
                       <Checkbox
                         {...field}
-                        defaultChecked={field.value}
+                        checked={field.value}
                         inputRef={ref}
                         disabled={!!giveawayId}
                       />
@@ -596,41 +567,20 @@ const EditGiveaway = () => {
                 disabled={!!giveawayId}
               />
             </Box>
-            <Box
-              sx={{ display: 'flex', mt: '2rem', justifyContent: 'flex-end' }}
-            >
-              <Box
-                sx={{
-                  borderRadius: '0.6rem',
-                  borderColor: '#6D6DF0',
-                  borderWidth: '3px',
-                  borderStyle: 'solid',
-                }}
-              >
-                <Button
-                  onClick={() => navigate(-1)}
-                  sx={{
-                    textTransform: 'capitalize',
-                    color: '#6D6DF0',
-                    fontWeight: 600,
-                    px: '1rem',
-                  }}
-                >
-                  Cancel
-                </Button>
-              </Box>
+            <Box className="cancel-save-container">
               <Button
-                sx={{
-                  ml: '1rem',
-                  textTransform: 'capitalize',
-                  backgroundColor: '#6D6DF0',
-                  ':hover': {
-                    bgcolor: '#6D6DF0',
-                  },
-                  borderRadius: '0.6rem',
-                }}
+                className="cancel-btn"
+                variant="outlined"
+                onClick={() => navigate(-1)}
+                disableElevation
+              >
+                Cancel
+              </Button>
+              <Button
+                className="save-btn"
                 variant="contained"
                 onClick={handleSubmit(saveGiveaway)}
+                disableElevation
               >
                 Save
               </Button>
