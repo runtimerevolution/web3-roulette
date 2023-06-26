@@ -63,6 +63,10 @@ afterEach(async () => {
   jest.clearAllMocks();
 });
 
+const wait = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 describe('GET /', () => {
   it('should return a message while authenticated', async () => {
     const response = await request(app).get('/');
