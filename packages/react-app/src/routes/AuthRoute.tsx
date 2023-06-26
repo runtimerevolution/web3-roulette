@@ -13,7 +13,7 @@ const AuthRoute = () => {
   const { data: userInfo, isLoading } = useQuery<UserInfo | undefined>(
     'userInfo',
     AuthClient.getUserInfo,
-    { refetchOnMount: 'always' }
+    { staleTime: 0, cacheTime: 0 }
   );
 
   if (isLoading) {
@@ -21,9 +21,7 @@ const AuthRoute = () => {
   }
 
   if (!userInfo) {
-    return (
-      <Navigate to="/login" state={{ referrer: window.location.pathname }} />
-    );
+    return <Navigate to="/login" replace={true} />;
   }
 
   return (
