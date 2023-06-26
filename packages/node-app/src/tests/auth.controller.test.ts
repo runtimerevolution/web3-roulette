@@ -23,9 +23,8 @@ giveawaysContract.methods.addParticipant = jest
   .fn()
   .mockReturnValue({ send: () => ({}) });
 
-jest.mock('../utils/auth.util.ts', () => ({
-  getUserInfo: jest.fn(),
-}));
+jest.mock('../utils/auth.util');
+const mockedGetUserInfo = jest.mocked(getUserInfo);
 
 beforeAll(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
@@ -50,7 +49,9 @@ describe('POST /login', () => {
       accessToken: 'ngreobgrerteqkg',
     };
 
-    (getUserInfo as jest.Mock).mockReturnValueOnce(userInfo);
+    mockedGetUserInfo.mockReturnValueOnce(
+      new Promise((resolve) => resolve(userInfo))
+    );
     const res = await request(app).post('/login').send(payload).expect(201);
 
     const user = await User.findOne({ email: userInfo.email });
@@ -76,7 +77,9 @@ describe('POST /login', () => {
       accessToken: 'ngreobgrerteqkg',
     };
 
-    (getUserInfo as jest.Mock).mockReturnValueOnce(undefined);
+    mockedGetUserInfo.mockReturnValueOnce(
+      new Promise((resolve) => resolve(undefined))
+    );
     await request(app).post('/login').send(payload).expect(400);
 
     const user = await User.findOne({ email: userInfo.email });
@@ -90,7 +93,9 @@ describe('GET /me', () => {
       tokenType: 'bearer',
       accessToken: 'ngreobgrerteqkg',
     };
-    (getUserInfo as jest.Mock).mockReturnValueOnce(userInfo);
+    mockedGetUserInfo.mockReturnValueOnce(
+      new Promise((resolve) => resolve(userInfo))
+    );
 
     const res = await request(app).post('/login').send(payload).expect(201);
     const token = res.body.token;
