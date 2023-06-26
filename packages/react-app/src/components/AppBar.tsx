@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -52,7 +53,11 @@ function ResponsiveAppBar() {
       <Box className="profile-menu-container">
         <Stack direction="row" alignItems="center" spacing="8px">
           <IconButton onClick={handleOpenUserMenu}>
-            <Avatar src={userInfo.picture} alt={userInfo.name} />
+            <Avatar
+              src={userInfo.picture}
+              alt={userInfo.name}
+              imgProps={{ referrerPolicy: 'no-referrer' }}
+            />
           </IconButton>
           <Typography
             sx={{
