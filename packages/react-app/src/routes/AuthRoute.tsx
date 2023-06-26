@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+
 import { useQuery } from 'react-query';
 import { Navigate, Outlet } from 'react-router-dom';
 
@@ -11,7 +12,8 @@ const UserContext = createContext<UserInfo | null>(null);
 const AuthRoute = () => {
   const { data: userInfo, isLoading } = useQuery<UserInfo | undefined>(
     'userInfo',
-    AuthClient.getUserInfo
+    AuthClient.getUserInfo,
+    { refetchOnMount: 'always' }
   );
 
   if (isLoading) {
