@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 
+import { verifyToken } from './middlewares/auth.middleware';
 import { router as AuthRoutes } from './routes/auth.route';
 import { router as GiveawayRoutes } from './routes/giveaway.route';
 import { router as LocationRoutes } from './routes/location.routes';
@@ -15,5 +16,5 @@ app.get('/', (req, res) => {
 });
 
 app.use('/', AuthRoutes);
-app.use('/giveaways', GiveawayRoutes);
-app.use('/locations', LocationRoutes);
+app.use('/giveaways', verifyToken, GiveawayRoutes);
+app.use('/locations', verifyToken, LocationRoutes);
