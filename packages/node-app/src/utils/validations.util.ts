@@ -63,9 +63,12 @@ const validateUnit = (participant, giveaway) => {
   const requiredUnit = giveaway.requirements.unit;
 
   // unit required and valid or unit not required
-  if ((requiredUnit && requiredUnit === participantUnit) || !requiredUnit)
-    return ParticipantState.CONFIRMED;
-  return ParticipantState.REJECTED;
+  if (requiredUnit) {
+    const found = participantUnit.some((unit) => unit === requiredUnit);
+    return found ? ParticipantState.CONFIRMED : ParticipantState.REJECTED;
+  }
+
+  return ParticipantState.CONFIRMED;
 };
 
 export const validateParticipant = (participant, giveaway) => {

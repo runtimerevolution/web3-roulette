@@ -21,14 +21,14 @@ describe('User model', () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',
-      unit: Unit.NODE,
+      unit: [Unit.NODE],
     };
 
     const user = await User.create(userData);
 
     expect(user.email).toEqual(userData.email);
     expect(user.name).toEqual(userData.name);
-    expect(user.unit).toEqual(Unit.NODE);
+    expect(user.unit).toEqual([Unit.NODE]);
     expect(user.picture).toBeUndefined();
     expect(user.role).toEqual(UserRole.USER);
   });
@@ -37,14 +37,14 @@ describe('User model', () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',
-      unit: 'invalid',
+      unit: ['invalid'],
     };
 
     try {
       await User.create(userData);
       fail('Expected revert, but transaction succeeded');
     } catch (err) {
-      expect(err.errors.unit).toBeDefined();
+      expect(err.errors).toBeDefined();
     }
   });
 
@@ -52,7 +52,7 @@ describe('User model', () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',
-      unit: Unit.NODE,
+      unit: [Unit.NODE],
       role: 'invalid',
     };
 

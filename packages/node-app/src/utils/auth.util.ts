@@ -42,15 +42,15 @@ const getUserInfo = async (tokenType, accessToken) => {
 };
 
 const getUnit = (user) => {
-  const skills = user.skills;
-  const unitSkill = skills.find((skill) => skill.startsWith('unit-'));
-
-  if (unitSkill) {
-    const unit = unitSkill.replace('unit-', '');
-    if (Object.values(Unit).includes(unit)) {
-      return unit;
+  return user.skills.reduce((units, skill) => {
+    if (skill.startsWith('unit-')) {
+      const unit = skill.replace('unit-', '');
+      if (Object.values(Unit).includes(unit)) {
+        return [unit as Unit, ...units];
+      }
     }
-  }
+    return units;
+  }, []);
 };
 
-export { getUserInfo, getUnit };
+export { getUnit, getUserInfo };

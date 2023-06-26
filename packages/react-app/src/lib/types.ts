@@ -19,7 +19,7 @@ type UserInfo = {
   email: string;
   name: string;
   role: UserRole;
-  unit?: Unit;
+  unit: Unit[];
   picture?: string;
 };
 

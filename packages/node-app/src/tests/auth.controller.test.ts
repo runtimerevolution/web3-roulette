@@ -12,7 +12,7 @@ const userInfo = {
   email: 'example@domain.com',
   name: 'name',
   picture: 'picture',
-  unit: Unit.NODE,
+  unit: [Unit.NODE],
 };
 
 giveawaysContract.methods.createGiveaway = jest
