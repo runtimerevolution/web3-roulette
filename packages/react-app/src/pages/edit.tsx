@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
 import { useDropzone } from 'react-dropzone';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
@@ -20,7 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import uploadIcon from '../assets/CloudUpload.png';
@@ -134,7 +135,7 @@ const EditGiveaway = () => {
       formData.append('startTime', data?.startTime?.toISOString() || '');
       formData.append('endTime', data?.endTime?.toISOString() || '');
       formData.append('numberOfWinners', `${data?.numberOfWinners}`);
-      formData.append('isManual', `${data?.manual}`);
+      formData.append('isManual', `${data.manual}`);
     }
     formData.append('prize', `${data?.prize}`);
     formData.append('description', data?.description || '');
