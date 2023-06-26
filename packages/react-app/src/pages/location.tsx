@@ -17,6 +17,7 @@ import {
 import MuiAlert from '@mui/material/Alert';
 
 import SubHeader from '../components/SubHeader';
+import queryClient from '../lib/queryClient';
 import { Location, UserInfo, UserRole } from '../lib/types';
 import { UserContext } from '../routes/AuthRoute';
 import FrontendApiClient from '../services/backend';
@@ -91,6 +92,7 @@ const LocationEdit = () => {
       .catch((e) => {
         setErrorMessage(e.message);
       });
+    queryClient.invalidateQueries('locations');
   };
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
