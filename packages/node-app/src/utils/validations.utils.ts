@@ -5,13 +5,14 @@ import { User } from '../models/user.model';
 
 export const getParticipant = async (data) => {
   const email = data.id;
+  if (!email) {
+    throw Error('Invalid participant data: missing id');
+  }
 
-  let unit;
-  if (email) {
-    const user = await User.findOne({ email: email });
-    if (user) {
-      unit = user.unit;
-    }
+  let unit = [];
+  const user = await User.findOne({ email: email });
+  if (user) {
+    unit = user.unit;
   }
 
   return {
