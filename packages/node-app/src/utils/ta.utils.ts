@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-const TA_USER = process.env.TA_USER;
-const TA_SECRET = process.env.TA_SECRET;
+const { TA_USER, TA_SECRET, TA_ORIGIN } = process.env;
 
 const TAInstance = axios.create({
-  baseURL: process.env.TA_ORIGIN,
+  baseURL: TA_ORIGIN,
 });
 
 const signIn = async () => {

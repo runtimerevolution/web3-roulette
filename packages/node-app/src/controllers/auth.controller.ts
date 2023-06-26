@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import { pick } from 'lodash';
 
 import { User } from '../models/user.model';
-import { getUserInfo } from '../utils/auth.util';
-import { handleError } from '../utils/model.util';
+import { getUserInfo } from '../utils/auth.utils';
+import { handleError } from '../utils/model.utils';
 
 const login = async (req: Request, res: Response) => {
   try {

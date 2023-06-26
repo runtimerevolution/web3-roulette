@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { Unit } from '../models/user.model';
-import TAClient from './ta.util';
+import TAClient from './ta.utils';
 
 const googleAuthInstance = axios.create({
   baseURL: process.env.GOOGLE_OAUTH_URI,

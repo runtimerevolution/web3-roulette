@@ -5,17 +5,20 @@ import { omit } from 'lodash';
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
+import { UserRole } from '../models/user.model';
 import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
-import { getParticipant, validateParticipant } from '../utils/validations.util';
 import {
   fileToBase64,
   getDefinedFields,
   giveawayStats,
   giveawayWinners,
   handleError,
-} from '../utils/model.util';
-import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
-import { UserRole } from '../models/user.model';
+} from '../utils/model.utils';
+import {
+  getParticipant,
+  validateParticipant,
+} from '../utils/validations.utils';
+import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
