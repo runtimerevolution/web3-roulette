@@ -20,7 +20,7 @@ const login = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid user info' });
     }
 
-    userInfo = pick(userInfo, ['email', 'name', 'picture', 'unit']);
+    userInfo = pick(userInfo, ['email', 'name', 'picture', 'units']);
     const user = await User.findOneAndUpdate(
       { email: userInfo.email },
       userInfo,

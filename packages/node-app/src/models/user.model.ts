@@ -16,7 +16,7 @@ export interface User extends mongoose.Document {
   name: string;
   picture: string;
   role: UserRole;
-  unit: Unit[];
+  units: Unit[];
 }
 
 const userSchema = new Schema<User>({
@@ -28,7 +28,7 @@ const userSchema = new Schema<User>({
     required: true,
     default: UserRole.USER,
   },
-  unit: {
+  units: {
     type: [String],
     enum: Object.values(Unit),
     required: true,

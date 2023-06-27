@@ -28,9 +28,9 @@ const getUserInfo = async (tokenType, accessToken) => {
         throw Error('user is not active');
       }
 
-      const unit = getUnit(taUser);
+      const unit = getUnits(taUser);
       if (unit) {
-        userInfo.unit = unit;
+        userInfo.units = unit;
       }
 
       return userInfo;
@@ -41,7 +41,7 @@ const getUserInfo = async (tokenType, accessToken) => {
   }
 };
 
-const getUnit = (user) => {
+const getUnits = (user) => {
   return user.skills.reduce((units, skill) => {
     if (skill.startsWith('unit-')) {
       const unit = skill.replace('unit-', '');
@@ -53,4 +53,4 @@ const getUnit = (user) => {
   }, []);
 };
 
-export { getUnit, getUserInfo };
+export { getUnits, getUserInfo };

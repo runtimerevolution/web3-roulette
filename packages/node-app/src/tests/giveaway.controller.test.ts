@@ -200,7 +200,7 @@ describe('POST /giveaways', () => {
   );
 
   it(
-    'should not create new giveaway while authenticated',
+    'should not create new giveaway if user is not admin',
     authenticated(async () => {
       await request(app)
         .post('/giveaways')

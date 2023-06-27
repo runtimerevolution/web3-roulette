@@ -44,7 +44,7 @@ describe('POST /locations', () => {
   );
 
   it(
-    'should not create new location while authenticated',
+    'should not create new location if user is not admin',
     authenticated(async () => {
       const res = await request(app)
         .post('/locations')
@@ -107,7 +107,7 @@ describe('DELETE /locations/:id', () => {
   );
 
   it(
-    'should not delete location while authenticated',
+    'should not delete location if user is not admin',
     authenticated(async () => {
       const location = await Location.create({
         name: 'Location',

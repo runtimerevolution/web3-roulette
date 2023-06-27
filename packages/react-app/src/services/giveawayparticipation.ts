@@ -81,7 +81,7 @@ const meetRequirements = async (
   const unit = giveaway.requirements.unit;
   const locationId = giveaway.requirements.location;
 
-  if (unit && !userInfo.unit.some((u) => u === unit)) {
+  if (unit && !userInfo.units.includes(unit)) {
     return false;
   }
 

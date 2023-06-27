@@ -237,7 +237,7 @@ export const updateParticipant = async (req: Request, res: Response) => {
     // not active giveaway
     const now = new Date();
     if (giveaway.startTime > now || now > giveaway.endTime) {
-      return res.status(400).json({ error: 'giveaway not active' });
+      return res.status(400).json({ error: 'Giveaway not active' });
     }
 
     // valid participant

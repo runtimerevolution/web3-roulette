@@ -12,7 +12,7 @@ const userInfo = {
   email: 'example@domain.com',
   name: 'name',
   picture: 'picture',
-  unit: [Unit.NODE],
+  units: [Unit.NODE],
 };
 
 giveawaysContract.methods.createGiveaway = jest
@@ -56,7 +56,7 @@ describe('POST /login', () => {
     expect(res.body.token).toBeDefined();
     expect(user.name).toEqual(userInfo.name);
     expect(user.picture).toEqual(userInfo.picture);
-    expect(user.unit).toEqual(userInfo.unit);
+    expect(user.units).toEqual(userInfo.units);
     expect(user.role).toEqual(UserRole.USER);
   });
 
@@ -101,7 +101,7 @@ describe('GET /me', () => {
     expect(resUserData.body.email).toEqual(userInfo.email);
     expect(resUserData.body.name).toEqual(userInfo.name);
     expect(resUserData.body.picture).toEqual(userInfo.picture);
-    expect(resUserData.body.unit).toEqual(userInfo.unit);
+    expect(resUserData.body.units).toEqual(userInfo.units);
     expect(resUserData.body.role).toEqual(UserRole.USER);
   });
 

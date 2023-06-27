@@ -12,14 +12,14 @@ export const getParticipant = async (data) => {
   let unit = [];
   const user = await User.findOne({ email: email });
   if (user) {
-    unit = user.unit;
+    unit = user.units;
   }
 
   return {
     id: data.id,
     name: data.name,
     location: data.location,
-    unit: unit,
+    units: unit,
   };
 };
 
@@ -60,13 +60,14 @@ const validateLocation = (participant, giveaway) => {
 };
 
 const validateUnit = (participant, giveaway) => {
-  const participantUnit = participant.unit;
-  const requiredUnit = giveaway.requirements.unit;
+  const participantUnits = participant.units;
+  const requiredUnit = giveaway.requirements.units;
 
   // unit required and valid or unit not required
   if (requiredUnit) {
-    const found = participantUnit.some((unit) => unit === requiredUnit);
-    return found ? ParticipantState.CONFIRMED : ParticipantState.REJECTED;
+    return participantUnits.includes(requiredUnit)
+      ? ParticipantState.CONFIRMED
+      : ParticipantState.REJECTED;
   }
 
   return ParticipantState.CONFIRMED;

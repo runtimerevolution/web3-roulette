@@ -21,14 +21,14 @@ describe('User model', () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',
-      unit: [Unit.NODE],
+      units: [Unit.NODE],
     };
 
     const user = await User.create(userData);
 
     expect(user.email).toEqual(userData.email);
     expect(user.name).toEqual(userData.name);
-    expect(user.unit).toEqual([Unit.NODE]);
+    expect(user.units).toEqual([Unit.NODE]);
     expect(user.picture).toBeUndefined();
     expect(user.role).toEqual(UserRole.USER);
   });
@@ -37,7 +37,7 @@ describe('User model', () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',
-      unit: ['invalid'],
+      units: ['invalid'],
     };
 
     try {
@@ -52,7 +52,7 @@ describe('User model', () => {
     const userData = {
       email: 'name@domain.com',
       name: 'name user',
-      unit: [Unit.NODE],
+      units: [Unit.NODE],
       role: 'invalid',
     };
 
