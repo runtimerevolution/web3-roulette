@@ -5,7 +5,6 @@ import { omit } from 'lodash';
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
-import { UserRole } from '../models/user.model';
 import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
 import {
   fileToBase64,
@@ -154,7 +153,7 @@ export const addParticipant = async (req: Request, res: Response) => {
     const participantEmail = req.body.id;
     const user = req.user;
 
-    if (user.role !== UserRole.ADMIN && participantEmail !== user.email) {
+    if (participantEmail !== user.email) {
       return res.status(400).json({ error: 'Invalid participant' });
     }
 
