@@ -1,9 +1,10 @@
 import express from 'express';
+
 import {
-  listLocations,
   createLocation,
-  updateLocation,
   deleteLocation,
+  listLocations,
+  updateLocation,
 } from '../controllers/location.controller';
 
 export const router = express.Router();

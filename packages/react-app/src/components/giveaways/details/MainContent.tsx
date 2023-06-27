@@ -1,11 +1,12 @@
-import { format } from 'date-fns';
-import { UserContext } from '../../../routes/AuthRoute';
 import { useContext, useMemo } from 'react';
+
+import { format } from 'date-fns';
 
 import { Stack, Typography } from '@mui/material';
 
 import { Giveaway, Participant, UserInfo, UserRole } from '../../../lib/types';
 import { GiveawayContext } from '../../../pages/details';
+import { UserContext } from '../../../routes/AuthRoute';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
 type GiveawayMainContentProps = {
@@ -17,11 +18,10 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const isAdmin = userInfo.role === UserRole.ADMIN;
 
-  const nrParticipants = giveaway.stats?.nrConfirmedParticipants;
-  const nrPending = giveaway.stats?.nrPendingParticipants;
+  const nrParticipants = giveaway.stats.nrConfirmedParticipants;
+  const nrPending = giveaway.stats.nrPendingParticipants;
 
   const winningChance = useMemo(() => {
-    if (nrParticipants === undefined) return;
     if (nrParticipants === 0) return 100;
 
     const isRegistered = participants.some(
@@ -106,11 +106,11 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
               </span>{' '}
               {`${nrParticipants} participants`}
             </Typography>
-            {!isAdmin && participants && nrParticipants !== undefined && (
+            {!isAdmin && participants && (
               <span className="winning-chance">{`You have a ${winningChance}% chance of winning`}</span>
             )}
           </div>
-          {isAdmin && nrPending !== undefined && nrPending > 0 && (
+          {isAdmin && nrPending > 0 && (
             <PendingApprovalBanner giveaway={giveaway} nrPending={nrPending} />
           )}
         </Stack>

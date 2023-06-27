@@ -7,26 +7,20 @@ type Giveaway = {
   winners: Winner[];
   numberOfWinners: number;
   participants: Participant[];
-  rules?: string;
-  requirements?: Requirements;
   image: string;
   prize: string;
-  manual?: boolean;
-  stats?: Stats;
+  stats: Stats;
+  manual: boolean;
+  rules?: string;
+  requirements?: Requirements;
 };
 
 type UserInfo = {
   email: string;
-  familyName: string;
-  givenName: string;
-  hd: string;
-  id: string;
-  locale: string;
   name: string;
-  verifiedEmail: boolean;
-  picture?: string;
-  role?: UserRole;
+  role: UserRole;
   unit?: Unit;
+  picture?: string;
 };
 
 type Participant = {
@@ -90,15 +84,15 @@ type GiveawayCondition = {
 };
 
 export {
-  Giveaway,
-  UserInfo,
-  Requirements,
-  Location,
-  UserRole,
-  Unit,
-  ParticipationState,
-  Participant,
-  GiveawayCondition,
   ConditionType,
   ConditionValue,
+  Giveaway,
+  GiveawayCondition,
+  Location,
+  Participant,
+  ParticipationState,
+  Requirements,
+  Unit,
+  UserInfo,
+  UserRole,
 };

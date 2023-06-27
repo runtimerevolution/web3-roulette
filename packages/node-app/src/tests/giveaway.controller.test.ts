@@ -7,10 +7,14 @@ import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { isoStringToSecondsTimestamp } from '../utils/date.utils';
 import { encrypt, objectIdToBytes24 } from '../utils/web3.util';
+import { authenticated, notAuthenticated } from './__utils__/helper.utils';
+
+jest.mock('../middlewares/auth.middleware');
 
 const createGiveawayMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const addParticipantMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const generateWinnersMock = jest.fn().mockReturnValue({ send: () => ({}) });
+
 const getWinnersMock = jest
   .fn()
   .mockReturnValue({ call: () => ['WINNER_ADDRESS'] });
@@ -42,7 +46,7 @@ afterEach(async () => {
 });
 
 describe('GET /', () => {
-  it('should return a message', async () => {
+  it('should return a message while authenticated', async () => {
     const response = await request(app).get('/');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ alive: 'True' });
@@ -50,211 +54,299 @@ describe('GET /', () => {
 });
 
 describe('GET /giveaways', () => {
-  it('should return an empty array if no giveaways exist', async () => {
-    const response = await request(app).get('/giveaways');
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual([]);
-  });
+  it(
+    'should return an empty array if no giveaways exist while authenticated',
+    authenticated(async () => {
+      const response = await request(app).get('/giveaways');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([]);
+    })
+  );
 
-  it('should return a list of giveaways if they exist', async () => {
-    const giveaways = [
-      await Giveaway.create({
-        title: 'Giveaway 1',
-        description: 'Description for giveaway 1',
-        startTime: Date.now() + 60,
-        endTime: Date.now() + 120,
-        numberOfWinners: 1,
-        prize: 'Test prize',
-        image: 'test-image-base64',
-      }),
-      await Giveaway.create({
-        title: 'Giveaway 2',
-        description: 'Description for giveaway 2',
-        startTime: Date.now() + 60,
-        endTime: Date.now() + 120,
-        numberOfWinners: 1,
-        prize: 'Test prize',
-        image: 'test-image-base64',
-      }),
-    ];
+  it(
+    'should return a list of giveaways if they exist while authenticated',
+    authenticated(async () => {
+      const giveaways = [
+        await Giveaway.create({
+          title: 'Giveaway 1',
+          description: 'Description for giveaway 1',
+          startTime: Date.now() + 60,
+          endTime: Date.now() + 120,
+          numberOfWinners: 1,
+          prize: 'Test prize',
+          image: 'test-image-base64',
+        }),
+        await Giveaway.create({
+          title: 'Giveaway 2',
+          description: 'Description for giveaway 2',
+          startTime: Date.now() + 60,
+          endTime: Date.now() + 120,
+          numberOfWinners: 1,
+          prize: 'Test prize',
+          image: 'test-image-base64',
+        }),
+      ];
 
-    const response = await request(app).get('/giveaways');
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ title: giveaways[0].title }),
-        expect.objectContaining({ title: giveaways[1].title }),
-      ])
-    );
-  });
+      const response = await request(app).get('/giveaways');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ title: giveaways[0].title }),
+          expect.objectContaining({ title: giveaways[1].title }),
+        ])
+      );
+    })
+  );
 });
 
 describe('GET /giveaways/:id', () => {
-  it('should return error when the id does not exist', async () => {
-    const response = await request(app).get('/giveaways/invalid-id');
-    expect(response.status).toBe(500);
-  });
+  it(
+    'should return error when the id does not exist while authenticated',
+    authenticated(async () => {
+      const response = await request(app).get('/giveaways/invalid-id');
+      expect(response.status).toBe(500);
+    })
+  );
 
-  it('should return a giveaway if it exists', async () => {
-    const giveaway = await Giveaway.create({
-      title: 'Giveaway',
-      description: 'Description for giveaway',
-      startTime: Date.now() + 60,
-      endTime: Date.now() + 120,
-      numberOfWinners: 1,
-      prize: 'Test prize',
-      image: 'test-image-base64',
-    });
+  it(
+    'should return a giveaway if it exists while authenticated',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create({
+        title: 'Giveaway',
+        description: 'Description for giveaway',
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 120,
+        numberOfWinners: 1,
+        prize: 'Test prize',
+        image: 'test-image-base64',
+      });
 
-    const response = await request(app).get(`/giveaways/${giveaway._id}`);
-    expect(response.status).toBe(200);
-    expect(response.body.title).toBe('Giveaway');
-    expect(response.body.description).toBe('Description for giveaway');
-    expect(new Date(response.body.startTime)).toEqual(giveaway.startTime);
-    expect(new Date(response.body.endTime)).toEqual(giveaway.endTime);
-    expect(response.body.numberOfWinners).toEqual(1);
-  });
+      const response = await request(app).get(`/giveaways/${giveaway._id}`);
+      expect(response.status).toBe(200);
+      expect(response.body.title).toBe('Giveaway');
+      expect(response.body.description).toBe('Description for giveaway');
+      expect(new Date(response.body.startTime)).toEqual(giveaway.startTime);
+      expect(new Date(response.body.endTime)).toEqual(giveaway.endTime);
+      expect(response.body.numberOfWinners).toEqual(1);
+    })
+  );
 });
 
 describe('POST /giveaways', () => {
-  it('should create a new giveaway and return it in the response', async () => {
-    const newGiveaway = {
-      title: 'Test Giveaway',
-      description: 'This is a test giveaway',
-      startTime: new Date(Date.now() + 60).toISOString(),
-      endTime: new Date(Date.now() + 120).toISOString(),
-      numberOfWinners: 1,
-      prize: 'Test prize',
-    };
+  const giveawayData = {
+    title: 'Test Giveaway',
+    description: 'This is a test giveaway',
+    numberOfWinners: 1,
+    prize: 'Test prize',
+    image: 'test-image',
+  };
 
-    const response = await request(app)
-      .post('/giveaways')
-      .set('content-type', 'multipart/form-data')
-      .field('title', newGiveaway.title)
-      .field('description', newGiveaway.description)
-      .field('startTime', newGiveaway.startTime)
-      .field('endTime', newGiveaway.endTime)
-      .field('numberOfWinners', newGiveaway.numberOfWinners)
-      .field('prize', newGiveaway.prize)
-      .attach(
-        'image',
-        fs.readFileSync(`${__dirname}/test-image.png`),
-        'tests/test-image.png'
-      )
-      .expect(201);
+  it(
+    'should create a new giveaway and return it in the response while authenticated',
+    authenticated(async () => {
+      const newGiveaway = {
+        ...giveawayData,
+        startTime: new Date(Date.now() + 60).toISOString(),
+        endTime: new Date(Date.now() + 120).toISOString(),
+      };
 
-    expect(response.body.title).toEqual(newGiveaway.title);
-    expect(response.body.description).toEqual(newGiveaway.description);
-    expect(response.body.startTime).toEqual(newGiveaway.startTime);
-    expect(response.body.endTime).toEqual(newGiveaway.endTime);
-    expect(response.body.numberOfWinners).toEqual(newGiveaway.numberOfWinners);
+      const response = await request(app)
+        .post('/giveaways')
+        .set('content-type', 'multipart/form-data')
+        .field('title', newGiveaway.title)
+        .field('description', newGiveaway.description)
+        .field('startTime', newGiveaway.startTime)
+        .field('endTime', newGiveaway.endTime)
+        .field('numberOfWinners', newGiveaway.numberOfWinners)
+        .field('prize', newGiveaway.prize)
+        .attach(
+          'image',
+          fs.readFileSync(`${__dirname}/test-image.png`),
+          'tests/test-image.png'
+        )
+        .expect(201);
 
-    const localGiveaway = await Giveaway.findById(response.body._id);
-    expect(localGiveaway.title).toEqual(newGiveaway.title);
-    expect(localGiveaway.description).toEqual(newGiveaway.description);
-    expect(localGiveaway.startTime).toEqual(new Date(newGiveaway.startTime));
-    expect(localGiveaway.endTime).toEqual(new Date(newGiveaway.endTime));
-    expect(localGiveaway.numberOfWinners).toEqual(newGiveaway.numberOfWinners);
+      expect(response.body.title).toEqual(newGiveaway.title);
+      expect(response.body.description).toEqual(newGiveaway.description);
+      expect(response.body.startTime).toEqual(newGiveaway.startTime);
+      expect(response.body.endTime).toEqual(newGiveaway.endTime);
+      expect(response.body.numberOfWinners).toEqual(
+        newGiveaway.numberOfWinners
+      );
 
-    expect(giveawaysContract.methods.createGiveaway).toHaveBeenCalledWith(
-      objectIdToBytes24(response.body._id),
-      isoStringToSecondsTimestamp(newGiveaway.startTime),
-      isoStringToSecondsTimestamp(newGiveaway.endTime),
-      newGiveaway.numberOfWinners
-    );
-  });
+      const localGiveaway = await Giveaway.findById(response.body._id);
+      expect(localGiveaway.title).toEqual(newGiveaway.title);
+      expect(localGiveaway.description).toEqual(newGiveaway.description);
+      expect(localGiveaway.startTime).toEqual(new Date(newGiveaway.startTime));
+      expect(localGiveaway.endTime).toEqual(new Date(newGiveaway.endTime));
+      expect(localGiveaway.numberOfWinners).toEqual(
+        newGiveaway.numberOfWinners
+      );
+
+      expect(giveawaysContract.methods.createGiveaway).toHaveBeenCalledWith(
+        objectIdToBytes24(response.body._id),
+        isoStringToSecondsTimestamp(newGiveaway.startTime),
+        isoStringToSecondsTimestamp(newGiveaway.endTime),
+        newGiveaway.numberOfWinners
+      );
+    })
+  );
+
+  it(
+    'should not create new giveaway while not authenticated',
+    notAuthenticated(async () => {
+      await request(app)
+        .post('/giveaways')
+        .set('content-type', 'multipart/form-data')
+        .field('title', giveawayData.title)
+        .field('description', giveawayData.description)
+        .field('startTime', new Date(Date.now() + 1000).toISOString())
+        .field('endTime', new Date(Date.now() + 1500).toISOString())
+        .field('numberOfWinners', giveawayData.numberOfWinners)
+        .field('prize', giveawayData.prize)
+        .attach(
+          'image',
+          fs.readFileSync(`${__dirname}/test-image.png`),
+          'tests/test-image.png'
+        )
+        .expect(401);
+
+      const giveaway = await Giveaway.findOne({ title: giveawayData.title });
+      expect(giveaway).toBeNull();
+      expect(giveawaysContract.methods.createGiveaway).not.toHaveBeenCalled();
+    })
+  );
 });
 
 describe('PUT /giveaways/:id', () => {
-  it('should return error when the id does not exist', async () => {
-    const response = await request(app).put('/giveaways/invalid-id');
-    expect(response.status).toBe(500);
-  });
+  it(
+    'should return error when the id does not exist while authenticated',
+    authenticated(async () => {
+      const response = await request(app).put('/giveaways/invalid-id');
+      expect(response.status).toBe(500);
+    })
+  );
 
-  it('should update a giveaway if it exists', async () => {
-    const giveaway = await Giveaway.create({
-      title: 'Giveaway',
-      description: 'Description for giveaway',
-      startTime: Date.now() + 60,
-      endTime: Date.now() + 120,
-      numberOfWinners: 1,
-      prize: 'Test prize',
-      image: 'test-image-base64',
-    });
-    const updatedGiveaway = {
-      title: 'Updated Giveaway',
-      description: 'Description for giveaway',
-      numberOfWinners: 2,
-      prize: 'Test prize 2',
-      image: 'test-image-base64-2',
-    };
+  it(
+    'should update a giveaway if it exists while authenticated',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create({
+        title: 'Giveaway',
+        description: 'Description for giveaway',
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 120,
+        numberOfWinners: 1,
+        prize: 'Test prize',
+        image: 'test-image-base64',
+      });
+      const updatedGiveaway = {
+        title: 'Updated Giveaway',
+        description: 'Description for giveaway',
+        numberOfWinners: 2,
+        prize: 'Test prize 2',
+        image: 'test-image-base64-2',
+      };
 
-    const response = await request(app)
-      .put(`/giveaways/${giveaway._id}`)
-      .send(updatedGiveaway)
-      .expect(200);
+      const response = await request(app)
+        .put(`/giveaways/${giveaway._id}`)
+        .send(updatedGiveaway)
+        .expect(200);
 
-    expect(response.status).toBe(200);
-    expect(response.body.title).toBe(updatedGiveaway.title);
-    expect(response.body.description).toBe(updatedGiveaway.description);
-    expect(response.body.numberOfWinners).toEqual(1);
-    expect(response.body.prize).toBe(updatedGiveaway.prize);
-  });
+      expect(response.status).toBe(200);
+      expect(response.body.title).toBe(updatedGiveaway.title);
+      expect(response.body.description).toBe(updatedGiveaway.description);
+      expect(response.body.numberOfWinners).toEqual(1);
+      expect(response.body.prize).toBe(updatedGiveaway.prize);
+    })
+  );
 });
 
 describe('POST /giveaways/:id/participants', () => {
-  it('should add a new participant', async () => {
-    const giveaway = await Giveaway.create({
-      title: 'Giveaway',
-      description: 'Description for giveaway',
-      startTime: Date.now() + 60,
-      endTime: Date.now() + 120,
-      numberOfWinners: 1,
-      prize: 'Test prize',
-      image: 'test-image-base64',
-    });
+  const giveawayData = {
+    title: 'Test Giveaway',
+    description: 'This is a test giveaway',
+    numberOfWinners: 1,
+    prize: 'Test prize',
+    image: 'test-image',
+  };
 
-    const body = { id: 'participant@example.com', name: 'participant' };
+  it(
+    'should add a new participant while authenticated',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 120,
+      });
 
-    const response = await request(app)
-      .put(`/giveaways/${giveaway._id}/participants`)
-      .send(body)
-      .expect(200);
+      const body = { id: 'participant@example.com', name: 'participant' };
 
-    expect(response.body.message).toEqual('Participant added successfully');
-    expect(giveawaysContract.methods.addParticipant).toHaveBeenCalled();
-  });
+      const response = await request(app)
+        .put(`/giveaways/${giveaway._id}/participants`)
+        .send(body)
+        .expect(200);
+
+      expect(response.body.message).toEqual('Participant added successfully');
+      expect(giveawaysContract.methods.addParticipant).toHaveBeenCalled();
+    })
+  );
+
+  it(
+    'should not add new participant while not authenticated',
+    notAuthenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 120,
+        image: 'test-image',
+      });
+
+      const payload = { id: 'participant@example.com', name: 'participant' };
+
+      await request(app)
+        .put(`/giveaways/${giveaway._id}/participants`)
+        .send(payload)
+        .expect(401);
+
+      const updatedGiveaway = await Giveaway.findById(giveaway._id);
+      expect(updatedGiveaway.participants.length).toEqual(0);
+      expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+    })
+  );
 });
 
 describe('GET /giveaways/:id/generate-winners', () => {
-  it('should generate and return winners', async () => {
-    const giveaway = await Giveaway.create({
-      title: 'Giveaway',
-      description: 'Description for giveaway',
-      startTime: Date.now() + 60,
-      endTime: Date.now() + 120,
-      numberOfWinners: 1,
-      prize: 'Test prize',
-      image: 'test-image-base64',
-    });
+  it(
+    'should generate and return winners while authenticated',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create({
+        title: 'Giveaway',
+        description: 'Description for giveaway',
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 120,
+        numberOfWinners: 1,
+        prize: 'Test prize',
+        image: 'test-image-base64',
+      });
 
-    await new Promise((r) => setTimeout(r, 200));
+      await new Promise((r) => setTimeout(r, 1000));
 
-    const response = await request(app)
-      .get(`/giveaways/${giveaway._id}/generate-winners`)
-      .expect(200);
+      const response = await request(app)
+        .get(`/giveaways/${giveaway._id}/generate-winners`)
+        .expect(200);
 
-    expect(response.body.length).toEqual(1);
-    expect(response.body[0].id).toEqual('DECRYPTED_DATA');
+      expect(response.body.length).toEqual(1);
+      expect(response.body[0].id).toEqual('DECRYPTED_DATA');
 
-    expect(giveawaysContract.methods.generateWinners).toHaveBeenCalledWith(
-      objectIdToBytes24(giveaway._id)
-    );
+      expect(giveawaysContract.methods.generateWinners).toHaveBeenCalledWith(
+        objectIdToBytes24(giveaway._id)
+      );
 
-    expect(giveawaysContract.methods.getWinners).toHaveBeenCalledWith(
-      objectIdToBytes24(giveaway._id)
-    );
-  });
+      expect(giveawaysContract.methods.getWinners).toHaveBeenCalledWith(
+        objectIdToBytes24(giveaway._id)
+      );
+    })
+  );
 });
 
 describe('PUT giveaways/:id/participants/:participantId', () => {
@@ -275,71 +367,83 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
     participants: [participant],
   };
 
-  it('should fail if invalid participant', async () => {
-    const giveaway = await Giveaway.create(giveawayData);
+  it(
+    'should fail if invalid participant while authenticated',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create(giveawayData);
 
-    const body = { state: ParticipantState.CONFIRMED };
-    const res = await request(app)
-      .put(`/giveaways/${giveaway._id}/participants/invalid`)
-      .send(body);
+      const body = { state: ParticipantState.CONFIRMED };
+      const res = await request(app)
+        .put(`/giveaways/${giveaway._id}/participants/invalid`)
+        .send(body);
 
-    const updatedGiveaway = await Giveaway.findById(giveaway._id);
-    expect(res.status).toEqual(404);
-    expect(res.body.error).toEqual('Participant not found');
-    expect(updatedGiveaway.participants[0].state).toEqual(
-      ParticipantState.PENDING
-    );
-    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
-  });
+      const updatedGiveaway = await Giveaway.findById(giveaway._id);
+      expect(res.status).toEqual(404);
+      expect(res.body.error).toEqual('Participant not found');
+      expect(updatedGiveaway.participants[0].state).toEqual(
+        ParticipantState.PENDING
+      );
+      expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+    })
+  );
 
-  it('should fail if invalid state', async () => {
-    const giveaway = await Giveaway.create(giveawayData);
+  it(
+    'should fail if invalid state while authenticated',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create(giveawayData);
 
-    const body = { state: 'invalid' };
-    const res = await request(app)
-      .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
-      .send(body);
+      const body = { state: 'invalid' };
+      const res = await request(app)
+        .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
+        .send(body);
 
-    const updatedGiveaway = await Giveaway.findById(giveaway._id);
-    expect(res.status).toEqual(400);
-    expect(updatedGiveaway.participants[0].state).toEqual(
-      ParticipantState.PENDING
-    );
-    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
-  });
+      const updatedGiveaway = await Giveaway.findById(giveaway._id);
+      expect(res.status).toEqual(400);
+      expect(updatedGiveaway.participants[0].state).toEqual(
+        ParticipantState.PENDING
+      );
+      expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+    })
+  );
 
-  it('should update participant state', async () => {
-    const giveaway = await Giveaway.create(giveawayData);
+  it(
+    'should update participant state while authenticated',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create(giveawayData);
 
-    const body = { state: ParticipantState.CONFIRMED };
-    const res = await request(app)
-      .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
-      .send(body);
+      const body = { state: ParticipantState.CONFIRMED };
+      const res = await request(app)
+        .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
+        .send(body);
 
-    const updatedGiveaway = await Giveaway.findById(giveaway._id);
-    expect(res.status).toEqual(200);
-    expect(updatedGiveaway.participants[0].state).toEqual(
-      ParticipantState.CONFIRMED
-    );
-    expect(giveawaysContract.methods.addParticipant).toHaveBeenCalledWith(
-      objectIdToBytes24(giveaway._id),
-      encrypt(participant.id)
-    );
-  });
+      const updatedGiveaway = await Giveaway.findById(giveaway._id);
+      expect(res.status).toEqual(200);
+      expect(updatedGiveaway.participants[0].state).toEqual(
+        ParticipantState.CONFIRMED
+      );
+      expect(giveawaysContract.methods.addParticipant).toHaveBeenCalledWith(
+        objectIdToBytes24(giveaway._id),
+        encrypt(participant.id)
+      );
+    })
+  );
 
-  it('should not add to contract if rejected', async () => {
-    const giveaway = await Giveaway.create(giveawayData);
+  it(
+    'should not add to contract if rejected while authenticated',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create(giveawayData);
 
-    const body = { state: ParticipantState.REJECTED };
-    const res = await request(app)
-      .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
-      .send(body);
+      const body = { state: ParticipantState.REJECTED };
+      const res = await request(app)
+        .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
+        .send(body);
 
-    const updatedGiveaway = await Giveaway.findById(giveaway._id);
-    expect(res.status).toEqual(200);
-    expect(updatedGiveaway.participants[0].state).toEqual(
-      ParticipantState.REJECTED
-    );
-    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
-  });
+      const updatedGiveaway = await Giveaway.findById(giveaway._id);
+      expect(res.status).toEqual(200);
+      expect(updatedGiveaway.participants[0].state).toEqual(
+        ParticipantState.REJECTED
+      );
+      expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+    })
+  );
 });

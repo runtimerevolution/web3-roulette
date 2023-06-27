@@ -1,10 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-export enum Unit {
-  NODE = 'node',
-  RAILS = 'rails',
-  PYTHON = 'python',
-}
+import { Unit } from './user.model';
 
 export interface Requirements {
   unit?: Unit;

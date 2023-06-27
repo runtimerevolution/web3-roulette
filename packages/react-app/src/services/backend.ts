@@ -1,12 +1,13 @@
 import axios, {
-  AxiosRequestConfig,
-  Method,
-  AxiosResponse,
   AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  Method,
 } from 'axios';
 
 import { Giveaway, Location, Participant } from '../lib/types';
 import Constants from '../utils/Constants';
+import AuthClient from './authclient';
 import GeolocationService, { Coordinates } from './geolocation';
 
 type ParticipantBody = {
@@ -55,7 +56,16 @@ class BackendService {
       axiosRequestConfig.data = params;
     }
 
-    axiosRequestConfig.headers = { ...headers, 'Cache-Control': 'no-cache' };
+    const tokens = AuthClient.readTokens();
+    if (!tokens) {
+      return new Promise((resolve, reject) => reject('Tokens not found'));
+    }
+
+    axiosRequestConfig.headers = {
+      ...headers,
+      Authorization: `Bearer ${tokens.apiToken}`,
+      'Cache-Control': 'no-cache',
+    };
     return instance.request(axiosRequestConfig);
   }
 

@@ -1,6 +1,7 @@
 import { getDistance } from 'geolib';
 
-import { ParticipantState, Unit } from '../models/giveaway.model';
+import { ParticipantState } from '../models/giveaway.model';
+import { Unit } from '../models/user.model';
 
 // TODO: connect to inside database and get participant data
 export const getParticipant = (data) => {

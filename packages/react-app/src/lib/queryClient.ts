@@ -30,4 +30,4 @@ const useParticipants = (giveawayId: string) => {
 };
 
 export default queryClient;
-export { useGiveaways, useGiveawayDetails, useLocations, useParticipants };
+export { useGiveawayDetails, useGiveaways, useLocations, useParticipants };

@@ -1,14 +1,20 @@
-import { format } from 'date-fns';
 import { useContext, useState } from 'react';
+
+import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
 import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 
+import Trophy from '../../../assets/Trophy.png';
 import { useParticipants } from '../../../lib/queryClient';
-import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
+import {
+  Giveaway,
+  ParticipationState,
+  UserInfo,
+  UserRole,
+} from '../../../lib/types';
 import { UserContext } from '../../../routes/AuthRoute';
 import ParticipationService from '../../../services/giveawayparticipation';
-import Trophy from '../../../assets/Trophy.png';
 import ParticipationButton from '../participation/ParticipationButton';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
@@ -23,8 +29,8 @@ const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
   const { data: participants } = useParticipants(giveaway._id);
   const [participation, setParticipation] = useState<ParticipationState>();
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
-  const nrConfirmedParticipants = giveaway.stats?.nrConfirmedParticipants;
-  const nrPendingParticipants = giveaway.stats?.nrPendingParticipants;
+  const nrConfirmedParticipants = giveaway.stats.nrConfirmedParticipants;
+  const nrPendingParticipants = giveaway.stats.nrPendingParticipants;
 
   const getWinnerStr = () => {
     const winners = giveaway.winners;
@@ -68,7 +74,7 @@ const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
       }}
       elevation={0}
     >
-      {nrPendingParticipants !== undefined && nrPendingParticipants > 0 && (
+      {userInfo.role === UserRole.ADMIN && nrPendingParticipants > 0 && (
         <div className="card-pending-approvals">
           <PendingApprovalBanner
             giveaway={giveaway}
