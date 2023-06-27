@@ -42,7 +42,7 @@ describe('User model', () => {
 
     try {
       await User.create(userData);
-      expect(true).toEqual(false);
+      fail('Expected revert, but transaction succeeded');
     } catch (err) {
       expect(err.errors.unit).toBeDefined();
     }

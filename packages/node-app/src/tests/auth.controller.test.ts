@@ -49,9 +49,7 @@ describe('POST /login', () => {
       accessToken: 'ngreobgrerteqkg',
     };
 
-    mockedGetUserInfo.mockReturnValueOnce(
-      new Promise((resolve) => resolve(userInfo))
-    );
+    mockedGetUserInfo.mockResolvedValueOnce(userInfo);
     const res = await request(app).post('/login').send(payload).expect(201);
 
     const user = await User.findOne({ email: userInfo.email });
@@ -77,9 +75,7 @@ describe('POST /login', () => {
       accessToken: 'ngreobgrerteqkg',
     };
 
-    mockedGetUserInfo.mockReturnValueOnce(
-      new Promise((resolve) => resolve(undefined))
-    );
+    mockedGetUserInfo.mockResolvedValueOnce(undefined);
     await request(app).post('/login').send(payload).expect(400);
 
     const user = await User.findOne({ email: userInfo.email });
@@ -93,9 +89,7 @@ describe('GET /me', () => {
       tokenType: 'bearer',
       accessToken: 'ngreobgrerteqkg',
     };
-    mockedGetUserInfo.mockReturnValueOnce(
-      new Promise((resolve) => resolve(userInfo))
-    );
+    mockedGetUserInfo.mockResolvedValueOnce(userInfo);
 
     const res = await request(app).post('/login').send(payload).expect(201);
     const token = res.body.token;
