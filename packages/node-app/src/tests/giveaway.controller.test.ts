@@ -7,7 +7,7 @@ import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { User, UserRole } from '../models/user.model';
 import { isoStringToSecondsTimestamp } from '../utils/date.utils';
-import { encrypt, objectIdToBytes24 } from '../utils/web3.util';
+import { encrypt, objectIdToBytes24 } from '../utils/web3.utils';
 import { authenticated, notAuthenticated } from './__utils__/helper.utils';
 
 jest.mock('../middlewares/auth.middleware');
