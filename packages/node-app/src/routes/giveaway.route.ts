@@ -11,7 +11,7 @@ import {
   updateGiveaway,
   updateParticipant,
 } from '../controllers/giveaway.controller';
-import { verifyAdmin, verifyToken } from '../middlewares/auth.middleware';
+import { verifyAdmin } from '../middlewares/auth.middleware';
 
 const storage = diskStorage({
   destination: (req, file, cb) => {
@@ -25,32 +25,12 @@ const upload = multer({ storage });
 
 export const router = express.Router();
 
-router.get('/', verifyToken, listGiveaways);
-router.get('/:id', verifyToken, getGiveaway);
-router.put('/:id/participants', verifyToken, addParticipant);
-router.get('/:id/participants', verifyToken, getParticipants);
+router.get('/', listGiveaways);
+router.get('/:id', getGiveaway);
+router.put('/:id/participants', addParticipant);
+router.get('/:id/participants', getParticipants);
 
-router.post(
-  '/',
-  verifyToken,
-  verifyAdmin,
-  upload.single('image'),
-  createGiveaway
-);
-
-router.put(
-  '/:id',
-  verifyToken,
-  verifyAdmin,
-  upload.single('image'),
-  updateGiveaway
-);
-
-router.put(
-  '/:id/participants/:participantId',
-  verifyToken,
-  verifyAdmin,
-  updateParticipant
-);
-
-router.get('/:id/generate-winners', verifyToken, verifyAdmin, generateWinners);
+router.post('/', verifyAdmin, upload.single('image'), createGiveaway);
+router.put('/:id', verifyAdmin, upload.single('image'), updateGiveaway);
+router.put('/:id/participants/:participantId', verifyAdmin, updateParticipant);
+router.get('/:id/generate-winners', verifyAdmin, generateWinners);
