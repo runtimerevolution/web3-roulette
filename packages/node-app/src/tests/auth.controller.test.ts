@@ -6,7 +6,7 @@ import { giveawaysContract } from '../contracts';
 import { Giveaway } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
 import { Unit, User, UserRole } from '../models/user.model';
-import { getUserInfo } from '../utils/auth.util';
+import { getUserInfo } from '../utils/auth.utils';
 
 const userInfo = {
   email: 'example@domain.com',
@@ -23,7 +23,7 @@ giveawaysContract.methods.addParticipant = jest
   .fn()
   .mockReturnValue({ send: () => ({}) });
 
-jest.mock('../utils/auth.util');
+jest.mock('../utils/auth.utils');
 const mockedGetUserInfo = jest.mocked(getUserInfo);
 
 beforeAll(async () => {
