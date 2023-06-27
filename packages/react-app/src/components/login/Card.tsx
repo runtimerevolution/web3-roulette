@@ -38,7 +38,7 @@ const LoginCard = ({ handleAuthError }: LoginCardProps) => {
       return;
     }
 
-    AuthClient.saveTokens(tokenType, accessToken, apiToken);
+    AuthClient.saveTokens(apiToken);
     navigate('/');
   };
 

@@ -32,33 +32,17 @@ const getUserInfo = async () => {
   console.log(`error fetching user info: ${res.status} ${res.data}`);
 };
 
-const saveTokens = (
-  tokenType: string,
-  accessToken: string,
-  apiToken: string
-) => {
-  localStorage.setItem('tokenType', tokenType);
-  localStorage.setItem('accessToken', accessToken);
+const saveTokens = (apiToken: string) => {
   localStorage.setItem('apiToken', apiToken);
 };
 
 const readTokens = () => {
-  const tokenType = localStorage.getItem('tokenType');
-  const accessToken = localStorage.getItem('accessToken');
   const apiToken = localStorage.getItem('apiToken');
-
-  if (!tokenType || !accessToken || !apiToken) return;
-
-  return {
-    tokenType,
-    accessToken,
-    apiToken,
-  };
+  if (!apiToken) return;
+  return { apiToken };
 };
 
 const cleanupTokens = () => {
-  localStorage.removeItem('tokenType');
-  localStorage.removeItem('accessToken');
   localStorage.removeItem('apiToken');
 };
 
