@@ -1,0 +1,6 @@
+./packages/react-app
+README.md
+dist
+docs
+fly.*.toml
+node_modules
