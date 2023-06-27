@@ -5,9 +5,15 @@ import request from 'supertest';
 import { app } from '../app';
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
+import { User } from '../models/user.model';
 import { isoStringToSecondsTimestamp } from '../utils/date.utils';
-import { encrypt, objectIdToBytes24 } from '../utils/web3.util';
-import { authenticated, notAuthenticated } from './__utils__/helper.utils';
+import { encrypt, objectIdToBytes24 } from '../utils/web3.utils';
+import {
+  adminAuthenticated,
+  authenticated,
+  notAuthenticated,
+  wait,
+} from './__utils__/helper.utils';
 
 jest.mock('../middlewares/auth.middleware');
 
@@ -24,7 +30,7 @@ giveawaysContract.methods.addParticipant = addParticipantMock;
 giveawaysContract.methods.generateWinners = generateWinnersMock;
 giveawaysContract.methods.getWinners = getWinnersMock;
 
-jest.mock('../utils/web3.util', () => ({
+jest.mock('../utils/web3.utils', () => ({
   __esModule: true,
   decrypt: () => 'DECRYPTED_DATA',
   encrypt: () => 'ENCRYPTED_DATA',
@@ -42,6 +48,7 @@ afterAll(async () => {
 
 afterEach(async () => {
   await Giveaway.deleteMany({});
+  await User.deleteMany({});
   jest.clearAllMocks();
 });
 
@@ -142,8 +149,8 @@ describe('POST /giveaways', () => {
   };
 
   it(
-    'should create a new giveaway and return it in the response while authenticated',
-    authenticated(async () => {
+    'should create a new giveaway and return it in the response while admin authenticated',
+    adminAuthenticated(async () => {
       const newGiveaway = {
         ...giveawayData,
         startTime: new Date(Date.now() + 60).toISOString(),
@@ -193,8 +200,8 @@ describe('POST /giveaways', () => {
   );
 
   it(
-    'should not create new giveaway while not authenticated',
-    notAuthenticated(async () => {
+    'should not create new giveaway if user is not admin',
+    authenticated(async () => {
       await request(app)
         .post('/giveaways')
         .set('content-type', 'multipart/form-data')
@@ -220,16 +227,16 @@ describe('POST /giveaways', () => {
 
 describe('PUT /giveaways/:id', () => {
   it(
-    'should return error when the id does not exist while authenticated',
-    authenticated(async () => {
+    'should return error when the id does not exist while admin authenticated',
+    adminAuthenticated(async () => {
       const response = await request(app).put('/giveaways/invalid-id');
       expect(response.status).toBe(500);
     })
   );
 
   it(
-    'should update a giveaway if it exists while authenticated',
-    authenticated(async () => {
+    'should update a giveaway if it exists while admin authenticated',
+    adminAuthenticated(async () => {
       const giveaway = await Giveaway.create({
         title: 'Giveaway',
         description: 'Description for giveaway',
@@ -279,7 +286,7 @@ describe('POST /giveaways/:id/participants', () => {
         endTime: Date.now() + 120,
       });
 
-      const body = { id: 'participant@example.com', name: 'participant' };
+      const body = { id: 'example@domain.com', name: 'participant' };
 
       const response = await request(app)
         .put(`/giveaways/${giveaway._id}/participants`)
@@ -317,8 +324,8 @@ describe('POST /giveaways/:id/participants', () => {
 
 describe('GET /giveaways/:id/generate-winners', () => {
   it(
-    'should generate and return winners while authenticated',
-    authenticated(async () => {
+    'should generate and return winners while admin authenticated',
+    adminAuthenticated(async () => {
       const giveaway = await Giveaway.create({
         title: 'Giveaway',
         description: 'Description for giveaway',
@@ -329,7 +336,7 @@ describe('GET /giveaways/:id/generate-winners', () => {
         image: 'test-image-base64',
       });
 
-      await new Promise((r) => setTimeout(r, 1000));
+      await wait(200);
 
       const response = await request(app)
         .get(`/giveaways/${giveaway._id}/generate-winners`)
@@ -359,8 +366,6 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
   const giveawayData = {
     title: 'Giveaway',
     description: 'Description for giveaway',
-    startTime: Date.now() + 10000,
-    endTime: Date.now() + 12000,
     numberOfWinners: 1,
     prize: 'Test prize',
     image: 'test-image-base64',
@@ -368,9 +373,14 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
   };
 
   it(
-    'should fail if invalid participant while authenticated',
-    authenticated(async () => {
-      const giveaway = await Giveaway.create(giveawayData);
+    'should fail if invalid participant while admin authenticated',
+    adminAuthenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 10000,
+      });
+      await wait(200);
 
       const body = { state: ParticipantState.CONFIRMED };
       const res = await request(app)
@@ -388,9 +398,14 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
   );
 
   it(
-    'should fail if invalid state while authenticated',
-    authenticated(async () => {
-      const giveaway = await Giveaway.create(giveawayData);
+    'should fail if invalid state while admin authenticated',
+    adminAuthenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 10000,
+      });
+      await wait(200);
 
       const body = { state: 'invalid' };
       const res = await request(app)
@@ -407,9 +422,14 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
   );
 
   it(
-    'should update participant state while authenticated',
-    authenticated(async () => {
-      const giveaway = await Giveaway.create(giveawayData);
+    'should update participant state while admin authenticated',
+    adminAuthenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 10000,
+      });
+      await wait(200);
 
       const body = { state: ParticipantState.CONFIRMED };
       const res = await request(app)
@@ -429,9 +449,14 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
   );
 
   it(
-    'should not add to contract if rejected while authenticated',
-    authenticated(async () => {
-      const giveaway = await Giveaway.create(giveawayData);
+    'should not add to contract if rejected while admin authenticated',
+    adminAuthenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 10000,
+      });
+      await wait(200);
 
       const body = { state: ParticipantState.REJECTED };
       const res = await request(app)

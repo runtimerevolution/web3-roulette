@@ -6,15 +6,18 @@ import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
 import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
-import { getParticipant, validateParticipant } from '../utils/inside.util';
 import {
   fileToBase64,
   getDefinedFields,
   giveawayStats,
   giveawayWinners,
   handleError,
-} from '../utils/model.util';
-import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.util';
+} from '../utils/model.utils';
+import {
+  getParticipant,
+  validateParticipant,
+} from '../utils/validations.utils';
+import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -146,6 +149,14 @@ export const updateGiveaway = async (req: Request, res: Response) => {
 
 export const addParticipant = async (req: Request, res: Response) => {
   try {
+    // validate user
+    const participantEmail = req.body.id;
+    const user = req.user;
+
+    if (participantEmail !== user.email) {
+      return res.status(400).json({ error: 'Invalid participant' });
+    }
+
     // check if giveaway exists
     const giveaway = await Giveaway.findById(req.params.id).populate(
       'requirements.location'
@@ -153,7 +164,7 @@ export const addParticipant = async (req: Request, res: Response) => {
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
     // get participant state based on requirements and save to db
-    const participant = getParticipant(req.body);
+    const participant = await getParticipant(req.body);
 
     const participantExists =
       (await Giveaway.findOne({
@@ -221,6 +232,12 @@ export const updateParticipant = async (req: Request, res: Response) => {
     // valid giveaway
     const giveaway = await Giveaway.findById(req.params.id);
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
+
+    // not active giveaway
+    const now = new Date();
+    if (giveaway.startTime > now || now > giveaway.endTime) {
+      return res.status(400).json({ error: 'Giveaway not active' });
+    }
 
     // valid participant
     const participant = giveaway.participants.find(

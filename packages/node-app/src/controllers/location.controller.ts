@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
+
 import { Location } from '../models/location.model';
-import { handleError } from '../utils/model.util';
+import { handleError } from '../utils/model.utils';
 
 export const listLocations = async (req: Request, res: Response) => {
   try {

@@ -6,13 +6,13 @@ import { giveawaysContract } from '../contracts';
 import { Giveaway } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
 import { Unit, User, UserRole } from '../models/user.model';
-import { getUserInfo } from '../utils/auth.util';
+import { getUserInfo } from '../utils/auth.utils';
 
 const userInfo = {
   email: 'example@domain.com',
   name: 'name',
   picture: 'picture',
-  unit: Unit.NODE,
+  units: [Unit.NODE],
 };
 
 giveawaysContract.methods.createGiveaway = jest
@@ -23,7 +23,7 @@ giveawaysContract.methods.addParticipant = jest
   .fn()
   .mockReturnValue({ send: () => ({}) });
 
-jest.mock('../utils/auth.util');
+jest.mock('../utils/auth.utils');
 const mockedGetUserInfo = jest.mocked(getUserInfo);
 
 beforeAll(async () => {
@@ -56,7 +56,7 @@ describe('POST /login', () => {
     expect(res.body.token).toBeDefined();
     expect(user.name).toEqual(userInfo.name);
     expect(user.picture).toEqual(userInfo.picture);
-    expect(user.unit).toEqual(userInfo.unit);
+    expect(user.units).toEqual(userInfo.units);
     expect(user.role).toEqual(UserRole.USER);
   });
 
@@ -101,7 +101,7 @@ describe('GET /me', () => {
     expect(resUserData.body.email).toEqual(userInfo.email);
     expect(resUserData.body.name).toEqual(userInfo.name);
     expect(resUserData.body.picture).toEqual(userInfo.picture);
-    expect(resUserData.body.unit).toEqual(userInfo.unit);
+    expect(resUserData.body.units).toEqual(userInfo.units);
     expect(resUserData.body.role).toEqual(UserRole.USER);
   });
 

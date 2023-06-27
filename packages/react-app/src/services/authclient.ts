@@ -8,9 +8,14 @@ const APIClient: AxiosInstance = axios.create({
 });
 
 const login = async (tokenType: string, accessToken: string) => {
-  const res = await APIClient.post('/login', { tokenType, accessToken });
-  if (res.status === 201) {
-    return res.data.token;
+  try {
+    const res = await APIClient.post('/login', { tokenType, accessToken });
+    if (res.status === 201) {
+      return res.data.token;
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '';
+    console.log(`problems with login ${message}`);
   }
 };
 

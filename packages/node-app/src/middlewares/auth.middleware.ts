@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/user.model';
+import { User, UserRole } from '../models/user.model';
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -28,4 +28,14 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   return next();
 };
 
-export { verifyToken };
+const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  const user = req.user;
+
+  if (user.role !== UserRole.ADMIN) {
+    return res.status(401).json({ error: 'Invalid user role' });
+  }
+
+  return next();
+};
+
+export { verifyToken, verifyAdmin };

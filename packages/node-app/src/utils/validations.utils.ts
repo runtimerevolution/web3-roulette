@@ -1,15 +1,25 @@
 import { getDistance } from 'geolib';
 
 import { ParticipantState } from '../models/giveaway.model';
-import { Unit } from '../models/user.model';
+import { User } from '../models/user.model';
 
-// TODO: connect to inside database and get participant data
-export const getParticipant = (data) => {
+export const getParticipant = async (data) => {
+  const email = data.id;
+  if (!email) {
+    throw Error('Invalid participant data: missing id');
+  }
+
+  let unit = [];
+  const user = await User.findOne({ email: email });
+  if (user) {
+    unit = user.units;
+  }
+
   return {
     id: data.id,
     name: data.name,
     location: data.location,
-    unit: Unit.NODE,
+    units: unit,
   };
 };
 
@@ -50,13 +60,17 @@ const validateLocation = (participant, giveaway) => {
 };
 
 const validateUnit = (participant, giveaway) => {
-  const participantUnit = participant.unit;
-  const requiredUnit = giveaway.requirements.unit;
+  const participantUnits = participant.units;
+  const requiredUnit = giveaway.requirements.units;
 
   // unit required and valid or unit not required
-  if ((requiredUnit && requiredUnit === participantUnit) || !requiredUnit)
-    return ParticipantState.CONFIRMED;
-  return ParticipantState.REJECTED;
+  if (requiredUnit) {
+    return participantUnits.includes(requiredUnit)
+      ? ParticipantState.CONFIRMED
+      : ParticipantState.REJECTED;
+  }
+
+  return ParticipantState.CONFIRMED;
 };
 
 export const validateParticipant = (participant, giveaway) => {

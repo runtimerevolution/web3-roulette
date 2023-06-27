@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+
 import { useQuery } from 'react-query';
 import { Navigate, Outlet } from 'react-router-dom';
 
@@ -11,7 +12,8 @@ const UserContext = createContext<UserInfo | null>(null);
 const AuthRoute = () => {
   const { data: userInfo, isLoading } = useQuery<UserInfo | undefined>(
     'userInfo',
-    AuthClient.getUserInfo
+    AuthClient.getUserInfo,
+    { staleTime: 0, cacheTime: 0 }
   );
 
   if (isLoading) {
@@ -19,9 +21,7 @@ const AuthRoute = () => {
   }
 
   if (!userInfo) {
-    return (
-      <Navigate to="/login" state={{ referrer: window.location.pathname }} />
-    );
+    return <Navigate to="/login" replace={true} />;
   }
 
   return (

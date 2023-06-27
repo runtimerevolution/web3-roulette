@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import { pick } from 'lodash';
 
 import { User } from '../models/user.model';
-import { getUserInfo } from '../utils/auth.util';
-import { handleError } from '../utils/model.util';
+import { getUserInfo } from '../utils/auth.utils';
+import { handleError } from '../utils/model.utils';
 
 const login = async (req: Request, res: Response) => {
   try {
@@ -17,10 +17,10 @@ const login = async (req: Request, res: Response) => {
 
     let userInfo = await getUserInfo(tokenType, accessToken);
     if (!userInfo) {
-      return res.status(400).json({ error: 'Invalid tokens' });
+      return res.status(400).json({ error: 'Invalid user info' });
     }
 
-    userInfo = pick(userInfo, ['email', 'name', 'picture', 'unit']);
+    userInfo = pick(userInfo, ['email', 'name', 'picture', 'units']);
     const user = await User.findOneAndUpdate(
       { email: userInfo.email },
       userInfo,

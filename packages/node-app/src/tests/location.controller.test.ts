@@ -3,7 +3,7 @@ import request from 'supertest';
 
 import { app } from '../app';
 import { Location } from '../models/location.model';
-import { authenticated, notAuthenticated } from './__utils__/helper.utils';
+import { adminAuthenticated, authenticated } from './__utils__/helper.utils';
 
 jest.mock('../middlewares/auth.middleware');
 
@@ -29,8 +29,8 @@ describe('POST /locations', () => {
   };
 
   it(
-    'should create a new location while authenticated',
-    authenticated(async () => {
+    'should create a new location while admin authenticated',
+    adminAuthenticated(async () => {
       const response = await request(app)
         .post('/locations')
         .send(newLocation)
@@ -44,8 +44,8 @@ describe('POST /locations', () => {
   );
 
   it(
-    'should not create new location while not authenticated',
-    notAuthenticated(async () => {
+    'should not create new location if user is not admin',
+    authenticated(async () => {
       const res = await request(app)
         .post('/locations')
         .send(newLocation)
@@ -53,15 +53,15 @@ describe('POST /locations', () => {
 
       const location = await Location.findOne({ name: newLocation.name });
       expect(location).toBeNull();
-      expect(res.body.error).toEqual('Invalid token');
+      expect(res.body.error).toEqual('Invalid user role');
     })
   );
 });
 
 describe('POST /locations/:id', () => {
   it(
-    'should update an existing location while authenticated',
-    authenticated(async () => {
+    'should update an existing location while admin authenticated',
+    adminAuthenticated(async () => {
       const location = await Location.create({
         name: 'Location',
         latitude: 1.234,
@@ -90,8 +90,8 @@ describe('POST /locations/:id', () => {
 
 describe('DELETE /locations/:id', () => {
   it(
-    'should delete an existing location while authenticated',
-    authenticated(async () => {
+    'should delete an existing location while admin authenticated',
+    adminAuthenticated(async () => {
       const location = await Location.create({
         name: 'Location',
         latitude: 1.234,
@@ -107,8 +107,8 @@ describe('DELETE /locations/:id', () => {
   );
 
   it(
-    'should not delete location while not authenticated',
-    notAuthenticated(async () => {
+    'should not delete location if user is not admin',
+    authenticated(async () => {
       const location = await Location.create({
         name: 'Location',
         latitude: 1.234,
@@ -122,7 +122,7 @@ describe('DELETE /locations/:id', () => {
 
       const updatedLocation = await Location.findById(location._id);
       expect(updatedLocation).not.toBeNull();
-      expect(res.body.error).toEqual('Invalid token');
+      expect(res.body.error).toEqual('Invalid user role');
     })
   );
 });
