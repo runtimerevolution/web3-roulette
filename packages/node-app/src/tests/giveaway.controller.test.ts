@@ -4,10 +4,12 @@ import request from 'supertest';
 
 import { app } from '../app';
 import { giveawaysContract } from '../contracts';
-import { verifyToken } from '../middlewares/auth.middleware';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { isoStringToSecondsTimestamp } from '../utils/date.utils';
 import { encrypt, objectIdToBytes24 } from '../utils/web3.util';
+import { authenticated, notAuthenticated } from './__utils__/helper.utils';
+
+jest.mock('../middlewares/auth.middleware');
 
 const createGiveawayMock = jest.fn().mockReturnValue({ send: () => ({}) });
 const addParticipantMock = jest.fn().mockReturnValue({ send: () => ({}) });
@@ -28,16 +30,6 @@ jest.mock('../utils/web3.util', () => ({
   encrypt: () => 'ENCRYPTED_DATA',
   objectIdToBytes24: () => 'BYTES24',
 }));
-
-jest.mock('../middlewares/auth.middleware');
-const mockedVerifyToken = jest.mocked(verifyToken);
-
-const authenticated = (testFn) => {
-  return async () => {
-    mockedVerifyToken.mockImplementation(async (req, res, next) => next());
-    await testFn();
-  };
-};
 
 beforeAll(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
@@ -200,31 +192,30 @@ describe('POST /giveaways', () => {
     })
   );
 
-  it('should not create new giveaway while not authenticated', async () => {
-    mockedVerifyToken.mockImplementation(async (req, res) => {
-      return res.status(401).json({ error: 'Invalid token' });
-    });
+  it(
+    'should not create new giveaway while not authenticated',
+    notAuthenticated(async () => {
+      await request(app)
+        .post('/giveaways')
+        .set('content-type', 'multipart/form-data')
+        .field('title', giveawayData.title)
+        .field('description', giveawayData.description)
+        .field('startTime', new Date(Date.now() + 1000).toISOString())
+        .field('endTime', new Date(Date.now() + 1500).toISOString())
+        .field('numberOfWinners', giveawayData.numberOfWinners)
+        .field('prize', giveawayData.prize)
+        .attach(
+          'image',
+          fs.readFileSync(`${__dirname}/test-image.png`),
+          'tests/test-image.png'
+        )
+        .expect(401);
 
-    await request(app)
-      .post('/giveaways')
-      .set('content-type', 'multipart/form-data')
-      .field('title', giveawayData.title)
-      .field('description', giveawayData.description)
-      .field('startTime', new Date(Date.now() + 1000).toISOString())
-      .field('endTime', new Date(Date.now() + 1500).toISOString())
-      .field('numberOfWinners', giveawayData.numberOfWinners)
-      .field('prize', giveawayData.prize)
-      .attach(
-        'image',
-        fs.readFileSync(`${__dirname}/test-image.png`),
-        'tests/test-image.png'
-      )
-      .expect(401);
-
-    const giveaway = await Giveaway.findOne({ title: giveawayData.title });
-    expect(giveaway).toBeNull();
-    expect(giveawaysContract.methods.createGiveaway).not.toHaveBeenCalled();
-  });
+      const giveaway = await Giveaway.findOne({ title: giveawayData.title });
+      expect(giveaway).toBeNull();
+      expect(giveawaysContract.methods.createGiveaway).not.toHaveBeenCalled();
+    })
+  );
 });
 
 describe('PUT /giveaways/:id', () => {
@@ -300,28 +291,28 @@ describe('POST /giveaways/:id/participants', () => {
     })
   );
 
-  it('should not add new participant while not authenticated', async () => {
-    mockedVerifyToken.mockImplementation(async (req, res) => {
-      return res.status(401).json({ error: 'Invalid token' });
-    });
-    const giveaway = await Giveaway.create({
-      ...giveawayData,
-      startTime: Date.now() + 60,
-      endTime: Date.now() + 120,
-      image: 'test-image',
-    });
+  it(
+    'should not add new participant while not authenticated',
+    notAuthenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 120,
+        image: 'test-image',
+      });
 
-    const payload = { id: 'participant@example.com', name: 'participant' };
+      const payload = { id: 'participant@example.com', name: 'participant' };
 
-    await request(app)
-      .put(`/giveaways/${giveaway._id}/participants`)
-      .send(payload)
-      .expect(401);
+      await request(app)
+        .put(`/giveaways/${giveaway._id}/participants`)
+        .send(payload)
+        .expect(401);
 
-    const updatedGiveaway = await Giveaway.findById(giveaway._id);
-    expect(updatedGiveaway.participants.length).toEqual(0);
-    expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
-  });
+      const updatedGiveaway = await Giveaway.findById(giveaway._id);
+      expect(updatedGiveaway.participants.length).toEqual(0);
+      expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+    })
+  );
 });
 
 describe('GET /giveaways/:id/generate-winners', () => {

@@ -2,18 +2,10 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 
 import { app } from '../app';
-import { verifyToken } from '../middlewares/auth.middleware';
 import { Location } from '../models/location.model';
+import { authenticated, notAuthenticated } from './__utils__/helper.utils';
 
 jest.mock('../middlewares/auth.middleware');
-const mockedVerifyToken = jest.mocked(verifyToken);
-
-const authenticated = (testFn) => {
-  return async () => {
-    mockedVerifyToken.mockImplementation(async (req, res, next) => next());
-    await testFn();
-  };
-};
 
 beforeAll(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
@@ -51,19 +43,19 @@ describe('POST /locations', () => {
     })
   );
 
-  it('should not create new location while not authenticated', async () => {
-    mockedVerifyToken.mockImplementation(async (req, res) => {
-      return res.status(401).json({ error: 'Invalid token' });
-    });
-    const res = await request(app)
-      .post('/locations')
-      .send(newLocation)
-      .expect(401);
+  it(
+    'should not create new location while not authenticated',
+    notAuthenticated(async () => {
+      const res = await request(app)
+        .post('/locations')
+        .send(newLocation)
+        .expect(401);
 
-    const location = await Location.findOne({ name: newLocation.name });
-    expect(location).toBeNull();
-    expect(res.body.error).toEqual('Invalid token');
-  });
+      const location = await Location.findOne({ name: newLocation.name });
+      expect(location).toBeNull();
+      expect(res.body.error).toEqual('Invalid token');
+    })
+  );
 });
 
 describe('POST /locations/:id', () => {
@@ -114,25 +106,25 @@ describe('DELETE /locations/:id', () => {
     })
   );
 
-  it('should not delete location while not authenticated', async () => {
-    mockedVerifyToken.mockImplementation(async (req, res) => {
-      return res.status(401).json({ error: 'Invalid token' });
-    });
-    const location = await Location.create({
-      name: 'Location',
-      latitude: 1.234,
-      longitude: 2.345,
-      radius: 100,
-    });
+  it(
+    'should not delete location while not authenticated',
+    notAuthenticated(async () => {
+      const location = await Location.create({
+        name: 'Location',
+        latitude: 1.234,
+        longitude: 2.345,
+        radius: 100,
+      });
 
-    const res = await request(app)
-      .delete(`/locations/${location._id}`)
-      .expect(401);
+      const res = await request(app)
+        .delete(`/locations/${location._id}`)
+        .expect(401);
 
-    const updatedLocation = await Location.findById(location._id);
-    expect(updatedLocation).not.toBeNull();
-    expect(res.body.error).toEqual('Invalid token');
-  });
+      const updatedLocation = await Location.findById(location._id);
+      expect(updatedLocation).not.toBeNull();
+      expect(res.body.error).toEqual('Invalid token');
+    })
+  );
 });
 
 describe('GET /locations', () => {
