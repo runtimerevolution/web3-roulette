@@ -570,6 +570,7 @@ const EditGiveaway = () => {
                   <Controller
                     name={'manual'}
                     control={control}
+                    defaultValue={true}
                     render={({ field: { ref, ...field } }) => (
                       <Checkbox
                         {...field}
