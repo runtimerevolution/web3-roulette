@@ -1,8 +1,23 @@
-import { isAfter, isBefore } from 'date-fns';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+
+import {
+  isAfter,
+  isBefore,
+} from 'date-fns';
 import Confetti from 'react-confetti';
 
-import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
+import {
+  Box,
+  Container,
+  Grid,
+  Snackbar,
+  Typography,
+} from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 
@@ -15,7 +30,11 @@ import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
 import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
 import { useGiveaways } from '../lib/queryClient';
-import { Giveaway, UserInfo, UserRole } from '../lib/types';
+import {
+  Giveaway,
+  UserInfo,
+  UserRole,
+} from '../lib/types';
 import { UserContext } from '../routes/AuthRoute';
 import ParticipationService from '../services/giveawayparticipation';
 
@@ -206,6 +225,7 @@ const Manage = () => {
                 >
                   <GiveawayCard
                     giveaway={g}
+                    archived={activeTab === Tabs.Archived}
                     onWinnersGeneration={handleWinners}
                   />
                 </Grid>
