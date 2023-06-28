@@ -1,9 +1,22 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { useDropzone } from 'react-dropzone';
-import { Controller, useForm } from 'react-hook-form';
+import {
+  Controller,
+  useForm,
+} from 'react-hook-form';
 import { useMutation } from 'react-query';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import {
+  Navigate,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DeleteIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -21,10 +34,14 @@ import {
   Typography,
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import {
+  DateTimePicker,
+  LocalizationProvider,
+} from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import uploadIcon from '../assets/CloudUpload.png';
+import WarningBox from '../components/WarningBox';
 import queryClient, {
   useGiveawayDetails,
   useLocations,
@@ -553,19 +570,23 @@ const EditGiveaway = () => {
                   <Controller
                     name={'manual'}
                     control={control}
-                    defaultValue={data?.manual ? data?.manual : false}
-                    render={({ field: { ref, ...field }, fieldState }) => (
+                    render={({ field: { ref, ...field } }) => (
                       <Checkbox
                         {...field}
-                        checked={field.value}
+                        checked={true}
                         inputRef={ref}
-                        disabled={!!giveawayId}
+                        disabled={true}
                       />
                     )}
                   />
                 }
                 label="Manual giveaway"
                 disabled={!!giveawayId}
+              />
+              <WarningBox
+                message="Automatic raffles will be available in the next
+                        version. The manual option requires an administrator 
+                        to raffle winners when the giveaway ends."
               />
             </Box>
             <Box className="cancel-save-container">
