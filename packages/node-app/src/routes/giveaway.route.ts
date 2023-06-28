@@ -29,8 +29,8 @@ router.get('/', listGiveaways);
 router.get('/:id', getGiveaway);
 router.put('/:id/participants', addParticipant);
 router.get('/:id/participants', getParticipants);
+router.put('/:id/participants/:participantId', updateParticipant);
 
 router.post('/', verifyAdmin, upload.single('image'), createGiveaway);
 router.put('/:id', verifyAdmin, upload.single('image'), updateGiveaway);
-router.put('/:id/participants/:participantId', verifyAdmin, updateParticipant);
 router.get('/:id/generate-winners', verifyAdmin, generateWinners);

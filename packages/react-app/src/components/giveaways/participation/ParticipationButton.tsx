@@ -9,18 +9,22 @@ import React, {
 import { Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
-import { Giveaway, ParticipationState, UserInfo } from '../../../lib/types';
+import {
+  Giveaway,
+  ParticipationState,
+  UserInfo,
+} from '../../../lib/types';
 import { UserContext } from '../../../routes/AuthRoute';
 import FrontendApiClient from '../../../services/backend';
 import ParticipationService from '../../../services/giveawayparticipation';
 import {
   ApprovalPendingButton,
   CheckingButton,
+  GenerateWinnersButton,
   ManageButton,
   NotAllowedButton,
   ParticipateButton,
   ParticipatingButton,
-  GenerateWinnersButton,
 } from './ActionButtons';
 import {
   PendingLocationModal,
@@ -175,7 +179,7 @@ const ParticipationButton = ({
       {showWinnerModal && (
         <WinnerModal
           giveaway={giveaway}
-          open={showWinnerModal}
+          open={true}
           onClose={() => setShowWinnerModal(false)}
         />
       )}
