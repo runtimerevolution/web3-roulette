@@ -1,8 +1,18 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+
 import QRCode from 'react-qr-code';
 
 import CheckIcon from '@mui/icons-material/Check';
-import { Button, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import LinkIcon from '../../../assets/Link.png';
 import {
@@ -84,9 +94,9 @@ const GiveawayAsideContent = ({
             <div>
               <Typography className="aside-title">Share QR code</Typography>
               <Typography className="aside-text">
-                Description Lorem ipsum dolor sit amet consectetur. Elementum
-                facilisi diam amet turpis. Nisi pharetra aenean tristique at
-                Lorem ipsum.
+                Share the love and spread the excitement! Share the QR code
+                below to disclose the giveaway and give your colleagues a chance
+                to win.
               </Typography>
             </div>
             <div className="qr-container" ref={qrContainerRef}>

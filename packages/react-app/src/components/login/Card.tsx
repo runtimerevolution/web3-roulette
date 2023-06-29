@@ -1,8 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 
-import { Button, Card, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  Card,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
+import {
+  TokenResponse,
+  useGoogleLogin,
+} from '@react-oauth/google';
 
 import google from '../../assets/google.svg';
 import logo from '../../assets/Logo.svg';
@@ -81,8 +89,8 @@ const LoginCard = ({ handleAuthError }: LoginCardProps) => {
             variant="body1"
             sx={{ fontSize: '17px' }}
           >
-            Lorem ipsum dolor sit amet consectetur. Fermentum lacus in eget
-            nulla
+            Unlock exclusive giveaways and rewards by logging in to our app. Let
+            the excitement begin!
           </Typography>
           <GoogleAuthButton
             variant="outlined"
