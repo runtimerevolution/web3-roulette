@@ -585,9 +585,9 @@ const EditGiveaway = () => {
                 disabled={!!giveawayId}
               />
               <WarningBox
-                message="Automatic raffles will be available in the next
+                message="Automatic giveaways will be available in the next
                         version. The manual option requires an administrator 
-                        to raffle winners when the giveaway ends."
+                        to generate winners when the giveaway ends."
               />
             </Box>
             <Box className="cancel-save-container">
