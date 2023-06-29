@@ -164,22 +164,17 @@ const ParticipationButton = ({
         </MuiAlert>
       </Snackbar>
       {showPendingModal && (
-        <PendingLocationModal
-          open={true}
-          onClose={() => setShowPendingModal(false)}
-        />
+        <PendingLocationModal onClose={() => setShowPendingModal(false)} />
       )}
       {showRejectedModal && (
         <RejectionModal
           giveaway={giveaway}
-          open={true}
           onClose={() => setShowRejectedModal(false)}
         />
       )}
       {showWinnerModal && (
         <WinnerModal
           giveaway={giveaway}
-          open={true}
           onClose={() => setShowWinnerModal(false)}
         />
       )}
