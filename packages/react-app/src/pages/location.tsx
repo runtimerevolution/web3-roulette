@@ -1,9 +1,30 @@
 import 'leaflet/dist/leaflet.css';
 
-import { useContext, useMemo, useRef, useState } from 'react';
-import { Controller, ControllerRenderProps, useForm } from 'react-hook-form';
-import { Circle, MapContainer, Marker, TileLayer } from 'react-leaflet';
-import { Navigate, useNavigate } from 'react-router-dom';
+import {
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
+import L from 'leaflet';
+import MarkerIcon from 'leaflet/dist/images/marker-icon.png';
+import MarkerShadow from 'leaflet/dist/images/marker-shadow.png';
+import {
+  Controller,
+  ControllerRenderProps,
+  useForm,
+} from 'react-hook-form';
+import {
+  Circle,
+  MapContainer,
+  Marker,
+  TileLayer,
+} from 'react-leaflet';
+import {
+  Navigate,
+  useNavigate,
+} from 'react-router-dom';
 
 import {
   Box,
@@ -18,7 +39,11 @@ import MuiAlert from '@mui/material/Alert';
 
 import SubHeader from '../components/SubHeader';
 import queryClient from '../lib/queryClient';
-import { Location, UserInfo, UserRole } from '../lib/types';
+import {
+  Location,
+  UserInfo,
+  UserRole,
+} from '../lib/types';
 import { UserContext } from '../routes/AuthRoute';
 import FrontendApiClient from '../services/backend';
 
@@ -39,7 +64,12 @@ const defaultPin = {
   lat: 38.7531,
   lng: -9.1452,
 };
+const defaultIcon = L.icon({
+  iconUrl: MarkerIcon,
+  shadowUrl: MarkerShadow,
+});
 const defaultRadius = 200;
+L.Marker.prototype.options.icon = defaultIcon;
 
 const LocationEdit = () => {
   const navigate = useNavigate();

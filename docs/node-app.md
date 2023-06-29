@@ -33,3 +33,43 @@ To manage the MongoDB locally, we recommend using [MongoDB Compass](https://www.
 ### Run the API
 
 Now, to run the API, all you need is `yarn start-node-app`.
+
+### Docker Setup
+
+1. Build docker image \
+   `docker build -f ./packages/node-app/node.Dockerfile -t luckydart-api .`
+
+2. Run a container \
+   `docker run --env-file ./packages/node-app/.env -p 3000:3000 luckydart-api`
+
+Helpful commands:
+
+- Stop the container: `docker stop <container-id>`
+- Start existing container: `docker start <container-id>`
+- List running containers: `docker ps`
+
+## Deploy the app
+
+1. Make sure you have the flyctl: a command line tool to work with Fly.io
+   https://fly.io/docs/hands-on/install-flyctl/
+
+2. Deploy the app \
+   `fly deploy --config fly.node.toml --dockerfile packages/node-app/node.Dockerfile .`
+
+Helpful commands:
+
+- Add a secret \
+  `fly --config fly.node.toml secrets set key=value`
+
+- Check secrets and env variables \
+  `fly --config fly.node.toml secrets list`
+  `fly --config fly.node.toml config env`
+
+- Check app status and vms \
+  `fly --config fly.node.toml status`
+
+- Check app services \
+  `fly services list -a luckydart-api`
+
+Monitor the app:
+https://fly.io/apps/luckydart-api/monitoring
