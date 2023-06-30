@@ -1,11 +1,21 @@
-import { Request, Response } from 'express';
+import {
+  Request,
+  Response,
+} from 'express';
 import fs from 'fs';
 import { omit } from 'lodash';
 
 import { giveawaysContract } from '../contracts';
-import { Giveaway, ParticipantState } from '../models/giveaway.model';
+import {
+  Giveaway,
+  ParticipantState,
+} from '../models/giveaway.model';
 import { Location } from '../models/location.model';
-import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
+import { UserRole } from '../models/user.model';
+import {
+  hasEnded,
+  isoStringToSecondsTimestamp,
+} from '../utils/date.utils';
 import {
   fileToBase64,
   getDefinedFields,
@@ -17,7 +27,11 @@ import {
   getParticipant,
   validateParticipant,
 } from '../utils/validations.utils';
-import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
+import {
+  decrypt,
+  encrypt,
+  objectIdToBytes24,
+} from '../utils/web3.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -233,12 +247,6 @@ export const updateParticipant = async (req: Request, res: Response) => {
     const giveaway = await Giveaway.findById(req.params.id);
     if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
-    // not active giveaway
-    const now = new Date();
-    if (giveaway.startTime > now || now > giveaway.endTime) {
-      return res.status(400).json({ error: 'Giveaway not active' });
-    }
-
     // valid participant
     const participant = giveaway.participants.find(
       (participant) => participant.id === req.params.participantId
@@ -248,7 +256,22 @@ export const updateParticipant = async (req: Request, res: Response) => {
 
     // handle state
     const { state, notified } = req.body;
+    const user = req.user;
+
     if (state) {
+      // not active giveaway
+      const now = new Date();
+      if (giveaway.startTime > now || now > giveaway.endTime) {
+        return res.status(400).json({ error: 'Giveaway not active' });
+      }
+
+      // unauthorized user
+      if (user.role !== UserRole.ADMIN) {
+        return res
+          .status(401)
+          .json({ error: 'Unauthorized to change participant state' });
+      }
+
       if (participant.state !== ParticipantState.PENDING)
         return res.status(400).json({ error: 'Participant state already set' });
 
@@ -265,6 +288,12 @@ export const updateParticipant = async (req: Request, res: Response) => {
 
     // save participant
     if (notified) {
+      if (user.email !== participant.id) {
+        return res
+          .status(401)
+          .json({ error: 'Unauthorized to change participant' });
+      }
+
       participant.notified = notified;
     }
     await giveaway.save();

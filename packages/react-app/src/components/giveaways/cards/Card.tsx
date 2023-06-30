@@ -1,9 +1,18 @@
-import { useContext, useState } from 'react';
+import {
+  useContext,
+  useState,
+} from 'react';
 
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
-import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  Skeleton,
+  Typography,
+} from '@mui/material';
 
 import Trophy from '../../../assets/Trophy.png';
 import { useParticipants } from '../../../lib/queryClient';
@@ -20,10 +29,15 @@ import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
 type GiveawayCardProps = {
   giveaway: Giveaway;
+  archived: boolean;
   onWinnersGeneration: () => void;
 };
 
-const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
+const GiveawayCard = ({
+  giveaway,
+  archived,
+  onWinnersGeneration,
+}: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useContext(UserContext) as UserInfo;
   const { data: participants } = useParticipants(giveaway._id);
@@ -117,26 +131,23 @@ const GiveawayCard = ({ giveaway, onWinnersGeneration }: GiveawayCardProps) => {
           </span>{' '}
           {format(giveaway.endTime, 'MMMM d, yyyy')}
         </Typography>
-        {giveaway.winners.length > 0 && (
+        {archived && (
           <Typography className="winners" gutterBottom>
             <span role="img" aria-label="party emoji">
               🥳
             </span>{' '}
-            {getWinnerStr()}
+            {giveaway.winners.length > 0 ? getWinnerStr() : 'Pending'}
           </Typography>
         )}
-        {giveaway.endTime < new Date() &&
-          participation !== ParticipationState.PENDING_WINNERS && (
-            <Typography className="participants" gutterBottom>
-              <span role="img" aria-label="people">
-                👥
-              </span>{' '}
-              {`${nrConfirmedParticipants} participants`}
-            </Typography>
-          )}
-        {(!participation ||
-          giveaway.endTime > new Date() ||
-          participation === ParticipationState.PENDING_WINNERS) && (
+        {archived && (
+          <Typography className="participants" gutterBottom>
+            <span role="img" aria-label="people">
+              👥
+            </span>{' '}
+            {`${nrConfirmedParticipants} participants`}
+          </Typography>
+        )}
+        {!archived && (
           <ParticipationButton
             giveaway={giveaway}
             onStateChange={onStateChange}

@@ -4,10 +4,16 @@ import request from 'supertest';
 
 import { app } from '../app';
 import { giveawaysContract } from '../contracts';
-import { Giveaway, ParticipantState } from '../models/giveaway.model';
+import {
+  Giveaway,
+  ParticipantState,
+} from '../models/giveaway.model';
 import { User } from '../models/user.model';
 import { isoStringToSecondsTimestamp } from '../utils/date.utils';
-import { encrypt, objectIdToBytes24 } from '../utils/web3.utils';
+import {
+  encrypt,
+  objectIdToBytes24,
+} from '../utils/web3.utils';
 import {
   adminAuthenticated,
   authenticated,
@@ -469,6 +475,50 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
         ParticipantState.REJECTED
       );
       expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
+    })
+  );
+
+  it(
+    'should not update state if user is not admin',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 10000,
+      });
+      await wait(200);
+
+      const body = { state: ParticipantState.REJECTED };
+      const res = await request(app)
+        .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
+        .send(body);
+
+      const updatedGiveaway = await Giveaway.findById(giveaway._id);
+      expect(res.status).toEqual(401);
+      expect(updatedGiveaway.participants[0].state).toEqual(
+        ParticipantState.PENDING
+      );
+    })
+  );
+
+  it(
+    'should not update other user notified flag',
+    authenticated(async () => {
+      const giveaway = await Giveaway.create({
+        ...giveawayData,
+        startTime: Date.now() + 60,
+        endTime: Date.now() + 10000,
+      });
+      await wait(200);
+
+      const body = { notified: true };
+      const res = await request(app)
+        .put(`/giveaways/${giveaway._id}/participants/${participant.id}`)
+        .send(body);
+
+      const updatedGiveaway = await Giveaway.findById(giveaway._id);
+      expect(res.status).toEqual(401);
+      expect(updatedGiveaway.participants[0].notified).toEqual(false);
     })
   );
 });
