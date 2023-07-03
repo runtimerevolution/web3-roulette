@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 
 import { Giveaway, UserInfo } from '../../../lib/types';
 import FrontendApiClient from '../../../services/backend';
@@ -67,10 +67,16 @@ const GenerateWinnersButton = ({
   successCallback,
   errorCallback,
 }: GenerateWinnersProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const generateWinners = () => {
+    setIsLoading(true);
     FrontendApiClient.generateWinners(giveaway._id)
-      .then(() => successCallback())
+      .then(() => {
+        setIsLoading(false);
+        successCallback();
+      })
       .catch((err) => {
+        setIsLoading(false);
         console.log(`problems generating winners: ${err}`);
         errorCallback();
       });
@@ -88,7 +94,7 @@ const GenerateWinnersButton = ({
       onClick={generateWinners}
       disableElevation
     >
-      Generate a winner
+      {isLoading? <CircularProgress size='1.5rem'/> : 'Generate a winner'}
     </Button>
   );
 };

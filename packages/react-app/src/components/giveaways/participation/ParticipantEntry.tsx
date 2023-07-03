@@ -1,4 +1,4 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, CircularProgress, Stack, Typography } from '@mui/material';
 
 import { Participant } from '../../../lib/types';
 
@@ -6,12 +6,14 @@ type ParticipantEntryProps = {
   participant: Participant;
   actionAllowed: boolean;
   onUpdateState: (participantId: string, newState: string) => void;
+  isLoading: string;
 };
 
 const ParticipantEntry = ({
   participant,
   actionAllowed,
   onUpdateState,
+  isLoading,
 }: ParticipantEntryProps) => {
   return (
     <Stack
@@ -32,7 +34,7 @@ const ParticipantEntry = ({
           disableElevation
           disabled={!actionAllowed}
         >
-          Reject
+          {isLoading === 'rejected'? <CircularProgress size='1.5rem'/> : 'Reject'}
         </Button>
         <Button
           className={`action-button approve ${!actionAllowed && 'disabled'}`}
@@ -44,7 +46,7 @@ const ParticipantEntry = ({
           disableElevation
           disabled={!actionAllowed}
         >
-          Approve
+          {isLoading === 'confirmed'? <CircularProgress size='1.5rem'/> : 'Approve'}
         </Button>
       </Stack>
     </Stack>

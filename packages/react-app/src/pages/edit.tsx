@@ -24,6 +24,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Container,
   FormControlLabel,
   Grid,
@@ -90,6 +91,7 @@ const EditGiveaway = () => {
   const [binImageFile, setBinImageFile] = useState<File>();
   const [imageURL, setImageURL] = useState<string>('');
   const [imageError, setImageError] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onDrop = useCallback((files: File[]) => {
     setImageURL(URL.createObjectURL(files[0]));
@@ -125,6 +127,7 @@ const EditGiveaway = () => {
   const saveMutation = useMutation({
     mutationFn: (data: FormData) => API.saveGiveaway(data),
     onError: (e: any) => {
+      setIsLoading(false);
       if (Array.isArray(e.data.error)) {
         addServerErrors(e.data.error, setError);
       } else if (e.data.error) {
@@ -132,6 +135,7 @@ const EditGiveaway = () => {
       }
     },
     onSuccess: () => {
+      setIsLoading(false);
       navigate(-1);
       queryClient.invalidateQueries('giveaways');
       if (giveawayId) {
@@ -171,6 +175,7 @@ const EditGiveaway = () => {
         }
       });
     }
+    setIsLoading(true);
     saveMutation.mutate(formData);
   };
 
@@ -605,7 +610,7 @@ const EditGiveaway = () => {
                 onClick={handleSubmit(saveGiveaway)}
                 disableElevation
               >
-                Save
+                {isLoading ? <CircularProgress size='1.5rem'/> : 'Save'}
               </Button>
             </Box>
           </Grid>
