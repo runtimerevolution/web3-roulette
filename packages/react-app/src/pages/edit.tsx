@@ -24,7 +24,6 @@ import {
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   Container,
   FormControlLabel,
   Grid,
@@ -40,6 +39,7 @@ import {
   LocalizationProvider,
 } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LoadingButton } from '@mui/lab';
 
 import uploadIcon from '../assets/CloudUpload.png';
 import WarningBox from '../components/WarningBox';
@@ -604,14 +604,25 @@ const EditGiveaway = () => {
               >
                 Cancel
               </Button>
-              <Button
+              <LoadingButton
                 className="save-btn"
                 variant="contained"
+                sx={{
+                  backgroundColor: '#DBDBFB',
+                  color: '#6D6DF0',
+          
+                  '&.Mui-disabled': {
+                    background: '#6D6DF0',
+                    color: 'white',
+                  },
+                }}
                 onClick={handleSubmit(saveGiveaway)}
                 disableElevation
+                loading={isLoading}
+                disabled={isLoading}
               >
-                {isLoading ? <CircularProgress size='1.5rem'/> : 'Save'}
-              </Button>
+                {!isLoading && 'Save'}
+              </LoadingButton>
             </Box>
           </Grid>
         </Grid>

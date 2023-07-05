@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Button, CircularProgress } from '@mui/material';
+import { Button } from '@mui/material';
 
 import { Giveaway, UserInfo } from '../../../lib/types';
 import FrontendApiClient from '../../../services/backend';
@@ -83,19 +83,26 @@ const GenerateWinnersButton = ({
   };
 
   return (
-    <Button
+    <LoadingButton
       className="card-action-btn"
       variant="contained"
       sx={{
         ...ButtonBaseStyle,
         backgroundColor: '#DBDBFB',
         color: '#6D6DF0',
+
+        '&.Mui-disabled': {
+          background: '#6D6DF0',
+          color: 'white',
+        },
       }}
       onClick={generateWinners}
       disableElevation
+      loading={isLoading}
+      disabled={isLoading}
     >
-      {isLoading? <CircularProgress size='1.5rem'/> : 'Generate a winner'}
-    </Button>
+      {!isLoading && 'Generate a winner'}
+    </LoadingButton>
   );
 };
 
