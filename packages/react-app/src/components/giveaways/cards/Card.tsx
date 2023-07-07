@@ -15,9 +15,11 @@ import {
 } from '@mui/material';
 
 import Trophy from '../../../assets/Trophy.png';
+import SadEmoji from '../../../assets/SadEmoji.png';
 import { useParticipants } from '../../../lib/queryClient';
 import {
   Giveaway,
+  GiveawayStatus,
   ParticipationState,
   UserInfo,
   UserRole,
@@ -106,6 +108,14 @@ const GiveawayCard = ({
             </div>
           </div>
         )}
+        {giveaway.status === GiveawayStatus.INVALID && (
+          <div className="invalid">
+            <div style={{ textAlign: 'center' }}>
+              <img className="icon" src={SadEmoji} alt="SadEmoji" />
+              <Typography className="message">Not enough participants</Typography>
+            </div>
+          </div>
+        )}
       </div>
       <CardContent className="giveaway-card">
         <Typography
@@ -136,7 +146,7 @@ const GiveawayCard = ({
             <span role="img" aria-label="party emoji">
               🥳
             </span>{' '}
-            {giveaway.winners.length > 0 ? getWinnerStr() : 'Pending'}
+            {giveaway.winners.length > 0 ? getWinnerStr() : 'No Winners'}
           </Typography>
         )}
         {archived && (
