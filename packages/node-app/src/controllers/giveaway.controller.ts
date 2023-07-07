@@ -1,25 +1,17 @@
-import {
-  Request,
-  Response,
-} from 'express';
+import { Request, Response } from 'express';
 import fs from 'fs';
 import { omit } from 'lodash';
 
 import { giveawaysContract } from '../contracts';
-import {
-  Giveaway,
-  ParticipantState,
-} from '../models/giveaway.model';
+import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
 import { UserRole } from '../models/user.model';
-import {
-  hasEnded,
-  isoStringToSecondsTimestamp,
-} from '../utils/date.utils';
+import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
 import {
   fileToBase64,
   getDefinedFields,
   giveawayStats,
+  giveawayStatus,
   giveawayWinners,
   giveawayWinningChance,
   handleError,
@@ -28,11 +20,7 @@ import {
   getParticipant,
   validateParticipant,
 } from '../utils/validations.utils';
-import {
-  decrypt,
-  encrypt,
-  objectIdToBytes24,
-} from '../utils/web3.utils';
+import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -46,6 +34,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
       ...omit(giveaway, ['participants']),
       winners: giveawayWinners(giveaway),
       stats: giveawayStats(giveaway),
+      status: giveawayStatus(giveaway),
     }));
 
     res.status(200).json(giveaways);
