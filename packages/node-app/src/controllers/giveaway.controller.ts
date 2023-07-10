@@ -89,7 +89,7 @@ export const createGiveaway = async (req: Request, res: Response) => {
     if (requirements && requirements.location) {
       const location = await Location.findById(requirements.location);
       if (!location)
-        return res.status(404).json({ error: 'Location not found' });
+        return res.status(400).json({ error: 'Location not found' });
     }
 
     // create giveaway
@@ -136,7 +136,7 @@ export const updateGiveaway = async (req: Request, res: Response) => {
   const file = req.file as Express.Multer.File;
   try {
     const { id } = req.params;
-    const { title, description, prize, rules } = req.body;
+    const { title, description, prize, rules, manual } = req.body;
     const image = file ? fileToBase64(file as Express.Multer.File) : undefined;
     const updateFields = getDefinedFields({
       title,
@@ -144,6 +144,7 @@ export const updateGiveaway = async (req: Request, res: Response) => {
       prize,
       rules,
       image,
+      manual
     });
     const giveaway = await Giveaway.findByIdAndUpdate(id, updateFields, {
       new: true,

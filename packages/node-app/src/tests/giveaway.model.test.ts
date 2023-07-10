@@ -93,8 +93,8 @@ describe('Giveaway model', () => {
     const giveaway = new Giveaway({
       title: 'Test giveaway',
       description: 'This is a test giveaway',
-      startTime: new Date(2023, 5, 30),
-      endTime: new Date(2023, 6, 1),
+      startTime: new Date(2050, 5, 30),
+      endTime: new Date(2050, 6, 1),
       numberOfWinners: 1,
       prize: 'Test prize',
       image: 'test-image-base64',
