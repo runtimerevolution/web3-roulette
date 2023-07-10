@@ -245,6 +245,7 @@ const EditGiveaway = () => {
             onClick={() => {
               navigate(-1);
             }}
+            disabled={isLoading}
           >
             Back
           </Button>
@@ -601,6 +602,7 @@ const EditGiveaway = () => {
                 variant="outlined"
                 onClick={() => navigate(-1)}
                 disableElevation
+                disabled={isLoading}
               >
                 Cancel
               </Button>
