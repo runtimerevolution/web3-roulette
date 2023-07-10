@@ -67,29 +67,42 @@ const GenerateWinnersButton = ({
   successCallback,
   errorCallback,
 }: GenerateWinnersProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const generateWinners = () => {
+    setIsLoading(true);
     FrontendApiClient.generateWinners(giveaway._id)
-      .then(() => successCallback())
+      .then(() => {
+        setIsLoading(false);
+        successCallback();
+      })
       .catch((err) => {
+        setIsLoading(false);
         console.log(`problems generating winners: ${err}`);
         errorCallback();
       });
   };
 
   return (
-    <Button
+    <LoadingButton
       className="card-action-btn"
       variant="contained"
       sx={{
         ...ButtonBaseStyle,
         backgroundColor: '#DBDBFB',
         color: '#6D6DF0',
+
+        '&.Mui-disabled': {
+          background: '#6D6DF0',
+          color: 'white',
+        },
       }}
       onClick={generateWinners}
       disableElevation
+      loading={isLoading}
+      disabled={isLoading}
     >
-      Generate a winner
-    </Button>
+      {!isLoading && 'Generate a winner'}
+    </LoadingButton>
   );
 };
 

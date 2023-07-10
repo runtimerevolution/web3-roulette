@@ -1,4 +1,5 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 import { Participant } from '../../../lib/types';
 
@@ -6,12 +7,14 @@ type ParticipantEntryProps = {
   participant: Participant;
   actionAllowed: boolean;
   onUpdateState: (participantId: string, newState: string) => void;
+  isLoading: string;
 };
 
 const ParticipantEntry = ({
   participant,
   actionAllowed,
   onUpdateState,
+  isLoading,
 }: ParticipantEntryProps) => {
   return (
     <Stack
@@ -22,30 +25,50 @@ const ParticipantEntry = ({
     >
       <Typography className="participant-name">{participant.name}</Typography>
       <Stack direction={'row'}>
-        <Button
+        <LoadingButton
           className={`action-button reject ${!actionAllowed && 'disabled'}`}
           variant="contained"
+          sx={{
+            backgroundColor: '#DBDBFB',
+            color: '#6D6DF0',
+    
+            '&.Mui-disabled': {
+              background: '#6D6DF0',
+              color: 'white',
+            },
+          }}
           color="error"
           onClick={() => {
             onUpdateState(participant.id, 'rejected');
           }}
           disableElevation
-          disabled={!actionAllowed}
+          disabled={!actionAllowed || isLoading !== 'no action'}
+          loading={isLoading === 'rejected'}
         >
-          Reject
-        </Button>
-        <Button
+          {isLoading !=='rejected' && 'Reject'}
+        </LoadingButton>
+        <LoadingButton
           className={`action-button approve ${!actionAllowed && 'disabled'}`}
           variant="contained"
           color="success"
+          sx={{
+            backgroundColor: '#DBDBFB',
+            color: '#6D6DF0',
+    
+            '&.Mui-disabled': {
+              background: '#6D6DF0',
+              color: 'white',
+            },
+          }}
           onClick={() => {
             onUpdateState(participant.id, 'confirmed');
           }}
           disableElevation
-          disabled={!actionAllowed}
+          disabled={!actionAllowed || isLoading !== 'no action'}
+          loading={isLoading === 'confirmed'}
         >
-          Approve
-        </Button>
+          {isLoading !=='confirmed' && 'Approve'}
+        </LoadingButton>
       </Stack>
     </Stack>
   );
