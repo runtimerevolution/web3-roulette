@@ -40,6 +40,7 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
   return (
     <Stack sx={{ paddingLeft: { sm: '80px', lg: '0px' } }}>
       <Typography
+        className="giveaway-title"
         sx={{
           fontSize: '35px',
           fontWeight: 'bold',

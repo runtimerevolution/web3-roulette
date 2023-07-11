@@ -71,7 +71,7 @@ const GiveawayAsideContent = ({
     <div>
       {!isAdmin && (
         <Stack className="participation-btn-container">
-          <div style={{ width: '290px' }}>
+          <div className="participation-btn-aside">
             <ParticipationButton
               giveaway={giveaway}
               onStateChange={onParticipationChange}
@@ -84,7 +84,7 @@ const GiveawayAsideContent = ({
         style={{ paddingTop: isAdmin ? '70px' : '20px' }}
       >
         {giveaway.rules && (
-          <Stack sx={{ marginBottom: '41px' }}>
+          <Stack className="aside-rules-container">
             <Typography className="aside-title">Rules</Typography>
             <Typography className="aside-text">{giveaway.rules}</Typography>
           </Stack>
