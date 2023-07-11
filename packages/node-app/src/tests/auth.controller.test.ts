@@ -106,8 +106,8 @@ describe('GET /me', () => {
   });
 
   it('should not get user information missing token', async () => {
-    const res = await request(app).get('/me').expect(403);
-    expect(res.body.error).toEqual('Access token is required to access');
+    const res = await request(app).get('/me').expect(401);
+    expect(res.body.error).toEqual('Invalid Authentication');
   });
 
   it('should not get user information invalid token', async () => {
@@ -115,6 +115,6 @@ describe('GET /me', () => {
       .get('/me')
       .set('Authorization', `Bearer invalid`)
       .expect(401);
-    expect(res.body.error).toEqual('Invalid token');
+    expect(res.body.error).toEqual('Invalid Authentication');
   });
 });
