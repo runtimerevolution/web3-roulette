@@ -288,12 +288,7 @@ const EditGiveaway = () => {
                   <img
                     src={imageURL}
                     alt=""
-                    style={{
-                      width: '100%',
-                      maxHeight: '250px',
-                      cursor: 'pointer',
-                      borderRadius: '8px',
-                    }}
+                    className="image-input-filled"
                   />
                   <input {...getInputProps()} />
                 </Box>
@@ -312,11 +307,11 @@ const EditGiveaway = () => {
                     borderRadius: '8px',
                   }}
                 >
-                  <img src={uploadIcon} alt="" style={{ width: '5rem' }} />
+                  <img src={uploadIcon} alt="" className="image-input-empty" />
                   <input {...getInputProps()} />
                   <Typography sx={{ mt: '1rem', fontWeight: '800' }}>
                     Drag & drop files or{' '}
-                    <span style={{ color: '#6D6DF0' }}>Browse</span>
+                    <span className="input-browse-text">Browse</span>
                   </Typography>
                   <Typography sx={{ color: '#676767', mt: '1rem' }}>
                     Supported formats: JPEG, PNG, GIF

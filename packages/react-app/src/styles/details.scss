@@ -51,6 +51,10 @@
   opacity: 0.9;
 }
 
+.aside-rules-container {
+  margin-bottom: 41px;
+}
+
 .aside-title {
   font-size: 20px !important;
   font-weight: bold !important;
@@ -124,4 +128,8 @@
     margin-left: 0;
     align-items: center !important;
   }
+}
+
+.participation-btn-aside {
+  width: 290px;
 }

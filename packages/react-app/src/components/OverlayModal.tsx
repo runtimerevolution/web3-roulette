@@ -22,7 +22,7 @@ const OverlayModal = ({
       onClick={onClose}
     >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div style={{ textAlign: 'center' }}>
+        <div className="center-text">
           <img className="img" src={img} alt="Location" />
           <Typography className="modal-title">{title}</Typography>
           <div className="description">{description}</div>

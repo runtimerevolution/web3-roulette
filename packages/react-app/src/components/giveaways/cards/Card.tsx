@@ -100,7 +100,7 @@ const GiveawayCard = ({
         <img className="img" src={giveaway.image} alt="Giveaway thumb" />
         {isWinner && (
           <div className="winner">
-            <div style={{ textAlign: 'center' }}>
+            <div className="center-text">
               <img className="icon" src={Trophy} alt="Trophy" />
               <Typography className="message">You won this contest!</Typography>
             </div>
