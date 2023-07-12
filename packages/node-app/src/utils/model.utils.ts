@@ -70,3 +70,20 @@ export const handleError = (error: Error): APIError => {
   }
   return { code: 500, message: error.message };
 };
+
+export const giveawayWinningChance = (email, stats, participants, giveaway) => {
+  const { nrConfirmedParticipants } = stats;
+  if (nrConfirmedParticipants === 0) return 100;
+
+  const isRegistered = participants.some(
+    (p) => p.id === email && p.state === 'confirmed'
+  );
+  const totalParticipants = isRegistered
+    ? nrConfirmedParticipants
+    : nrConfirmedParticipants + 1;
+  const winningChance = Math.floor(
+    (giveaway.numberOfWinners / totalParticipants) * 100
+  );
+
+  return Math.min(winningChance, 100);
+};

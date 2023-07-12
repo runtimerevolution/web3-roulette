@@ -20,22 +20,7 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
 
   const nrParticipants = giveaway.stats.nrConfirmedParticipants;
   const nrPending = giveaway.stats.nrPendingParticipants;
-
-  const winningChance = useMemo(() => {
-    if (nrParticipants === 0) return 100;
-
-    const isRegistered = participants.some(
-      (p) => p.id === userInfo.email && p.state === 'confirmed'
-    );
-    const totalParticipants = isRegistered
-      ? nrParticipants
-      : nrParticipants + 1;
-    const winningChance = Math.floor(
-      (giveaway.numberOfWinners / totalParticipants) * 100
-    );
-
-    return Math.min(winningChance, 100);
-  }, [giveaway, nrParticipants, participants, userInfo]);
+  const { winningChance } = giveaway;
 
   return (
     <Stack sx={{ paddingLeft: { sm: '80px', lg: '0px' } }}>
