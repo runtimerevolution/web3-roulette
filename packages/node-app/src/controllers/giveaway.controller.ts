@@ -1,7 +1,4 @@
-import {
-  Request,
-  Response,
-} from 'express';
+import { Request, Response } from 'express';
 import fs from 'fs';
 import { omit } from 'lodash';
 
@@ -10,6 +7,7 @@ import {
   Giveaway,
   ParticipantState,
 } from '../models/giveaway.model';
+import { GiveawayLog } from '../models/log_data.model';
 import { Location } from '../models/location.model';
 import { UserRole } from '../models/user.model';
 import {
@@ -108,6 +106,19 @@ export const createGiveaway = async (req: Request, res: Response) => {
     });
     giveawayId = giveaway._id;
 
+    await GiveawayLog.create({
+      action: 'create-giveaway',
+      author: req.user.email,
+      giveaway_id: giveawayId,
+      changes: {
+        title,
+        description,
+        prize,
+        rules,
+        image,
+      },
+    });
+
     // add giveaway to smart contract
     await giveawaysContract.methods
       .createGiveaway(
@@ -147,6 +158,18 @@ export const updateGiveaway = async (req: Request, res: Response) => {
     });
     const giveaway = await Giveaway.findByIdAndUpdate(id, updateFields, {
       new: true,
+    });
+    await GiveawayLog.create({
+      action: 'update-giveaway',
+      author: req.user.email,
+      giveaway_id: giveaway.id,
+      changes: {
+        title,
+        description,
+        prize,
+        rules,
+        image,
+      },
     });
 
     res.status(200).json(giveaway);
@@ -218,8 +241,22 @@ export const addParticipant = async (req: Request, res: Response) => {
       giveaway.participants = giveaway.participants.filter(
         (p) => p.id !== participant.id
       );
+      const { id, title, description, prize, rules, image } = giveaway;
       await giveaway.save();
       throw error;
+      await GiveawayLog.create({
+        action: 'add-giveaway-participant',
+        author: req.user.email,
+        giveaway_id: id,
+        changes: {
+          title,
+          description,
+          prize,
+          rules,
+          image,
+        },
+      });
+      
     }
 
     res.status(200).json({ message: 'Participant added successfully' });
@@ -298,6 +335,20 @@ export const updateParticipant = async (req: Request, res: Response) => {
     }
     await giveaway.save();
 
+    const { id, title, description, prize, rules, image } = giveaway;
+    await GiveawayLog.create({
+      action: 'update-giveaway-participant',
+      author: req.user.email,
+      giveaway_id: id,
+      changes: {
+        title,
+        description,
+        prize,
+        rules,
+        image,
+      },
+    });
+
     res.status(200).json({ message: 'Participant updated successfully' });
   } catch (error) {
     const { code, message } = handleError(error);
@@ -330,6 +381,21 @@ export const generateWinners = async (req: Request, res: Response) => {
 
     giveaway.winners = decryptedWinners;
     await giveaway.save();
+
+    const { title, description, prize, rules, image } = giveaway;
+
+    await GiveawayLog.create({
+      action: 'generate-giveaway-winners',
+      author: req.user.email,
+      giveaway_id: id,
+      changes: {
+        title,
+        description,
+        prize,
+        rules,
+        image,
+      },
+    });
 
     res.status(200).json(decryptedWinners);
   } catch (error) {
