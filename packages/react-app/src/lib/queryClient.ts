@@ -12,7 +12,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const useGiveaways = () => useQuery('giveaways', API.getGiveaways);
+const useGiveaways = ({ active }) =>
+  useQuery('giveaways', () => API.getGiveaways({ active }));
 
 const useGiveawayDetails = (id?: string) =>
   useQuery<Giveaway | undefined>(['details', id], () =>
