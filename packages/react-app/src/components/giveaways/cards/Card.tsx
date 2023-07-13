@@ -15,9 +15,11 @@ import {
 } from '@mui/material';
 
 import Trophy from '../../../assets/Trophy.png';
+import SadEmoji from '../../../assets/SadEmoji.png';
 import { useParticipants } from '../../../lib/queryClient';
 import {
   Giveaway,
+  GiveawayStatus,
   ParticipationState,
   UserInfo,
   UserRole,
@@ -103,6 +105,14 @@ const GiveawayCard = ({
             <div style={{ textAlign: 'center' }}>
               <img className="icon" src={Trophy} alt="Trophy" />
               <Typography className="message">You won this contest!</Typography>
+            </div>
+          </div>
+        )}
+        {giveaway.status === GiveawayStatus.INVALID && (
+          <div className="invalid">
+            <div style={{ textAlign: 'center' }}>
+              <img className="icon" src={SadEmoji} alt="SadEmoji" />
+              <Typography className="message">Not enough participants</Typography>
             </div>
           </div>
         )}
