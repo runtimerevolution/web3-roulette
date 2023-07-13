@@ -17,10 +17,13 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
   const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const isAdmin = userInfo.role === UserRole.ADMIN;
-
-  const nrParticipants = giveaway.stats.nrConfirmedParticipants;
-  const nrPending = giveaway.stats.nrPendingParticipants;
-  const { winningChance } = giveaway;
+  const {
+    stats: {
+      nrConfirmedParticipants,
+      nrPendingParticipants,
+    },
+    winningChance,
+  } = giveaway;
 
   return (
     <Stack sx={{ paddingLeft: { sm: '80px', lg: '0px' } }}>
@@ -89,14 +92,14 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
               >
                 👥
               </span>{' '}
-              {`${nrParticipants} participants`}
+              {`${nrConfirmedParticipants} participants`}
             </Typography>
             {!isAdmin && participants && (
               <span className="winning-chance">{`You have a ${winningChance}% chance of winning`}</span>
             )}
           </div>
-          {isAdmin && nrPending > 0 && (
-            <PendingApprovalBanner giveaway={giveaway} nrPending={nrPending} />
+          {isAdmin && nrPendingParticipants > 0 && (
+            <PendingApprovalBanner giveaway={giveaway} nrPending={nrPendingParticipants} />
           )}
         </Stack>
       </Stack>
