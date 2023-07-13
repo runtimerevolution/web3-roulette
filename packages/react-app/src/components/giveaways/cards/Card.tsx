@@ -146,7 +146,7 @@ const GiveawayCard = ({
             <span role="img" aria-label="party emoji">
               🥳
             </span>{' '}
-            {giveaway.winners.length > 0 ? getWinnerStr() : 'No Winners'}
+            {giveaway.winners.length > 0 ? getWinnerStr() : 'Pending'}
           </Typography>
         )}
         {archived && (
