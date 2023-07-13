@@ -21,6 +21,7 @@ import {
   getDefinedFields,
   giveawayStats,
   giveawayWinners,
+  giveawayWinningChance,
   handleError,
 } from '../utils/model.utils';
 import {
@@ -57,10 +58,14 @@ export const listGiveaways = async (req: Request, res: Response) => {
 export const getGiveaway = async (req: Request, res: Response) => {
   try {
     let giveaway = await Giveaway.findById(req.params.id).lean();
+    const { participants } = giveaway;
+    const stats = giveawayStats(giveaway);
+    const winningChance = giveawayWinningChance(req.user.email, stats, participants, giveaway);
     giveaway = {
       ...omit(giveaway, ['participants']),
       winners: giveawayWinners(giveaway),
-      stats: giveawayStats(giveaway),
+      stats,
+      winningChance: winningChance,
     };
     res.status(200).json(giveaway);
   } catch (error) {
