@@ -16,6 +16,7 @@ import {
   giveawayWinners,
   giveawayWinningChance,
   handleError,
+  getActiveGiveaways,
 } from '../utils/model.utils';
 import {
   getParticipant,
@@ -33,40 +34,21 @@ export const listGiveaways = async (req: Request, res: Response) => {
       .lean();
 
     const active = req.query.active === 'true' ? true : false;
+    const activeGiveaways = getActiveGiveaways(giveaways, req.user.role);
 
-    const activeGiveaways = giveaways?.filter((g) => {
-      const now = new Date();
-      const giveawayStartDate = new Date(g.startTime);
-      const giveawayEndDate = new Date(g.endTime);
-      const status =
-        g.endTime < new Date() &&
-        (g.participants.length <= 0 ||
-          g.numberOfWinners > g.participants.length)
-          ? false
-          : true;
-      const hasPendingWinners =
-        g.manual && new Date() > g.endTime && g.winners.length === 0
-          ? false
-          : true;
-
-      if (req.user.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
-        return false;
-      }
-
-      if (req.user.role === UserRole.ADMIN && hasPendingWinners) return true;
-
-      return status;
-    });
-
-    giveaways = active ? activeGiveaways.map((giveaway) => ({
-      ...omit(giveaway, ['participants']),
-      winners: giveawayWinners(giveaway),
-      stats: giveawayStats(giveaway),
-    })) : giveaways.filter(g => !activeGiveaways.includes(g)).map((giveaway) => ({
-      ...omit(giveaway, ['participants']),
-      winners: giveawayWinners(giveaway),
-      stats: giveawayStats(giveaway),
-    }));
+    giveaways = active
+      ? activeGiveaways.map((giveaway) => ({
+          ...omit(giveaway, ['participants']),
+          winners: giveawayWinners(giveaway),
+          stats: giveawayStats(giveaway),
+        }))
+      : giveaways
+          .filter((g) => !activeGiveaways.includes(g))
+          .map((giveaway) => ({
+            ...omit(giveaway, ['participants']),
+            winners: giveawayWinners(giveaway),
+            stats: giveawayStats(giveaway),
+          }));
 
     res.status(200).json(giveaways);
   } catch (error) {
