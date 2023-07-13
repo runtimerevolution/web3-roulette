@@ -44,36 +44,22 @@ const Tabs = {
   Archived: 1,
 };
 
+const IsTabActive = (tab) => !!!tab;
+
 const Manage = () => {
   const userInfo = useContext(UserContext) as UserInfo;
-  const { isLoading, data, refetch } = useGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
+  const { isLoading, data, refetch } = useGiveaways({
+    active: IsTabActive(activeTab),
+  });
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
 
-  const giveaways = useMemo(() => {
-    return data?.filter((g) => {
+  const giveaways = data;
 
-      if (userInfo.role !== UserRole.ADMIN && g.status === GiveawayStatus.FUTURE) {
-        return false;
-      }
 
-      if (g._id === countdownGiveaway?._id) {
-        return false;
-      }
-
-      if (
-        userInfo.role === UserRole.ADMIN &&
-        g.status === GiveawayStatus.PENDING
-      )
-        return activeTab === Tabs.Active;
-
-      return activeTab === Tabs.Active
-        ? (g.status === GiveawayStatus.FUTURE || g.status === GiveawayStatus.ONGOING)
-        : (g.status === GiveawayStatus.FINISHED || g.status === GiveawayStatus.INVALID);
-    });
-  }, [activeTab, data, countdownGiveaway]);
+  useEffect(() => {refetch()}, [activeTab]);
 
   useEffect(() => {
     if (data === undefined && !isLoading) {

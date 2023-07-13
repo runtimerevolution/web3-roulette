@@ -60,20 +60,6 @@ export const giveawayWinners = (giveaway: any) => {
   return winners;
 };
 
-export const giveawayStatus = (giveaway: any) => {
-  if (giveaway.endTime < new Date()) {
-    if (
-      giveaway.participants.length <= 0 ||
-      giveaway.numberOfWinners > giveaway.participants.length
-    )
-      return 'invalid';
-    if (giveaway.winners.length > 0) return 'finished';
-    return 'pending';
-  }
-  if (giveaway.startTime > new Date()) return 'future';
-  return 'ongoing';
-};
-
 export const handleError = (error: Error): APIError => {
   if (error instanceof MongooseError.ValidationError) {
     const message = Object.entries(error.errors).map(([field, error]) => ({

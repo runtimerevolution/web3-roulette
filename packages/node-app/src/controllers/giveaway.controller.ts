@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import fs from 'fs';
 import { omit } from 'lodash';
 
+import { isAfter, isBefore } from 'date-fns';
+
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
@@ -11,7 +13,6 @@ import {
   fileToBase64,
   getDefinedFields,
   giveawayStats,
-  giveawayStatus,
   giveawayWinners,
   giveawayWinningChance,
   handleError,
@@ -21,6 +22,7 @@ import {
   validateParticipant,
 } from '../utils/validations.utils';
 import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
+import { parse } from 'querystring';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -30,11 +32,40 @@ export const listGiveaways = async (req: Request, res: Response) => {
       )
       .lean();
 
-    giveaways = giveaways.map((giveaway) => ({
+    const active = req.query.active === 'true' ? true : false;
+
+    const activeGiveaways = giveaways?.filter((g) => {
+      const now = new Date();
+      const giveawayStartDate = new Date(g.startTime);
+      const giveawayEndDate = new Date(g.endTime);
+      const status =
+        g.endTime < new Date() &&
+        (g.participants.length <= 0 ||
+          g.numberOfWinners > g.participants.length)
+          ? false
+          : true;
+      const hasPendingWinners =
+        g.manual && new Date() > g.endTime && g.winners.length === 0
+          ? false
+          : true;
+
+      if (req.user.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
+        return false;
+      }
+
+      if (req.user.role === UserRole.ADMIN && hasPendingWinners) return true;
+
+      return status;
+    });
+
+    giveaways = active ? activeGiveaways.map((giveaway) => ({
       ...omit(giveaway, ['participants']),
       winners: giveawayWinners(giveaway),
       stats: giveawayStats(giveaway),
-      status: giveawayStatus(giveaway),
+    })) : giveaways.filter(g => !activeGiveaways.includes(g)).map((giveaway) => ({
+      ...omit(giveaway, ['participants']),
+      winners: giveawayWinners(giveaway),
+      stats: giveawayStats(giveaway),
     }));
 
     res.status(200).json(giveaways);
