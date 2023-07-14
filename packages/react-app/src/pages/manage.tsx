@@ -49,14 +49,24 @@ const isTabActive = (tab) => tab === Tabs.Active;
 const Manage = () => {
   const userInfo = useContext(UserContext) as UserInfo;
   const [activeTab, setActiveTab] = useState(Tabs.Active);
-  const { data: giveaways, isLoading, refetch } = useGiveaways({
-    active: isTabActive(activeTab),
-  });
+  const {
+    data: giveaways,
+    isLoading,
+    refetch,
+  } = useGiveaways(
+    isTabActive(activeTab)
+      ? {
+          active: isTabActive(activeTab),
+        }
+      : { archived: !isTabActive(activeTab) }
+  );
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
 
-  useEffect(() => {refetch()}, [activeTab]);
+  useEffect(() => {
+    refetch();
+  }, [activeTab]);
 
   useEffect(() => {
     if (giveaways === undefined && !isLoading) {
@@ -106,7 +116,11 @@ const Manage = () => {
     return <UserEmptyState />;
   }
 
-  if (!isLoading && userInfo.role === UserRole.ADMIN && giveaways?.length === 0) {
+  if (
+    !isLoading &&
+    userInfo.role === UserRole.ADMIN &&
+    giveaways?.length === 0
+  ) {
     return <AdminEmptyState />;
   }
 

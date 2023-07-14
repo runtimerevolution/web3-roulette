@@ -34,6 +34,8 @@ export const listGiveaways = async (req: Request, res: Response) => {
       .lean();
 
     const active = req.query.active === 'true' ? true : false;
+    const archived = req.query.archived === 'true' ? true : false;
+
     const activeGiveaways = getActiveGiveaways(giveaways, req.user.role);
 
     giveaways = active
@@ -42,13 +44,19 @@ export const listGiveaways = async (req: Request, res: Response) => {
           winners: giveawayWinners(giveaway),
           stats: giveawayStats(giveaway),
         }))
-      : giveaways
+      : archived
+      ? giveaways
           .filter((g) => !activeGiveaways.includes(g))
           .map((giveaway) => ({
             ...omit(giveaway, ['participants']),
             winners: giveawayWinners(giveaway),
             stats: giveawayStats(giveaway),
-          }));
+          }))
+      : giveaways.map((giveaway) => ({
+          ...omit(giveaway, ['participants']),
+          winners: giveawayWinners(giveaway),
+          stats: giveawayStats(giveaway),
+        }));
 
     res.status(200).json(giveaways);
   } catch (error) {

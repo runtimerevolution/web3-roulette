@@ -69,9 +69,10 @@ class BackendService {
     return instance.request(axiosRequestConfig);
   }
 
-  getGiveaways = async ({ active }) => {
+  getGiveaways = async ({ active, archived }) => {
     const giveaways = await this.makeRequest<Giveaway[]>(
-      `/giveaways${active ? '?active=true' : ''}`, 'GET'
+      `/giveaways${active ? '?active=true' : archived ? '?archived=true' : ''}`,
+      'GET'
     );
     if (giveaways) {
       giveaways.forEach((g) => {
