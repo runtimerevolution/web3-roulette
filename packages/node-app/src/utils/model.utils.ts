@@ -100,20 +100,13 @@ const nextGiveaway = (giveaways) => {
 
 export const getActiveGiveaways = (giveaways, role) => {
   return giveaways?.filter((g) => {
-    const status =
+    const isActive = !(
       g.endTime < new Date() &&
-      (g.participants.length <= 0 || g.numberOfWinners > g.participants.length)
-        ? false
-        : true;
-    const hasPendingWinners =
-      g.manual && new Date() > g.endTime && g.winners.length === 0
-        ? true
-        : false;
+      g.numberOfWinners >= g.participants.length
+    );
 
     if (role !== UserRole.ADMIN && g.startTime > new Date()) return false;
 
-    if (role === UserRole.ADMIN && hasPendingWinners) return true;
-
-    return status;
+    return isActive;
   });
 };

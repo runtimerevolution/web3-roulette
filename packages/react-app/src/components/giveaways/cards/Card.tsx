@@ -157,7 +157,7 @@ const GiveawayCard = ({
             {giveaway.winners.length > 0 ? getWinnerStr() : 'Pending'}
           </Typography>
         )}
-        {archived && giveaway.winners.length <= 0 && (
+        {archived && giveaway.winners.length == 0 && (
           <Typography className="winners" gutterBottom>
             <span role="img" aria-label="party emoji">
               🥳

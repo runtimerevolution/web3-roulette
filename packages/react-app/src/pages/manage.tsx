@@ -206,7 +206,7 @@ const Manage = () => {
                 There are no giveaways to present.
               </Typography>
             ) : (
-              giveaways?.map((g) => (
+              giveaways?.filter(g => g._id !== countdownGiveaway?._id).map((g) => (
                 <Grid
                   item
                   xs={3}

@@ -33,30 +33,21 @@ export const listGiveaways = async (req: Request, res: Response) => {
       )
       .lean();
 
-    const active = req.query.active === 'true' ? true : false;
-    const archived = req.query.active === 'false' ? true : false;
-
-    const activeGiveaways = getActiveGiveaways(giveaways, req.user.role);
-
-    giveaways = active
-      ? activeGiveaways.map((giveaway) => ({
-          ...omit(giveaway, ['participants']),
-          winners: giveawayWinners(giveaway),
-          stats: giveawayStats(giveaway),
-        }))
-      : archived
-      ? giveaways
-          .filter((g) => !activeGiveaways.includes(g))
-          .map((giveaway) => ({
-            ...omit(giveaway, ['participants']),
-            winners: giveawayWinners(giveaway),
-            stats: giveawayStats(giveaway),
-          }))
-      : giveaways.map((giveaway) => ({
-          ...omit(giveaway, ['participants']),
-          winners: giveawayWinners(giveaway),
-          stats: giveawayStats(giveaway),
-        }));
+    if (req.query.active) {
+      const active = req.query.active === 'true'
+      const activeGiveaways = getActiveGiveaways(giveaways, req.user.role);
+      
+      if (active) {
+         giveaways = activeGiveaways
+      } else {
+         giveaways = giveaways.filter((g) => !activeGiveaways.includes(g))
+      }
+   }
+   giveaways = giveaways.map((giveaway) => ({
+      ...omit(giveaway, ['participants']),
+      winners: giveawayWinners(giveaway),
+      stats: giveawayStats(giveaway),
+    }));
 
     res.status(200).json(giveaways);
   } catch (error) {
