@@ -15,7 +15,7 @@ agenda
   .on('ready', () => console.log('Agenda started!'))
   .on('error', () => console.log('Agenda connection error!'));
 
-agenda.define('createGiveaway', async (job) => {
+agenda.define('generateGiveawayWinners', async (job) => {
   const giveaway = await Giveaway.findById(job.attrs.data._id);
   try {
     if (!giveaway) return console.log('Giveaway not found.');
@@ -30,5 +30,5 @@ agenda.define('createGiveaway', async (job) => {
 });
 export const scheduleWinnerGeneration = async (data) => {
   await agenda.start();
-  await agenda.schedule(data.endTime, 'createGiveaway', data);
+  await agenda.schedule(data.endTime, 'generateGiveawayWinners', data);
 };

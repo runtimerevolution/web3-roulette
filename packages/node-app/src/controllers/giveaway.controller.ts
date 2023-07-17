@@ -117,7 +117,6 @@ export const createGiveaway = async (req: Request, res: Response) => {
     });
     giveawayId = giveaway._id;
 
-    await scheduleWinnerGeneration(giveaway);
 
     // add giveaway to smart contract
     await giveawaysContract.methods
@@ -128,6 +127,8 @@ export const createGiveaway = async (req: Request, res: Response) => {
         Number(numberOfWinners)
       )
       .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+
+    await scheduleWinnerGeneration(giveaway);
 
     res.status(201).json(giveaway);
   } catch (error) {
