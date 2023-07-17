@@ -31,7 +31,9 @@
                             "application/json": {
                                 "schema": {
                                     "type": "array",
-                                    "$ref": "#/components/schemas/GiveawayListItem"
+                                    "items": {
+                                        "$ref": "#/components/schemas/GiveawayListItem"
+                                    }
                                 }
                             }
                         }
@@ -112,7 +114,6 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
                                     "$ref": "#/components/schemas/GiveawayItem"
                                 }
                             }
@@ -138,7 +139,8 @@
                     {
                       "name": "giveawayId",
                       "in": "query",
-                      "description": "ID of the giveaway"
+                      "description": "ID of the giveaway",
+                      "required": true
                     }
                 ],
                 "responses": {
@@ -146,7 +148,9 @@
                         "description": "OK",
                         "content": {
                             "application/json": {
-                                "schema": { "$ref": "#/components/schemas/GiveawayItem" }
+                                "schema": {
+                                    "$ref": "#/components/schemas/GiveawayItem"
+                                }
                             }
                         }
                     },
@@ -168,7 +172,8 @@
                     {
                       "name": "giveawayId",
                       "in": "query",
-                      "description": "ID of the giveaway"
+                      "description": "ID of the giveaway",
+                      "required": true
                     }
                 ],
                 "requestBody": {
@@ -211,7 +216,6 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
                                     "$ref": "#/components/schemas/GiveawayItem"
                                 }
                             }
@@ -237,7 +241,8 @@
                     {
                       "name": "giveawayId",
                       "in": "query",
-                      "description": "ID of the giveaway"
+                      "description": "ID of the giveaway",
+                      "required": true
                     }
                 ],
                 "responses": {
@@ -279,7 +284,8 @@
                     {
                       "name": "giveawayId",
                       "in": "query",
-                      "description": "ID of the giveaway"
+                      "description": "ID of the giveaway",
+                      "required": true
                     }
                 ],
                 "responses": {
@@ -331,17 +337,20 @@
                     {
                       "name": "giveawayId",
                       "in": "query",
-                      "description": "ID of the giveaway"
+                      "description": "ID of the giveaway",
+                      "required": true
                     },
                     {
                         "name": "participantId",
                         "in": "query",
-                        "description": "ID of the participant"
+                        "description": "ID of the participant",
+                        "required": true
                     },
                     {
                         "name": "state",
                         "in": "body",
-                        "description": "New state of the participant"
+                        "description": "New state of the participant",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -357,6 +366,164 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Invalid Authentication"
+                    },
+                    "4XX": {
+                        "description": "Invalid or missing information"
+                    },
+                    "5XX": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        },
+        "/locations": {
+            "get": {
+                "tags": ["locations"],
+                "description": "Get all locations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/LocationItem"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Authentication"
+                    },
+                    "4XX": {
+                        "description": "Invalid or missing information"
+                    },
+                    "5XX": {
+                        "description": "Unexpected error"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["locations", "admin"],
+                "description": "Create new location",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "latitude",
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "radius",
+                        "in": "body",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LocationItem"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Authentication"
+                    },
+                    "4XX": {
+                        "description": "Invalid or missing information"
+                    },
+                    "5XX": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        },
+        "/locations/{locationId}": {
+            "put": {
+                "tags": ["locations", "admin"],
+                "description": "Update location",
+                "parameters": [
+                    {
+                      "name": "locationId",
+                      "in": "query",
+                      "description": "ID of the locatiton",
+                      "required": true
+                    },
+                    {
+                        "name": "name",
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "latitude",
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "radius",
+                        "in": "body",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LocationItem"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Authentication"
+                    },
+                    "4XX": {
+                        "description": "Invalid or missing information"
+                    },
+                    "5XX": {
+                        "description": "Unexpected error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["locations", "admin"],
+                "description": "Delete location",
+                "parameters": [
+                    {
+                      "name": "locationId",
+                      "in": "query",
+                      "description": "ID of the locatiton",
+                      "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Deleted"
                     },
                     "401": {
                         "description": "Invalid Authentication"
@@ -451,6 +618,15 @@
                         "enum": ["node", "rails", "python"]
                     },
                     "location": { "type": "string" }
+                }
+            },
+            "LocationItem": {
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string", "required": true },
+                    "latitude": { "type": "number", "required": true },
+                    "longitude": { "type": "number", "required": true },
+                    "radius": { "type": "number", "required": true }
                 }
             }
         }
