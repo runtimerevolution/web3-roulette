@@ -99,7 +99,6 @@ const nextGiveaway = (giveaways) => {
 };
 
 export const getActiveGiveaways = (giveaways, role) => {
-  const countdownGiveaway = nextGiveaway(giveaways);
   return giveaways?.filter((g) => {
     const status =
       g.endTime < new Date() &&
@@ -114,8 +113,6 @@ export const getActiveGiveaways = (giveaways, role) => {
     if (role !== UserRole.ADMIN && g.startTime > new Date()) return false;
 
     if (role === UserRole.ADMIN && hasPendingWinners) return true;
-
-    if (g._id === countdownGiveaway?._id) return false;
 
     return status;
   });

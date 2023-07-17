@@ -53,13 +53,7 @@ const Manage = () => {
     data: giveaways,
     isLoading,
     refetch,
-  } = useGiveaways(
-    isTabActive(activeTab)
-      ? {
-          active: isTabActive(activeTab),
-        }
-      : { archived: !isTabActive(activeTab) }
-  );
+  } = useGiveaways({ active: isTabActive(activeTab)});
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
@@ -119,7 +113,8 @@ const Manage = () => {
   if (
     !isLoading &&
     userInfo.role === UserRole.ADMIN &&
-    giveaways?.length === 0
+    giveaways?.length === 0 &&
+    activeTab !== Tabs.Archived
   ) {
     return <AdminEmptyState />;
   }

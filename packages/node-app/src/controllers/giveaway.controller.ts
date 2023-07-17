@@ -34,7 +34,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
       .lean();
 
     const active = req.query.active === 'true' ? true : false;
-    const archived = req.query.archived === 'true' ? true : false;
+    const archived = req.query.active === 'false' ? true : false;
 
     const activeGiveaways = getActiveGiveaways(giveaways, req.user.role);
 
