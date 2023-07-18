@@ -30,7 +30,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
       .lean();
 
     giveaways = giveaways.map((giveaway) => ({
-      ...omit(giveaway, ['participants']),
+      ...omit(giveaway, ['participants', 'numberOfWinners']),
       winners: giveawayWinners(giveaway),
       stats: giveawayStats(giveaway),
       isInvalid: isGiveawayInvalid(giveaway),
