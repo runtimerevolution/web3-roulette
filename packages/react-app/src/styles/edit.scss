@@ -65,6 +65,21 @@
   color: #cc6161;
 }
 
+.image-input-filled {
+  width: 100%;
+  max-height: 250px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.image-input-empty {
+  width: 5rem;
+}
+
+.input-browse-text {
+  color: #6D6DF0;
+}
+
 .back {
   font-size: 18px !important;
   text-transform: none !important;
