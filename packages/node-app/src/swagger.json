@@ -536,6 +536,86 @@
                     }
                 }
             }
+        },
+        "/login": {
+            "post": {
+                "tags": ["authentication"],
+                "description": "Login user",
+                "parameters": [
+                    {
+                      "name": "tokenType",
+                      "in": "query",
+                      "required": true
+                    },
+                    {
+                        "name": "accessToken",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "API access token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "example": {
+                                        "token": "auth-token"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid Authentication"
+                    },
+                    "5XX": {
+                        "description": "Unexpected error"
+                    }
+                }
+
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": ["authentication"],
+                "description": "Get user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "email": { "type": "string" },
+                                        "name": { "type": "string" },
+                                        "role": {
+                                            "type": "string",
+                                            "enum": ["user", "admin"]
+                                        },
+                                        "units": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": ["node", "rails", "python"]
+                                            }
+                                        },
+                                        "picture": { "type": "string" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "4XX": {
+                        "description": "Invalid or missing information"
+                    },
+                    "5XX": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
         }
     },
     "components": {
