@@ -2,20 +2,20 @@ import { Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 import { Participant } from '../../../lib/types';
+import { useState } from 'react';
 
 type ParticipantEntryProps = {
   participant: Participant;
   actionAllowed: boolean;
   onUpdateState: (participantId: string, newState: string) => void;
-  isLoading: string;
 };
 
 const ParticipantEntry = ({
   participant,
   actionAllowed,
   onUpdateState,
-  isLoading,
 }: ParticipantEntryProps) => {
+  const [isLoading, setIsLoading] = useState<string>('no action');
   return (
     <Stack
       className="participant-entry-container"
@@ -38,8 +38,10 @@ const ParticipantEntry = ({
             },
           }}
           color="error"
-          onClick={() => {
-            onUpdateState(participant.id, 'rejected');
+          onClick={async () => {
+            setIsLoading('rejected');
+            await onUpdateState(participant.id, 'rejected');
+            setIsLoading('no action');
           }}
           disableElevation
           disabled={!actionAllowed || isLoading !== 'no action'}
@@ -60,8 +62,10 @@ const ParticipantEntry = ({
               color: 'white',
             },
           }}
-          onClick={() => {
-            onUpdateState(participant.id, 'confirmed');
+          onClick={async () => {
+            setIsLoading('confirmed');
+            await onUpdateState(participant.id, 'confirmed');
+            setIsLoading('no action');
           }}
           disableElevation
           disabled={!actionAllowed || isLoading !== 'no action'}
