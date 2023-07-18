@@ -60,7 +60,7 @@
   align-items: center;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: $black;
   z-index: 999999999;
 
   &.nobackground {
@@ -128,8 +128,8 @@
 }
 
 .warning-box {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: $lemon-chiffon;
+  color: $gamboge-orange;
   display: flex;
   align-items: center;
   justify-content: center;

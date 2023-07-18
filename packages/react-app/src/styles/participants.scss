@@ -24,28 +24,28 @@
 
     &.reject {
       width: 98px;
-      background-color: rgba(238, 88, 73, 0.2);
-      color: #ee5849;
+      background-color: $fire-opal-light;
+      color: $fire-opal;
     }
 
     &.approve {
       width: 121px;
-      background-color: rgba(18, 187, 106, 0.18);
-      color: #12bb6a;
+      background-color: $green-crayola-light;
+      color: $green-crayola;
     }
 
     &.disabled {
-      background-color: #cccccc;
-      color: #666666;
+      background-color: $chinese-silver;
+      color: $granite-gray;
     }
 
     &.reject:hover {
-      background-color: rgb(238, 88, 73);
+      background-color: $fire-opal;
       color: white;
     }
 
     &.approve:hover {
-      background-color: rgb(18, 187, 106);
+      background-color: $green-crayola;
       color: white;
     }
   }

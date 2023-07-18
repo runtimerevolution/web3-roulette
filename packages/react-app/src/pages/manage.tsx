@@ -32,6 +32,7 @@ import { splitTimeLeft } from '../hooks/useTimer';
 import { useGiveaways } from '../lib/queryClient';
 import {
   Giveaway,
+  GiveawayStatus,
   UserInfo,
   UserRole,
 } from '../lib/types';
@@ -43,48 +44,32 @@ const Tabs = {
   Archived: 1,
 };
 
+const isTabActive = (tab) => tab === Tabs.Active;
+
 const Manage = () => {
   const userInfo = useContext(UserContext) as UserInfo;
-  const { isLoading, data, refetch } = useGiveaways();
   const [activeTab, setActiveTab] = useState(Tabs.Active);
+  const {
+    data: giveaways,
+    isLoading,
+    refetch,
+  } = useGiveaways({ active: isTabActive(activeTab)});
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
 
-  const giveaways = useMemo(() => {
-    return data?.filter((g) => {
-      const now = new Date();
-      const giveawayStartDate = new Date(g.startTime);
-      const giveawayEndDate = new Date(g.endTime);
-
-      if (userInfo.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
-        return false;
-      }
-
-      if (g._id === countdownGiveaway?._id) {
-        return false;
-      }
-
-      if (
-        userInfo.role === UserRole.ADMIN &&
-        ParticipationService.hasPendingWinners(g)
-      )
-        return activeTab === Tabs.Active;
-
-      return activeTab === Tabs.Active
-        ? isAfter(giveawayEndDate, now)
-        : isBefore(giveawayEndDate, now);
-    });
-  }, [activeTab, data, countdownGiveaway]);
+  useEffect(() => {
+    refetch();
+  }, [activeTab]);
 
   useEffect(() => {
-    if (data === undefined && !isLoading) {
+    if (giveaways === undefined && !isLoading) {
       setError(true);
     }
 
-    if (data) {
+    if (giveaways) {
       if (userInfo.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
-        ParticipationService.nextGiveaway(data).then((nextGiveaway) => {
+        ParticipationService.nextGiveaway(giveaways).then((nextGiveaway) => {
           if (nextGiveaway) {
             const giveawayTime = nextGiveaway.endTime.getTime();
             const timeLeft = splitTimeLeft(giveawayTime - new Date().getTime());
@@ -97,7 +82,7 @@ const Manage = () => {
         setCountdownGiveaway(null);
       }
     }
-  }, [data, isLoading]);
+  }, [giveaways, isLoading]);
 
   const handleWinners = () => {
     animateConfettis();
@@ -120,12 +105,17 @@ const Manage = () => {
   if (
     !isLoading &&
     userInfo.role === UserRole.USER &&
-    !data?.some((g) => g.startTime < new Date())
+    !giveaways?.some((g) => g.startTime < new Date())
   ) {
     return <UserEmptyState />;
   }
 
-  if (!isLoading && userInfo.role === UserRole.ADMIN && data?.length === 0) {
+  if (
+    !isLoading &&
+    userInfo.role === UserRole.ADMIN &&
+    giveaways?.length === 0 &&
+    activeTab !== Tabs.Archived
+  ) {
     return <AdminEmptyState />;
   }
 
@@ -216,7 +206,7 @@ const Manage = () => {
                 There are no giveaways to present.
               </Typography>
             ) : (
-              giveaways?.map((g) => (
+              giveaways?.filter(g => g._id !== countdownGiveaway?._id).map((g) => (
                 <Grid
                   item
                   xs={3}

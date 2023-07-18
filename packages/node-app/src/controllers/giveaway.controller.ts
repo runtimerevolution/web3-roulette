@@ -1,21 +1,14 @@
-import {
-  Request,
-  Response,
-} from 'express';
+import { Request, Response } from 'express';
 import fs from 'fs';
 import { omit } from 'lodash';
 
+import { isAfter, isBefore } from 'date-fns';
+
 import { giveawaysContract } from '../contracts';
-import {
-  Giveaway,
-  ParticipantState,
-} from '../models/giveaway.model';
+import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { Location } from '../models/location.model';
 import { UserRole } from '../models/user.model';
-import {
-  hasEnded,
-  isoStringToSecondsTimestamp,
-} from '../utils/date.utils';
+import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
 import {
   fileToBase64,
   getDefinedFields,
@@ -23,16 +16,14 @@ import {
   giveawayWinners,
   giveawayWinningChance,
   handleError,
+  getActiveGiveaways,
 } from '../utils/model.utils';
 import {
   getParticipant,
   validateParticipant,
 } from '../utils/validations.utils';
-import {
-  decrypt,
-  encrypt,
-  objectIdToBytes24,
-} from '../utils/web3.utils';
+import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
+import { parse } from 'querystring';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -42,7 +33,17 @@ export const listGiveaways = async (req: Request, res: Response) => {
       )
       .lean();
 
-    giveaways = giveaways.map((giveaway) => ({
+    if (req.query.active) {
+      const active = req.query.active === 'true'
+      const activeGiveaways = getActiveGiveaways(giveaways, req.user.role);
+      
+      if (active) {
+         giveaways = activeGiveaways
+      } else {
+         giveaways = giveaways.filter((g) => !activeGiveaways.includes(g))
+      }
+   }
+   giveaways = giveaways.map((giveaway) => ({
       ...omit(giveaway, ['participants']),
       winners: giveawayWinners(giveaway),
       stats: giveawayStats(giveaway),

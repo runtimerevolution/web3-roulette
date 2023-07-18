@@ -2,6 +2,7 @@ import fs from 'fs';
 import { Error as MongooseError } from 'mongoose';
 
 import { ParticipantState } from '../models/giveaway.model';
+import { UserRole } from '../models/user.model';
 
 type APIError = {
   code: number;
@@ -86,4 +87,30 @@ export const giveawayWinningChance = (email, stats, participants, giveaway) => {
   );
 
   return Math.min(winningChance, 100);
+const nextGiveaway = (giveaways) => {
+  const activeGiveaways = giveaways.filter(
+    (g) => g.startTime < new Date() && new Date() < g.endTime
+  );
+  if (activeGiveaways.length === 0) return;
+
+  return activeGiveaways.reduce((prev, curr) =>
+    prev.endTime < curr.endTime ? prev : curr
+  );
+};
+
+export const getActiveGiveaways = (giveaways, role) => {
+  return giveaways?.filter((g) => {
+    const isActive = !(
+      g.endTime < new Date() && g.numberOfWinners >= g.participants.length
+    );
+
+    const hasPendingWinners =
+      g.manual && new Date() > g.endTime && g.winners.length === 0;
+
+    if (role === UserRole.ADMIN && hasPendingWinners) return true;
+
+    if (role !== UserRole.ADMIN && g.startTime > new Date()) return false;
+
+    return isActive;
+  });
 };

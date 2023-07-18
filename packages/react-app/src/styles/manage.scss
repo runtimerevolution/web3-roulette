@@ -107,13 +107,13 @@
 .card-media {
   position: relative;
 
-  .img {
+  .thumbnail-img {
     height: 120px;
     width: 100%;
     object-fit: cover;
   }
 
-  .winner {
+  .winner-container {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -124,11 +124,32 @@
     align-items: center;
     background-color: $transparent-primary-color;
 
-    .icon {
+    .winner-icon {
       width: 60px;
     }
 
-    .message {
+    .winner-message {
+      font-weight: bold;
+      font-size: 18px;
+      color: white;
+    }
+  }
+  .invalid-giveaway {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $mustard-yellow;
+
+    .invalid-icon {
+      width: 60px;
+    }
+
+    .invalid-message {
       font-weight: bold;
       font-size: 18px;
       color: white;

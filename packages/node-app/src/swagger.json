@@ -24,6 +24,17 @@
             "get": {
                 "tags": ["giveaways"],
                 "description": "Get all giveaways",
+                "parameters": [
+                    {
+                        "name": "active",
+                        "in":"query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "Flag used to filter out active or archived giveaways.By default returns all of them"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -48,6 +59,7 @@
                         "description": "Unexpected error"
                     }
                 }
+                
             },
             "post": {
                 "tags": ["giveaways", "admin"],
