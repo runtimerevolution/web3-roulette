@@ -569,20 +569,14 @@ const EditGiveaway = () => {
                     render={({ field: { ref, ...field } }) => (
                       <Checkbox
                         {...field}
-                        checked={true}
+                        checked={field.value}
                         inputRef={ref}
-                        disabled={true}
                       />
                     )}
                   />
                 }
                 label="Manual giveaway"
                 disabled={!!giveawayId}
-              />
-              <WarningBox
-                message="Automatic giveaways will be available in the next
-                        version. The manual option requires an administrator 
-                        to generate winners when the giveaway ends."
               />
             </Box>
             <Box className="cancel-save-container">
