@@ -11,7 +11,7 @@ import {
   fileToBase64,
   getDefinedFields,
   giveawayStats,
-  giveawayStatus,
+  isGiveawayInvalid,
   giveawayWinners,
   handleError,
 } from '../utils/model.utils';
@@ -25,7 +25,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
   try {
     let giveaways = await Giveaway.find()
       .select(
-        'title description startTime endTime winners requirements prize image participants manual'
+        'title description startTime endTime winners requirements prize image participants manual numberOfWinners'
       )
       .lean();
 
@@ -33,7 +33,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
       ...omit(giveaway, ['participants']),
       winners: giveawayWinners(giveaway),
       stats: giveawayStats(giveaway),
-      status: giveawayStatus(giveaway),
+      isInvalid: isGiveawayInvalid(giveaway),
     }));
 
     res.status(200).json(giveaways);

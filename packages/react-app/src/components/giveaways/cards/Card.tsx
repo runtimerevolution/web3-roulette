@@ -19,7 +19,6 @@ import SadEmoji from '../../../assets/SadEmoji.png';
 import { useParticipants } from '../../../lib/queryClient';
 import {
   Giveaway,
-  GiveawayStatus,
   ParticipationState,
   UserInfo,
   UserRole,
@@ -90,7 +89,7 @@ const GiveawayCard = ({
       }}
       elevation={0}
     >
-      {userInfo.role === UserRole.ADMIN && nrPendingParticipants > 0 && (
+      {userInfo.role === UserRole.ADMIN && nrPendingParticipants > 0 && !giveaway.isInvalid &&(
         <div className="card-pending-approvals">
           <PendingApprovalBanner
             giveaway={giveaway}
@@ -108,7 +107,7 @@ const GiveawayCard = ({
             </div>
           </div>
         )}
-        {giveaway.status === GiveawayStatus.INVALID && (
+        {giveaway.isInvalid && (
           <div className="invalid">
             <div style={{ textAlign: 'center' }}>
               <img className="icon" src={SadEmoji} alt="SadEmoji" />
@@ -146,7 +145,7 @@ const GiveawayCard = ({
             <span role="img" aria-label="party emoji">
               🥳
             </span>{' '}
-            {giveaway.winners.length > 0 ? getWinnerStr() : 'No Winners'}
+            {giveaway.winners.length > 0 ? getWinnerStr() : giveaway.isInvalid ? 'No Winners' : 'pending'}
           </Typography>
         )}
         {archived && (

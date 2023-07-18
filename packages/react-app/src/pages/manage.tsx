@@ -32,7 +32,6 @@ import { splitTimeLeft } from '../hooks/useTimer';
 import { useGiveaways } from '../lib/queryClient';
 import {
   Giveaway,
-  GiveawayStatus,
   UserInfo,
   UserRole,
 } from '../lib/types';
@@ -54,8 +53,11 @@ const Manage = () => {
 
   const giveaways = useMemo(() => {
     return data?.filter((g) => {
+      const now = new Date();
+      const giveawayStartDate = new Date(g.startTime);
+      const giveawayEndDate = new Date(g.endTime);
 
-      if (userInfo.role !== UserRole.ADMIN && g.status === GiveawayStatus.FUTURE) {
+      if (userInfo.role !== UserRole.ADMIN && giveawayStartDate > new Date()) {
         return false;
       }
 
@@ -63,15 +65,17 @@ const Manage = () => {
         return false;
       }
 
+      if(g.isInvalid) return activeTab === Tabs.Archived;
+
       if (
         userInfo.role === UserRole.ADMIN &&
-        g.status === GiveawayStatus.PENDING
+        ParticipationService.hasPendingWinners(g)
       )
         return activeTab === Tabs.Active;
 
       return activeTab === Tabs.Active
-        ? (g.status === GiveawayStatus.FUTURE || g.status === GiveawayStatus.ONGOING)
-        : (g.status === GiveawayStatus.FINISHED || g.status === GiveawayStatus.INVALID);
+        ? isAfter(giveawayEndDate, now)
+        : isBefore(giveawayEndDate, now);
     });
   }, [activeTab, data, countdownGiveaway]);
 

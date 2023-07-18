@@ -11,7 +11,7 @@ type Giveaway = {
   prize: string;
   stats: Stats;
   manual: boolean;
-  status: string;
+  isInvalid: boolean;
   rules?: string;
   requirements?: Requirements;
 };
@@ -84,20 +84,11 @@ type GiveawayCondition = {
   value: ConditionValue;
 };
 
-enum GiveawayStatus {
-  INVALID = 'invalid',
-  FINISHED = 'finished',
-  PENDING = 'pending',
-  FUTURE = 'future',
-  ONGOING = 'ongoing',
-}
-
 export {
   ConditionType,
   ConditionValue,
   Giveaway,
   GiveawayCondition,
-  GiveawayStatus,
   Location,
   Participant,
   ParticipationState,

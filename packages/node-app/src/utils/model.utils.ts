@@ -60,18 +60,15 @@ export const giveawayWinners = (giveaway: any) => {
   return winners;
 };
 
-export const giveawayStatus = (giveaway: any) => {
-  if (giveaway.endTime < new Date()) {
-    if (
-      giveaway.participants.length <= 0 ||
-      giveaway.numberOfWinners > giveaway.participants.length
-    )
-      return 'invalid';
-    if (giveaway.winners.length > 0) return 'finished';
-    return 'pending';
+export const isGiveawayInvalid = (giveaway: any) => {
+  let confirmedParticipants = 0;
+  for (const participant of giveaway.participants) {
+    if (participant.state === 'confirmed') confirmedParticipants++;
   }
-  if (giveaway.startTime > new Date()) return 'future';
-  return 'ongoing';
+  if (giveaway.endTime < new Date()) {
+    if (giveaway.numberOfWinners > confirmedParticipants) return true;
+  }
+  return false;
 };
 
 export const handleError = (error: Error): APIError => {
