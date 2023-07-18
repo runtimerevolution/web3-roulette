@@ -17,25 +17,13 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
   const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const isAdmin = userInfo.role === UserRole.ADMIN;
-
-  const nrParticipants = giveaway.stats.nrConfirmedParticipants;
-  const nrPending = giveaway.stats.nrPendingParticipants;
-
-  const winningChance = useMemo(() => {
-    if (nrParticipants === 0) return 100;
-
-    const isRegistered = participants.some(
-      (p) => p.id === userInfo.email && p.state === 'confirmed'
-    );
-    const totalParticipants = isRegistered
-      ? nrParticipants
-      : nrParticipants + 1;
-    const winningChance = Math.floor(
-      (giveaway.numberOfWinners / totalParticipants) * 100
-    );
-
-    return Math.min(winningChance, 100);
-  }, [giveaway, nrParticipants, participants, userInfo]);
+  const {
+    stats: {
+      nrConfirmedParticipants,
+      nrPendingParticipants,
+    },
+    winningChance,
+  } = giveaway;
 
   return (
     <Stack sx={{ paddingLeft: { sm: '80px', lg: '0px' } }}>
@@ -104,14 +92,14 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
               >
                 👥
               </span>{' '}
-              {`${nrParticipants} participants`}
+              {`${nrConfirmedParticipants} participants`}
             </Typography>
             {!isAdmin && participants && (
               <span className="winning-chance">{`You have a ${winningChance}% chance of winning`}</span>
             )}
           </div>
-          {isAdmin && nrPending > 0 && (
-            <PendingApprovalBanner giveaway={giveaway} nrPending={nrPending} />
+          {isAdmin && nrPendingParticipants > 0 && (
+            <PendingApprovalBanner giveaway={giveaway} nrPending={nrPendingParticipants} />
           )}
         </Stack>
       </Stack>
