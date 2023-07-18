@@ -15,7 +15,14 @@ const ParticipantEntry = ({
   actionAllowed,
   onUpdateState,
 }: ParticipantEntryProps) => {
-  const [isLoading, setIsLoading] = useState<string>('no action');
+  const [loadingStatus, setLoadingStatus] = useState<string>('no action');
+
+  const onButtonClick = async(newLoadingStatus: string) => {
+    setLoadingStatus(newLoadingStatus);
+    await onUpdateState(participant.id, newLoadingStatus);
+    setLoadingStatus('no action');
+  }
+
   return (
     <Stack
       className="participant-entry-container"
@@ -28,50 +35,28 @@ const ParticipantEntry = ({
         <LoadingButton
           className={`action-button reject ${!actionAllowed && 'disabled'}`}
           variant="contained"
-          sx={{
-            backgroundColor: '#DBDBFB',
-            color: '#6D6DF0',
-    
-            '&.Mui-disabled': {
-              background: '#6D6DF0',
-              color: 'white',
-            },
-          }}
           color="error"
-          onClick={async () => {
-            setIsLoading('rejected');
-            await onUpdateState(participant.id, 'rejected');
-            setIsLoading('no action');
+          onClick={() => {
+            onButtonClick('rejected')
           }}
           disableElevation
-          disabled={!actionAllowed || isLoading !== 'no action'}
-          loading={isLoading === 'rejected'}
+          disabled={!actionAllowed || loadingStatus !== 'no action'}
+          loading={loadingStatus === 'rejected'}
         >
-          {isLoading !=='rejected' && 'Reject'}
+          {loadingStatus !=='rejected' && 'Reject'}
         </LoadingButton>
         <LoadingButton
           className={`action-button approve ${!actionAllowed && 'disabled'}`}
           variant="contained"
           color="success"
-          sx={{
-            backgroundColor: '#DBDBFB',
-            color: '#6D6DF0',
-    
-            '&.Mui-disabled': {
-              background: '#6D6DF0',
-              color: 'white',
-            },
-          }}
-          onClick={async () => {
-            setIsLoading('confirmed');
-            await onUpdateState(participant.id, 'confirmed');
-            setIsLoading('no action');
+          onClick={() => {
+            onButtonClick('confirmed')
           }}
           disableElevation
-          disabled={!actionAllowed || isLoading !== 'no action'}
-          loading={isLoading === 'confirmed'}
+          disabled={!actionAllowed || loadingStatus !== 'no action'}
+          loading={loadingStatus === 'confirmed'}
         >
-          {isLoading !=='confirmed' && 'Approve'}
+          {loadingStatus !=='confirmed' && 'Approve'}
         </LoadingButton>
       </Stack>
     </Stack>
