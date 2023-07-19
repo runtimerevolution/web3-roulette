@@ -17,6 +17,7 @@ import {
   giveawayWinningChance,
   handleError,
   getActiveGiveaways,
+  handleGenerateWinners,
 } from '../utils/model.utils';
 import {
   getParticipant,
@@ -24,6 +25,8 @@ import {
 } from '../utils/validations.utils';
 import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
 import { parse } from 'querystring';
+
+import { agenda, scheduleWinnerGeneration} from '../utils/agenda.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -114,6 +117,7 @@ export const createGiveaway = async (req: Request, res: Response) => {
     });
     giveawayId = giveaway._id;
 
+
     // add giveaway to smart contract
     await giveawaysContract.methods
       .createGiveaway(
@@ -123,6 +127,10 @@ export const createGiveaway = async (req: Request, res: Response) => {
         Number(numberOfWinners)
       )
       .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+
+    if (!manual) {
+      await scheduleWinnerGeneration(giveaway);
+    }
 
     res.status(201).json(giveaway);
   } catch (error) {
@@ -325,18 +333,7 @@ export const generateWinners = async (req: Request, res: Response) => {
     if (giveaway.winners.length > 0)
       return res.status(400).json({ error: 'Giveaway already has winners' });
 
-    await giveawaysContract.methods
-      .generateWinners(objectIdToBytes24(giveaway._id))
-      .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
-
-    const winners = await giveawaysContract.methods
-      .getWinners(objectIdToBytes24(giveaway._id))
-      .call();
-
-    const decryptedWinners = winners.map((winner) => ({ id: decrypt(winner) }));
-
-    giveaway.winners = decryptedWinners;
-    await giveaway.save();
+    const { decryptedWinners } = await handleGenerateWinners(giveaway);
 
     res.status(200).json(decryptedWinners);
   } catch (error) {

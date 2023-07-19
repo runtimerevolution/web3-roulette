@@ -1,7 +1,9 @@
 import fs from 'fs';
 import { Error as MongooseError } from 'mongoose';
 
-import { ParticipantState } from '../models/giveaway.model';
+import { ParticipantState, Giveaway } from '../models/giveaway.model';
+import { decrypt, objectIdToBytes24 } from '../utils/web3.utils';
+import { giveawaysContract } from '../contracts';
 import { UserRole } from '../models/user.model';
 
 type APIError = {
@@ -87,6 +89,8 @@ export const giveawayWinningChance = (email, stats, participants, giveaway) => {
   );
 
   return Math.min(winningChance, 100);
+};
+
 const nextGiveaway = (giveaways) => {
   const activeGiveaways = giveaways.filter(
     (g) => g.startTime < new Date() && new Date() < g.endTime
@@ -113,4 +117,23 @@ export const getActiveGiveaways = (giveaways, role) => {
 
     return isActive;
   });
+};
+
+export const handleGenerateWinners = async (g) => {
+  const giveaway = await Giveaway.findById(g._id);
+
+  await giveawaysContract.methods
+    .generateWinners(objectIdToBytes24(giveaway._id))
+    .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+
+  const winners = await giveawaysContract.methods
+    .getWinners(objectIdToBytes24(giveaway._id))
+    .call();
+
+  const decryptedWinners = winners.map((winner) => ({ id: decrypt(winner) }));
+
+  giveaway.winners = decryptedWinners;
+  await giveaway.save();
+
+  return { decryptedWinners };
 };
