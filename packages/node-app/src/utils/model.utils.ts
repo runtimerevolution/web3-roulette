@@ -137,3 +137,9 @@ export const handleGenerateWinners = async (g) => {
 
   return { decryptedWinners };
 };
+
+export const getChangedFields = (oldGiveaway, newGiveaway) =>
+  Object.keys(newGiveaway).reduce(
+    (a, k) => (oldGiveaway[k] !== newGiveaway[k] && (a[k] = newGiveaway[k]), a),
+    {}
+  );

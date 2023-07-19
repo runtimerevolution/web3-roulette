@@ -22,6 +22,7 @@ import {
   handleError,
   getActiveGiveaways,
   handleGenerateWinners,
+  getChangedFields,
 } from '../utils/model.utils';
 import {
   getParticipant,
@@ -176,20 +177,13 @@ export const updateGiveaway = async (req: Request, res: Response) => {
       image,
       manual
     });
-    const giveaway = await Giveaway.findByIdAndUpdate(id, updateFields, {
-      new: true,
-    });
+    const oldGiveaway = await Giveaway.findById(id);
+    const giveaway = await Giveaway.findByIdAndUpdate(id, updateFields, { new: true });
     await GiveawayLog.create({
       action: 'update-giveaway',
       author: req.user.email,
       giveaway_id: giveaway.id,
-      changes: {
-        title,
-        description,
-        prize,
-        rules,
-        image,
-      },
+      changes: getChangedFields(oldGiveaway, updateFields),
     });
 
     res.status(200).json(giveaway);
@@ -264,19 +258,6 @@ export const addParticipant = async (req: Request, res: Response) => {
       const { id, title, description, prize, rules, image } = giveaway;
       await giveaway.save();
       throw error;
-      await GiveawayLog.create({
-        action: 'add-giveaway-participant',
-        author: req.user.email,
-        giveaway_id: id,
-        changes: {
-          title,
-          description,
-          prize,
-          rules,
-          image,
-        },
-      });
-      
     }
 
     res.status(200).json({ message: 'Participant added successfully' });
@@ -363,9 +344,8 @@ export const updateParticipant = async (req: Request, res: Response) => {
       changes: {
         title,
         description,
-        prize,
-        rules,
-        image,
+        notified: participant.notified,
+        participant,
       },
     });
 
@@ -402,7 +382,6 @@ export const generateWinners = async (req: Request, res: Response) => {
         description,
         prize,
         rules,
-        image,
       },
     });
 
