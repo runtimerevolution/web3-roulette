@@ -46,24 +46,23 @@ const ParticipantsManagerPage = () => {
     return participants.filter((p) => p.state === 'pending');
   }, [participants]);
 
-  const updateParticipant = async (participantId: string, newState: string) => {
+  const updateParticipant = (participantId: string, newState: string) => {
     if (!giveawayId) return;
 
-    await FrontendApiClient.manageParticipant(
+    return FrontendApiClient.manageParticipant(
       giveawayId,
       participantId,
       newState,
       () => {
         setParticipants(participants.filter((p) => p.id !== participantId));
+        queryClient.invalidateQueries(['giveaways']);
+        queryClient.invalidateQueries(['details', giveawayId]);
+        queryClient.invalidateQueries(['participants', giveawayId]);
       },
       () => {
         setError(true);
       }
     );
-
-    queryClient.invalidateQueries(['giveaways']);
-    queryClient.invalidateQueries(['details', giveawayId]);
-    queryClient.invalidateQueries(['participants', giveawayId]);
   };
 
   const closeError = () => {

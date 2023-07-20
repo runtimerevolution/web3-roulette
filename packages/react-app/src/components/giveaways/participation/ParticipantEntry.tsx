@@ -1,6 +1,8 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 import { Participant } from '../../../lib/types';
+import { useState } from 'react';
 
 type ParticipantEntryProps = {
   participant: Participant;
@@ -13,6 +15,14 @@ const ParticipantEntry = ({
   actionAllowed,
   onUpdateState,
 }: ParticipantEntryProps) => {
+  const [loadingStatus, setLoadingStatus] = useState<string>('no action');
+
+  const onButtonClick = async(newLoadingStatus: string) => {
+    setLoadingStatus(newLoadingStatus);
+    await onUpdateState(participant.id, newLoadingStatus);
+    setLoadingStatus('no action');
+  }
+
   return (
     <Stack
       className="participant-entry-container"
@@ -22,30 +32,32 @@ const ParticipantEntry = ({
     >
       <Typography className="participant-name">{participant.name}</Typography>
       <Stack direction={'row'}>
-        <Button
+        <LoadingButton
           className={`action-button reject ${!actionAllowed && 'disabled'}`}
           variant="contained"
           color="error"
           onClick={() => {
-            onUpdateState(participant.id, 'rejected');
+            onButtonClick('rejected')
           }}
           disableElevation
-          disabled={!actionAllowed}
+          disabled={!actionAllowed || loadingStatus !== 'no action'}
+          loading={loadingStatus === 'rejected'}
         >
-          Reject
-        </Button>
-        <Button
+          {loadingStatus !=='rejected' && 'Reject'}
+        </LoadingButton>
+        <LoadingButton
           className={`action-button approve ${!actionAllowed && 'disabled'}`}
           variant="contained"
           color="success"
           onClick={() => {
-            onUpdateState(participant.id, 'confirmed');
+            onButtonClick('confirmed')
           }}
           disableElevation
-          disabled={!actionAllowed}
+          disabled={!actionAllowed || loadingStatus !== 'no action'}
+          loading={loadingStatus === 'confirmed'}
         >
-          Approve
-        </Button>
+          {loadingStatus !=='confirmed' && 'Approve'}
+        </LoadingButton>
       </Stack>
     </Stack>
   );
