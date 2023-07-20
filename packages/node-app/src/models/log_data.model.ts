@@ -17,6 +17,7 @@ interface Changes extends mongoose.Document {
   prize?: string;
   rules?: string;
   image?: string;
+  participant?: Participant;
 }
 
 interface GiveawayLog extends mongoose.Document {
@@ -24,7 +25,6 @@ interface GiveawayLog extends mongoose.Document {
   author: string;
   giveaway_id: string;
   changes: Changes;
-  participant: Participant;
 }
 
 const giveawayLogSchema = new Schema<GiveawayLog>(
