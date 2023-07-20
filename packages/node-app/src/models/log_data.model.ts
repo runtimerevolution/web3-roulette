@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
 import { Unit } from './user.model';
-import { Participant, ParticipantState } from './giveaway.model';
 
 enum Action {
   CREATE_GIVEAWAY = 'create-giveaway',
@@ -17,8 +16,6 @@ interface Changes extends mongoose.Document {
   prize?: string;
   rules?: string;
   image?: string;
-  winners?: string[];
-  participants?: Participant[];
 }
 
 interface GiveawayLog extends mongoose.Document {
@@ -39,23 +36,6 @@ const giveawayLogSchema = new Schema<GiveawayLog>(
       prize: { type: String, required: false },
       rules: { type: String, required: false },
       image: { type: String, required: false },
-      winners: [
-        {
-          id: { type: String, required: true },
-        },
-      ],
-      participants: [
-        {
-          id: { type: String, required: true },
-          name: { type: String, required: true },
-          state: {
-            type: String,
-            enum: Object.values(ParticipantState),
-            required: true,
-          },
-          notified: { type: Boolean, required: false, default: false },
-        },
-      ],
     },
   },
   { timestamps: true }

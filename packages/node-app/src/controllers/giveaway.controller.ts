@@ -344,7 +344,7 @@ export const updateParticipant = async (req: Request, res: Response) => {
       changes: {
         title,
         description,
-        notified: participant.notified,
+        rules,
         participant,
       },
     });

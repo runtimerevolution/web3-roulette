@@ -13,7 +13,7 @@ export enum ParticipantState {
   REJECTED = 'rejected',
 }
 
-export interface Participant {
+interface Participant {
   id: string;
   name: string;
   state: ParticipantState;
