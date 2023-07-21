@@ -1,6 +1,6 @@
 require('dotenv').config();
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const { INFURA_API_KEY, PRIVATE_KEY } = process.env;
+const { PRIVATE_KEY } = process.env;
 
 module.exports = {
   networks: {
@@ -9,29 +9,13 @@ module.exports = {
       port: 7545,
       network_id: '*', // Match any network id
     },
-    sepolia: {
+    matic: {
       provider: () =>
-        new HDWalletProvider(
-          [PRIVATE_KEY],
-          `https://sepolia.infura.io/v3/${INFURA_API_KEY}`
-        ),
-      network_id: 11155111,
-      gas: 5000000,
-      confirmations: 1,
+        new HDWalletProvider([PRIVATE_KEY], `https://rpc-mumbai.maticvigil.com`),
+      network_id: 80001,
+      confirmations: 2,
       timeoutBlocks: 200,
-      skipDryRun: true,
-    },
-    mainnet: {
-      provider: () =>
-        new HDWalletProvider(
-          [PRIVATE_KEY],
-          `https://mainnet.infura.io/v3/${INFURA_API_KEY}`
-        ),
-      network_id: 1,
-      gas: 5000000,
-      confirmations: 1,
-      timeoutBlocks: 200,
-      skipDryRun: true,
+      skipDryRun: true
     },
   },
   compilers: {
