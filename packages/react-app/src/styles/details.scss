@@ -36,7 +36,7 @@
 .pending-alert-button {
   width: 252px;
   height: 35px;
-  background-color: #ee5849 !important;
+  background-color: $fire-opal !important;
   font-size: 16px !important;
   font-weight: bold !important;
   text-transform: none !important;
@@ -51,10 +51,14 @@
   opacity: 0.9;
 }
 
+.aside-rules-container {
+  margin-bottom: 41px;
+}
+
 .aside-title {
   font-size: 20px !important;
   font-weight: bold !important;
-  color: '#282655' !important;
+  color: $space-cadet !important;
 }
 
 .aside-text {
@@ -124,4 +128,8 @@
     margin-left: 0;
     align-items: center !important;
   }
+}
+
+.participation-btn-aside {
+  width: 290px;
 }

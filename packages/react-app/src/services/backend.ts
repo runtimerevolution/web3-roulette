@@ -69,8 +69,11 @@ class BackendService {
     return instance.request(axiosRequestConfig);
   }
 
-  getGiveaways = async () => {
-    const giveaways = await this.makeRequest<Giveaway[]>('/giveaways/', 'GET');
+  getGiveaways = async ({ active }) => {
+    const giveaways = await this.makeRequest<Giveaway[]>(
+      `/giveaways${active !== undefined ? `?active=${active}` : ''}`,
+      'GET'
+    );
     if (giveaways) {
       giveaways.forEach((g) => {
         g.startTime = new Date(g.startTime);

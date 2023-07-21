@@ -19,6 +19,7 @@ import SadEmoji from '../../../assets/SadEmoji.png';
 import { useParticipants } from '../../../lib/queryClient';
 import {
   Giveaway,
+  GiveawayStatus,
   ParticipationState,
   UserInfo,
   UserRole,
@@ -98,12 +99,28 @@ const GiveawayCard = ({
         </div>
       )}
       <div className="card-media clickable" onClick={navigateDetails}>
-        <img className="img" src={giveaway.image} alt="Giveaway thumb" />
+        <img
+          className="thumbnail-img"
+          src={giveaway.image}
+          alt="Giveaway thumb"
+        />
         {isWinner && (
-          <div className="winner">
-            <div style={{ textAlign: 'center' }}>
-              <img className="icon" src={Trophy} alt="Trophy" />
-              <Typography className="message">You won this contest!</Typography>
+          <div className="winner-container">
+            <div className="center-text">
+              <img className="winner-icon" src={Trophy} alt="Trophy" />
+              <Typography className="winner-message">
+                You won this contest!
+              </Typography>
+            </div>
+          </div>
+        )}
+        {giveaway.status === GiveawayStatus.INVALID && (
+          <div className="invalid-giveaway">
+            <div className="center-text">
+              <img className="invalid-icon" src={SadEmoji} alt="SadEmoji" />
+              <Typography className="invalid-message">
+                Not enough participants
+              </Typography>
             </div>
           </div>
         )}
@@ -146,6 +163,14 @@ const GiveawayCard = ({
               🥳
             </span>{' '}
             {giveaway.winners.length > 0 ? getWinnerStr() : giveaway.isInvalid ? 'No Winners' : 'pending'}
+          </Typography>
+        )}
+        {archived && giveaway.winners.length == 0 && (
+          <Typography className="winners" gutterBottom>
+            <span role="img" aria-label="party emoji">
+              🥳
+            </span>{' '}
+            {'No winners'}
           </Typography>
         )}
         {archived && (

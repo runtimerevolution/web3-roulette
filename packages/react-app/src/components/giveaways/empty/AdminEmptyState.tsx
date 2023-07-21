@@ -14,7 +14,7 @@ const AdminEmptyState = () => {
       <Typography className="description">
         Start by creating your first giveaway
       </Typography>
-      <div style={{ paddingTop: '42px' }}>
+      <div className="empty-state-create-new">
         <CreateNewButton />
       </div>
     </Stack>

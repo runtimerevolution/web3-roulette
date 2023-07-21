@@ -1,7 +1,10 @@
 import fs from 'fs';
 import { Error as MongooseError } from 'mongoose';
 
-import { ParticipantState } from '../models/giveaway.model';
+import { ParticipantState, Giveaway } from '../models/giveaway.model';
+import { decrypt, objectIdToBytes24 } from '../utils/web3.utils';
+import { giveawaysContract } from '../contracts';
+import { UserRole } from '../models/user.model';
 
 type APIError = {
   code: number;
@@ -81,3 +84,73 @@ export const handleError = (error: Error): APIError => {
   }
   return { code: 500, message: error.message };
 };
+
+export const giveawayWinningChance = (email, stats, participants, giveaway) => {
+  const { nrConfirmedParticipants } = stats;
+  if (nrConfirmedParticipants === 0) return 100;
+
+  const isRegistered = participants.some(
+    (p) => p.id === email && p.state === 'confirmed'
+  );
+  const totalParticipants = isRegistered
+    ? nrConfirmedParticipants
+    : nrConfirmedParticipants + 1;
+  const winningChance = Math.floor(
+    (giveaway.numberOfWinners / totalParticipants) * 100
+  );
+
+  return Math.min(winningChance, 100);
+};
+
+const nextGiveaway = (giveaways) => {
+  const activeGiveaways = giveaways.filter(
+    (g) => g.startTime < new Date() && new Date() < g.endTime
+  );
+  if (activeGiveaways.length === 0) return;
+
+  return activeGiveaways.reduce((prev, curr) =>
+    prev.endTime < curr.endTime ? prev : curr
+  );
+};
+
+export const getActiveGiveaways = (giveaways, role) => {
+  return giveaways?.filter((g) => {
+    const isActive = !(
+      g.endTime < new Date() && g.numberOfWinners >= g.participants.length
+    );
+
+    const hasPendingWinners =
+      g.manual && new Date() > g.endTime && g.winners.length === 0;
+
+    if (role === UserRole.ADMIN && hasPendingWinners) return true;
+
+    if (role !== UserRole.ADMIN && g.startTime > new Date()) return false;
+
+    return isActive;
+  });
+};
+
+export const handleGenerateWinners = async (g) => {
+  const giveaway = await Giveaway.findById(g._id);
+
+  await giveawaysContract.methods
+    .generateWinners(objectIdToBytes24(giveaway._id))
+    .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
+
+  const winners = await giveawaysContract.methods
+    .getWinners(objectIdToBytes24(giveaway._id))
+    .call();
+
+  const decryptedWinners = winners.map((winner) => ({ id: decrypt(winner) }));
+
+  giveaway.winners = decryptedWinners;
+  await giveaway.save();
+
+  return { decryptedWinners };
+};
+
+export const getChangedFields = (oldGiveaway, newGiveaway) =>
+  Object.keys(newGiveaway).reduce(
+    (a, k) => (oldGiveaway[k] !== newGiveaway[k] && (a[k] = newGiveaway[k]), a),
+    {}
+  );

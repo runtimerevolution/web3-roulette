@@ -12,7 +12,7 @@
     border-radius: 8px;
 
     fieldset {
-      border-color: #e1e6ef;
+      border-color: $azureish-white;
     }
   }
 }
@@ -24,7 +24,7 @@
 
   .MuiInputBase-root {
     fieldset {
-      border-color: #e1e6ef;
+      border-color: $azureish-white;
     }
   }
 }
@@ -45,7 +45,7 @@
 }
 
 .error-description {
-  color: #ff0000;
+  color: $red;
 }
 
 .conditions-title {
@@ -56,13 +56,28 @@
 .add-condition-btn {
   text-transform: none !important;
   font-size: 16px !important;
-  color: #282655 !important;
+  color: $space-cadet !important;
   text-decoration-line: underline !important;
   margin-top: 16px !important;
 }
 
 .delete-icon {
-  color: #cc6161;
+  color: $fuzzy-wuzzy;
+}
+
+.image-input-filled {
+  width: 100%;
+  max-height: 250px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.image-input-empty {
+  width: 5rem;
+}
+
+.input-browse-text {
+  color: #6D6DF0;
 }
 
 .back {

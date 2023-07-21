@@ -174,7 +174,7 @@ const LocationEdit = () => {
               center={position}
               zoom={16}
               scrollWheelZoom={false}
-              style={{ height: '100%', minHeight: 500 }}
+              className="map-container"
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

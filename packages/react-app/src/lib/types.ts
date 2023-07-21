@@ -84,11 +84,20 @@ type GiveawayCondition = {
   value: ConditionValue;
 };
 
+enum GiveawayStatus {
+  INVALID = 'invalid',
+  FINISHED = 'finished',
+  PENDING = 'pending',
+  FUTURE = 'future',
+  ONGOING = 'ongoing',
+}
+
 export {
   ConditionType,
   ConditionValue,
   Giveaway,
   GiveawayCondition,
+  GiveawayStatus,
   Location,
   Participant,
   ParticipationState,

@@ -59,13 +59,7 @@ function ResponsiveAppBar() {
               imgProps={{ referrerPolicy: 'no-referrer' }}
             />
           </IconButton>
-          <Typography
-            sx={{
-              fontSize: '16px',
-              color: '#303136',
-              display: { xs: 'none', sm: 'initial' },
-            }}
-          >
+          <Typography className='profile-name'>
             {userInfo.name}
           </Typography>
         </Stack>
@@ -86,7 +80,7 @@ function ResponsiveAppBar() {
           onClose={handleCloseUserMenu}
         >
           <MenuItem key="Logout" onClick={logout}>
-            <Typography textAlign="center">Logout</Typography>
+            <Typography className="center-text">Logout</Typography>
           </MenuItem>
         </Menu>
       </Box>

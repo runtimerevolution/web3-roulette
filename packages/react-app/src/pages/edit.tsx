@@ -39,6 +39,7 @@ import {
   LocalizationProvider,
 } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LoadingButton } from '@mui/lab';
 
 import uploadIcon from '../assets/CloudUpload.png';
 import WarningBox from '../components/WarningBox';
@@ -90,6 +91,7 @@ const EditGiveaway = () => {
   const [binImageFile, setBinImageFile] = useState<File>();
   const [imageURL, setImageURL] = useState<string>('');
   const [imageError, setImageError] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onDrop = useCallback((files: File[]) => {
     setImageURL(URL.createObjectURL(files[0]));
@@ -125,6 +127,7 @@ const EditGiveaway = () => {
   const saveMutation = useMutation({
     mutationFn: (data: FormData) => API.saveGiveaway(data),
     onError: (e: any) => {
+      setIsLoading(false);
       if (Array.isArray(e.data.error)) {
         addServerErrors(e.data.error, setError);
       } else if (e.data.error) {
@@ -132,6 +135,7 @@ const EditGiveaway = () => {
       }
     },
     onSuccess: () => {
+      setIsLoading(false);
       navigate(-1);
       queryClient.invalidateQueries('giveaways');
       if (giveawayId) {
@@ -171,6 +175,7 @@ const EditGiveaway = () => {
         }
       });
     }
+    setIsLoading(true);
     saveMutation.mutate(formData);
   };
 
@@ -240,6 +245,7 @@ const EditGiveaway = () => {
             onClick={() => {
               navigate(-1);
             }}
+            disabled={isLoading}
           >
             Back
           </Button>
@@ -288,12 +294,7 @@ const EditGiveaway = () => {
                   <img
                     src={imageURL}
                     alt=""
-                    style={{
-                      width: '100%',
-                      maxHeight: '250px',
-                      cursor: 'pointer',
-                      borderRadius: '8px',
-                    }}
+                    className="image-input-filled"
                   />
                   <input {...getInputProps()} />
                 </Box>
@@ -312,11 +313,11 @@ const EditGiveaway = () => {
                     borderRadius: '8px',
                   }}
                 >
-                  <img src={uploadIcon} alt="" style={{ width: '5rem' }} />
+                  <img src={uploadIcon} alt="" className="image-input-empty" />
                   <input {...getInputProps()} />
                   <Typography sx={{ mt: '1rem', fontWeight: '800' }}>
                     Drag & drop files or{' '}
-                    <span style={{ color: '#6D6DF0' }}>Browse</span>
+                    <span className="input-browse-text">Browse</span>
                   </Typography>
                   <Typography sx={{ color: '#676767', mt: '1rem' }}>
                     Supported formats: JPEG, PNG, GIF
@@ -574,20 +575,14 @@ const EditGiveaway = () => {
                     render={({ field: { ref, ...field } }) => (
                       <Checkbox
                         {...field}
-                        checked={true}
+                        checked={field.value}
                         inputRef={ref}
-                        disabled={true}
                       />
                     )}
                   />
                 }
                 label="Manual giveaway"
                 disabled={!!giveawayId}
-              />
-              <WarningBox
-                message="Automatic giveaways will be available in the next
-                        version. The manual option requires an administrator 
-                        to generate winners when the giveaway ends."
               />
             </Box>
             <Box className="cancel-save-container">
@@ -596,17 +591,29 @@ const EditGiveaway = () => {
                 variant="outlined"
                 onClick={() => navigate(-1)}
                 disableElevation
+                disabled={isLoading}
               >
                 Cancel
               </Button>
-              <Button
+              <LoadingButton
                 className="save-btn"
                 variant="contained"
+                sx={{
+                  backgroundColor: '#DBDBFB',
+                  color: '#6D6DF0',
+          
+                  '&.Mui-disabled': {
+                    background: '#6D6DF0',
+                    color: 'white',
+                  },
+                }}
                 onClick={handleSubmit(saveGiveaway)}
                 disableElevation
+                loading={isLoading}
+                disabled={isLoading}
               >
-                Save
-              </Button>
+                {!isLoading && 'Save'}
+              </LoadingButton>
             </Box>
           </Grid>
         </Grid>
