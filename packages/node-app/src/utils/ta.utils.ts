@@ -51,5 +51,25 @@ const getPeople = async (
   }
 };
 
-const TAClient = { signIn, getPeople };
+const getPersonById = async (
+  session: TASession,
+  archived: boolean,
+  id: number,
+): Promise<TAPerson> => {
+  const multiSite = session.siteUrl;
+  const queryParams = archived ? `?archived=${archived}` : '';
+
+  const res = await TAInstance.get(`/v1/${multiSite}/people/${id}`, {
+    headers: {
+      'access-token': session.accessToken,
+      uid: session.email,
+    },
+  });
+
+  if (res.status === 200) {
+    return res.data.person;
+  }
+};
+
+const TAClient = { signIn, getPeople, getPersonById };
 export default TAClient;
