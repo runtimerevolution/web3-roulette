@@ -5,10 +5,7 @@ import { omit } from 'lodash';
 import { isAfter, isBefore } from 'date-fns';
 
 import { giveawaysContract } from '../contracts';
-import {
-  Giveaway,
-  ParticipantState,
-} from '../models/giveaway.model';
+import { Giveaway, ParticipantState } from '../models/giveaway.model';
 import { GiveawayLog } from '../models/log_data.model';
 import { Location } from '../models/location.model';
 import { UserRole } from '../models/user.model';
@@ -32,7 +29,7 @@ import {
 import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
 import { parse } from 'querystring';
 
-import { agenda, scheduleWinnerGeneration} from '../utils/agenda.utils';
+import { agenda, scheduleWinnerGeneration } from '../utils/agenda.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
@@ -43,16 +40,16 @@ export const listGiveaways = async (req: Request, res: Response) => {
       .lean();
 
     if (req.query.active) {
-      const active = req.query.active === 'true'
+      const active = req.query.active === 'true';
       const activeGiveaways = getActiveGiveaways(giveaways, req.user.role);
-      
+
       if (active) {
-         giveaways = activeGiveaways
+        giveaways = activeGiveaways;
       } else {
-         giveaways = giveaways.filter((g) => !activeGiveaways.includes(g))
+        giveaways = giveaways.filter((g) => !activeGiveaways.includes(g));
       }
-   }
-   giveaways = giveaways.map((giveaway) => ({
+    }
+    giveaways = giveaways.map((giveaway) => ({
       ...omit(giveaway, ['participants', 'numberOfWinners']),
       winners: giveawayWinners(giveaway),
       stats: giveawayStats(giveaway),
@@ -71,7 +68,12 @@ export const getGiveaway = async (req: Request, res: Response) => {
     let giveaway = await Giveaway.findById(req.params.id).lean();
     const { participants } = giveaway;
     const stats = giveawayStats(giveaway);
-    const winningChance = giveawayWinningChance(req.user.email, stats, participants, giveaway);
+    const winningChance = giveawayWinningChance(
+      req.user.email,
+      stats,
+      participants,
+      giveaway
+    );
     giveaway = {
       ...omit(giveaway, ['participants']),
       winners: giveawayWinners(giveaway),
@@ -177,10 +179,12 @@ export const updateGiveaway = async (req: Request, res: Response) => {
       prize,
       rules,
       image,
-      manual
+      manual,
     });
     const oldGiveaway = await Giveaway.findById(id);
-    const giveaway = await Giveaway.findByIdAndUpdate(id, updateFields, { new: true });
+    const giveaway = await Giveaway.findByIdAndUpdate(id, updateFields, {
+      new: true,
+    });
     await GiveawayLog.create({
       action: 'update-giveaway',
       author: req.user.email,

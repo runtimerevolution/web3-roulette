@@ -119,6 +119,8 @@ export const getActiveGiveaways = (giveaways, role) => {
       g.endTime < new Date() && g.numberOfWinners >= g.participants.length
     );
 
+    if (isGiveawayInvalid(g)) return false;
+
     const hasPendingWinners =
       g.manual && new Date() > g.endTime && g.winners.length === 0;
 
