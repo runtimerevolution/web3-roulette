@@ -11,7 +11,7 @@ type Giveaway = {
   prize: string;
   stats: Stats;
   manual: boolean;
-  status: string;
+  isInvalid: boolean;
   rules?: string;
   requirements?: Requirements;
 };

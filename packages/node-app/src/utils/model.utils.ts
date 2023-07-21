@@ -63,6 +63,17 @@ export const giveawayWinners = (giveaway: any) => {
   return winners;
 };
 
+export const isGiveawayInvalid = (giveaway: any) => {
+  let confirmedParticipants = 0;
+  for (const participant of giveaway.participants) {
+    if (participant.state === 'confirmed') confirmedParticipants++;
+  }
+  if (giveaway.endTime < new Date()) {
+    if (giveaway.numberOfWinners > confirmedParticipants) return true;
+  }
+  return false;
+};
+
 export const handleError = (error: Error): APIError => {
   if (error instanceof MongooseError.ValidationError) {
     const message = Object.entries(error.errors).map(([field, error]) => ({
@@ -107,6 +118,8 @@ export const getActiveGiveaways = (giveaways, role) => {
     const isActive = !(
       g.endTime < new Date() && g.numberOfWinners >= g.participants.length
     );
+
+    if (isGiveawayInvalid(g)) return false;
 
     const hasPendingWinners =
       g.manual && new Date() > g.endTime && g.winners.length === 0;
