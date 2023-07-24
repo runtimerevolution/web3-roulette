@@ -53,7 +53,14 @@ const getParticipationState = async (
 
   if (!participants)
     participants = await FrontendApiClient.getParticipants(giveaway._id);
-  const registeredUser = participants.find((p) => p.id === userInfo.email);
+
+  let registeredUser;
+
+  if (userInfo.role === 'admin') {
+    registeredUser = participants?.find((p) => p.id === userInfo.email);
+  } else {
+    registeredUser = participants;
+  }
 
   if (registeredUser) {
     switch (registeredUser.state) {
