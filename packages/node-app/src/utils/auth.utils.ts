@@ -41,9 +41,7 @@ const getUserInfo = async (tokenType, accessToken) => {
         userInfo.units = unit;
       }
 
-      if (taUser) {
-        userInfo.taId = taUser.id;
-      }
+      userInfo.taId = taUser.id;
 
       return userInfo;
     }
