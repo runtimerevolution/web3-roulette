@@ -57,9 +57,9 @@ const getParticipationState = async (
   let registeredUser;
 
   if (userInfo.role === UserRole.ADMIN) {
-    registeredUser = participants?.find((p) => p.id === userInfo.email);
+    registeredUser = participants.find((p) => p.id === userInfo.email);
   } else {
-    registeredUser = participants;
+    registeredUser = participants.pop();
   }
 
   if (registeredUser) {
@@ -128,7 +128,13 @@ const shouldNotifyWinner = async (
 ): Promise<boolean> => {
   if (giveaway.winners.some((w) => w.id === userInfo.email)) {
     const participants = await FrontendApiClient.getParticipants(giveaway._id);
-    const userObj = participants.find((p) => p.id === userInfo.email);
+    let userObj;
+
+    if (userInfo.role === UserRole.ADMIN) {
+      userObj = participants.find((p) => p.id === userInfo.email);
+    } else {
+      userObj = participants.pop();
+    }
 
     if (userObj && !userObj.notified) {
       return true;
