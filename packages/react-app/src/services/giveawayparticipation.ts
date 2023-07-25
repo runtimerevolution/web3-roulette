@@ -56,7 +56,7 @@ const getParticipationState = async (
 
   let registeredUser;
 
-  if (userInfo.role === 'admin') {
+  if (userInfo.role === UserRole.ADMIN) {
     registeredUser = participants?.find((p) => p.id === userInfo.email);
   } else {
     registeredUser = participants;
