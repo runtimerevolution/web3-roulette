@@ -17,6 +17,7 @@ export interface User extends mongoose.Document {
   picture: string;
   role: UserRole;
   units: Unit[];
+  taId: number;
 }
 
 const userSchema = new Schema<User>({
@@ -35,6 +36,7 @@ const userSchema = new Schema<User>({
     default: [],
   },
   picture: { type: String, required: false },
+  taId: { type: Number, required: true },
 });
 
 export const User = mongoose.model<User>('User', userSchema);

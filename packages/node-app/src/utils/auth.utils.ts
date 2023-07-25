@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { Unit } from '../models/user.model';
+import { Unit, User } from '../models/user.model';
 import TAClient from './ta.utils';
 
 const googleAuthInstance = axios.create({
@@ -19,11 +19,19 @@ const getUserInfo = async (tokenType, accessToken) => {
     if (res.status === 200) {
       const userInfo = res.data;
       const taSession = await TAClient.signIn();
-      const runtimePeople = await TAClient.getPeople(taSession, false);
+      const dbUserRecord = await User.findOne({ email: userInfo.email });
+      let taUser;
 
-      const taUser = runtimePeople.find(
-        (user) => user.email === userInfo.email
-      );
+      if (dbUserRecord?.taId) {
+        taUser = await TAClient.getPersonById(taSession, false, dbUserRecord.taId);;
+      } else {
+        const runtimePeople = await TAClient.getPeople(taSession, false);
+  
+        taUser = runtimePeople.find(
+          (user) => user.email === userInfo.email
+        );
+      }
+
       if (!taUser) {
         throw Error('user is not active');
       }
@@ -32,6 +40,8 @@ const getUserInfo = async (tokenType, accessToken) => {
       if (unit) {
         userInfo.units = unit;
       }
+
+      userInfo.taId = taUser.id;
 
       return userInfo;
     }
