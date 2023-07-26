@@ -9,8 +9,6 @@ import { GiveawayContext } from '../../../pages/details';
 import { UserContext } from '../../../routes/AuthRoute';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
-type GiveawayMainContentProps = {};
-
 const GiveawayMainContent = () => {
   const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useContext(GiveawayContext) as Giveaway;

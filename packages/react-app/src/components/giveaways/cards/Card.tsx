@@ -52,20 +52,13 @@ const GiveawayCard = ({
     const winners = giveaway.winners;
     if (winners.length === 0) return;
 
-    const winnerId = winners[0].id;
-    let winnerParticipant;
-
-    if (userInfo.role === UserRole.ADMIN) {
-      winnerParticipant = participants.find((p) => p.id === winnerId);
-    } else {
-      winnerParticipant = participants.pop();
-    }
+    const winnerParticipant = winners[0];
 
     if (winnerParticipant) {
       if (winners.length === 1) {
-        return `${winnerParticipant.name}`;
+        return winners[0].name;
       } else {
-        return `${winnerParticipant.name} +${winners.length - 1} more`;
+        return `${winners[0].name} + ${winners.length - 1} more`;
       }
     }
   };

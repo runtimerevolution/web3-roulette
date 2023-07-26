@@ -14,8 +14,6 @@ type Giveaway = {
   isInvalid: boolean;
   rules?: string;
   requirements?: Requirements;
-  winningChance: number;
-  status: string;
 };
 
 type UserInfo = {
