@@ -7,6 +7,7 @@ import {
 import { UserContext } from '../../../routes/AuthRoute';
 import Resources from '../../../utils/Resources';
 import OverlayModal from '../../OverlayModal';
+import Confetti from 'react-confetti';
 
 type PendingLocationModalProps = {
   darkBackground?: boolean;
@@ -50,6 +51,7 @@ const WinnerModal = ({
 
   return (
     <div>
+      <Confetti />
       <OverlayModal
         img={Resources.TrophyImg}
         title={`Congratulations ${userInfo.name} !`}
