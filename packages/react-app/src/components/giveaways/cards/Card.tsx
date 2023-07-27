@@ -42,7 +42,6 @@ const GiveawayCard = ({
 }: GiveawayCardProps) => {
   const navigate = useNavigate();
   const userInfo = useContext(UserContext) as UserInfo;
-  const { data: participants } = useParticipants(giveaway._id);
   const [participation, setParticipation] = useState<ParticipationState>();
   const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
   const nrConfirmedParticipants = giveaway.stats.nrConfirmedParticipants;
@@ -109,16 +108,6 @@ const GiveawayCard = ({
               <img className="winner-icon" src={Trophy} alt="Trophy" />
               <Typography className="winner-message">
                 You won this contest!
-              </Typography>
-            </div>
-          </div>
-        )}
-        {giveaway.status === GiveawayStatus.INVALID && (
-          <div className="invalid-giveaway">
-            <div className="center-text">
-              <img className="invalid-icon" src={SadEmoji} alt="SadEmoji" />
-              <Typography className="invalid-message">
-                Not enough participants
               </Typography>
             </div>
           </div>

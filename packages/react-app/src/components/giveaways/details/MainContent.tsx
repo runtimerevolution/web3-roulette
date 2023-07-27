@@ -1,10 +1,10 @@
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 
 import { format } from 'date-fns';
 
 import { Stack, Typography } from '@mui/material';
 
-import { Giveaway, Participant, UserInfo, UserRole } from '../../../lib/types';
+import { Giveaway, UserInfo, UserRole } from '../../../lib/types';
 import { GiveawayContext } from '../../../pages/details';
 import { UserContext } from '../../../routes/AuthRoute';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
