@@ -1,4 +1,4 @@
-type Giveaway = {
+export type Giveaway = {
   _id: string;
   title: string;
   description: string;
@@ -17,7 +17,7 @@ type Giveaway = {
   winningChance: number;
 };
 
-type UserInfo = {
+export type User = {
   email: string;
   name: string;
   role: UserRole;
@@ -25,7 +25,7 @@ type UserInfo = {
   picture?: string;
 };
 
-type Participant = {
+export type Participant = {
   id: string;
   notified: boolean;
   name: string;
@@ -42,7 +42,7 @@ type Requirements = {
   location?: string;
 };
 
-type Location = {
+export type Location = {
   _id: string;
   name: string;
   latitude: number;
@@ -50,12 +50,12 @@ type Location = {
   radius: number;
 };
 
-enum UserRole {
+export enum UserRole {
   USER = 'user',
   ADMIN = 'admin',
 }
 
-enum Unit {
+export enum Unit {
   NODE = 'node',
   RAILS = 'rails',
   PYTHON = 'python',
@@ -66,7 +66,7 @@ type Stats = {
   nrPendingParticipants: number;
 };
 
-enum ParticipationState {
+export enum ParticipationState {
   CHECKING = 'checking',
   MANAGE = 'manage',
   PARTICIPATING = 'participating',
@@ -77,33 +77,18 @@ enum ParticipationState {
   PENDING_WINNERS = 'pendingWinners',
 }
 
-type ConditionType = 'unit' | 'location';
-type ConditionValue = Unit | string | null;
+export type ConditionType = 'unit' | 'location';
+export type ConditionValue = Unit | string | null;
 
-type GiveawayCondition = {
+export type GiveawayCondition = {
   type: ConditionType;
   value: ConditionValue;
 };
 
-enum GiveawayStatus {
+export enum GiveawayStatus {
   INVALID = 'invalid',
   FINISHED = 'finished',
   PENDING = 'pending',
   FUTURE = 'future',
   ONGOING = 'ongoing',
 }
-
-export {
-  ConditionType,
-  ConditionValue,
-  Giveaway,
-  GiveawayCondition,
-  GiveawayStatus,
-  Location,
-  Participant,
-  ParticipationState,
-  Requirements,
-  Unit,
-  UserInfo,
-  UserRole,
-};

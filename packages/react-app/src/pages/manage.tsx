@@ -1,43 +1,18 @@
-import {
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-
-import {
-  isAfter,
-  isBefore,
-} from 'date-fns';
+import { useContext, useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
-
-import {
-  Box,
-  Container,
-  Grid,
-  Snackbar,
-  Typography,
-} from '@mui/material';
+import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-
 import CreateNewButton from '../components/CreateNewButton';
-import GiveawayCard, {
-  GiveawayCardSkeleton,
-} from '../components/giveaways/cards/Card';
+import GiveawayCard, { GiveawayCardSkeleton } from '../components/giveaways/cards/Card';
 import GiveawayCountdownCard from '../components/giveaways/cards/CountdownCard';
 import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
 import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
 import { splitTimeLeft } from '../hooks/useTimer';
 import { useGiveaways } from '../lib/queryClient';
-import {
-  Giveaway,
-  GiveawayStatus,
-  UserInfo,
-  UserRole,
-} from '../lib/types';
-import { UserContext } from '../routes/AuthRoute';
+import { Giveaway, UserRole } from '../lib/types';
 import ParticipationService from '../services/giveawayparticipation';
+import { AuthenticationContext } from '../components/login/AuthenticationProvider';
 
 const Tabs = {
   Active: 0,
@@ -47,7 +22,7 @@ const Tabs = {
 const isTabActive = (tab) => tab === Tabs.Active;
 
 const Manage = () => {
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
   const [activeTab, setActiveTab] = useState(Tabs.Active);
   const {
     data: giveaways,
@@ -68,7 +43,7 @@ const Manage = () => {
     }
 
     if (giveaways) {
-      if (userInfo.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
+      if (user.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
         ParticipationService.nextGiveaway(giveaways).then((nextGiveaway) => {
           if (nextGiveaway) {
             const giveawayTime = nextGiveaway.endTime.getTime();
@@ -78,7 +53,7 @@ const Manage = () => {
             setCountdownGiveaway(null);
           }
         });
-      } else if (userInfo.role === UserRole.ADMIN) {
+      } else if (user.role === UserRole.ADMIN) {
         setCountdownGiveaway(null);
       }
     }
@@ -104,7 +79,7 @@ const Manage = () => {
 
   if (
     !isLoading &&
-    userInfo.role === UserRole.USER &&
+    user.role === UserRole.USER &&
     !giveaways?.some((g) => g.startTime < new Date())
   ) {
     return <UserEmptyState />;
@@ -112,7 +87,7 @@ const Manage = () => {
 
   if (
     !isLoading &&
-    userInfo.role === UserRole.ADMIN &&
+    user.role === UserRole.ADMIN &&
     giveaways?.length === 0 &&
     activeTab !== Tabs.Archived
   ) {
@@ -132,7 +107,7 @@ const Manage = () => {
           <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
           </Typography>
-          {userInfo.role === UserRole.ADMIN && <CreateNewButton />}
+          {user.role === UserRole.ADMIN && <CreateNewButton />}
         </Box>
 
         <Button

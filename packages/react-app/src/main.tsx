@@ -1,10 +1,7 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { QueryClientProvider } from 'react-query';
-
 import { createTheme, ThemeProvider } from '@mui/material';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-
 import App from './app/app';
 import queryClient from './lib/queryClient';
 import Constants from './utils/Constants';
@@ -28,13 +25,11 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <GoogleOAuthProvider clientId={Constants.OAUTH_CLIENT_ID}>
-    <StrictMode>
-      <ThemeProvider theme={theme}>
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </ThemeProvider>
-    </StrictMode>
-  </GoogleOAuthProvider>
+  <StrictMode>
+    <ThemeProvider theme={theme}>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </ThemeProvider>
+  </StrictMode>
 );

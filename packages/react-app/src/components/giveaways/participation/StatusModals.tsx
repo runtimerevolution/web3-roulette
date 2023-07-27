@@ -1,10 +1,6 @@
 import { useContext } from 'react';
-
-import {
-  Giveaway,
-  UserInfo,
-} from '../../../lib/types';
-import { UserContext } from '../../../routes/AuthRoute';
+import { Giveaway } from '../../../lib/types';
+import { AuthenticationContext } from '../../login/AuthenticationProvider';
 import Resources from '../../../utils/Resources';
 import OverlayModal from '../../OverlayModal';
 import Confetti from 'react-confetti';
@@ -47,14 +43,14 @@ const WinnerModal = ({
   onClose,
   darkBackground = true,
 }: GiveawayModalProps) => {
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
 
   return (
     <div>
       <Confetti />
       <OverlayModal
         img={Resources.TrophyImg}
-        title={`Congratulations ${userInfo.name} !`}
+        title={`Congratulations ${user.name} !`}
         description={
           <p>
             {`For winning ${giveaway.title} giveaway contest, you won a 

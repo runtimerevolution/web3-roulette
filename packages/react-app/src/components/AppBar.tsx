@@ -1,28 +1,11 @@
-import { useContext, useState } from 'react';
-
-import { useNavigate } from 'react-router-dom';
-
-import {
-  Avatar,
-  Box,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-} from '@mui/material';
-import { googleLogout } from '@react-oauth/google';
-
+import { useContext, useState} from 'react';
+import { Avatar, Box, Container, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import logo from '../assets/Logo.svg';
-import { UserInfo } from '../lib/types';
-import { UserContext } from '../routes/AuthRoute';
-import AuthClient from '../services/authclient';
+import { AuthenticationContext } from './login/AuthenticationProvider';
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const navigate = useNavigate();
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { logout, user } = useContext(AuthenticationContext);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -30,13 +13,6 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-  };
-
-  const logout = () => {
-    handleCloseUserMenu();
-    googleLogout();
-    AuthClient.cleanupTokens();
-    navigate('/login');
   };
 
   return (
@@ -54,13 +30,13 @@ function ResponsiveAppBar() {
         <Stack direction="row" alignItems="center" spacing="8px">
           <IconButton onClick={handleOpenUserMenu}>
             <Avatar
-              src={userInfo.picture}
-              alt={userInfo.name}
+              src={user.picture}
+              alt={user.name}
               imgProps={{ referrerPolicy: 'no-referrer' }}
             />
           </IconButton>
           <Typography className='profile-name'>
-            {userInfo.name}
+            {user.name}
           </Typography>
         </Stack>
         <Menu

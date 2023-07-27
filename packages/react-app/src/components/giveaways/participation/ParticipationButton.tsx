@@ -1,20 +1,7 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-
-import {
-  Giveaway,
-  ParticipationState,
-  UserInfo,
-} from '../../../lib/types';
-import { UserContext } from '../../../routes/AuthRoute';
+import { Giveaway, ParticipationState } from '../../../lib/types';
 import FrontendApiClient from '../../../services/backend';
 import ParticipationService from '../../../services/giveawayparticipation';
 import {
@@ -26,11 +13,8 @@ import {
   ParticipateButton,
   ParticipatingButton,
 } from './ActionButtons';
-import {
-  PendingLocationModal,
-  RejectionModal,
-  WinnerModal,
-} from './StatusModals';
+import { PendingLocationModal, RejectionModal, WinnerModal } from './StatusModals';
+import { AuthenticationContext } from '../../login/AuthenticationProvider';
 
 type ParticipationButtonProps = {
   giveaway: Giveaway;
@@ -43,8 +27,7 @@ const ParticipationButton = ({
 }: ParticipationButtonProps) => {
   const [participationState, setParticipationState] =
     useState<ParticipationState>(ParticipationState.CHECKING);
-
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
   const [error, setError] = useState(false);
   const [showPendingModal, setShowPendingModal] = useState(false);
   const [showRejectedModal, setShowRejectedModal] = useState(false);
@@ -53,7 +36,7 @@ const ParticipationButton = ({
   const notifyRejection = useCallback(async () => {
     await FrontendApiClient.setNotifiedParticipant(
       giveaway._id,
-      userInfo.email
+      user.email
     );
     setShowRejectedModal(true);
   }, [giveaway, userInfo]);
@@ -61,17 +44,17 @@ const ParticipationButton = ({
   const notifyWinner = useCallback(async () => {
     await FrontendApiClient.setNotifiedParticipant(
       giveaway._id,
-      userInfo.email
+      user.email
     );
     setShowWinnerModal(true);
-  }, [giveaway, userInfo]);
+  }, [giveaway, user]);
 
   const updateParticipationState = useCallback(
     (fromEvent = false) => {
       ParticipationService.getParticipationState(
         giveaway,
         undefined,
-        userInfo
+        user
       ).then((state) => {
         setParticipationState(state);
         onStateChange?.(state);
@@ -86,7 +69,7 @@ const ParticipationButton = ({
           notifyRejection();
         }
 
-        ParticipationService.shouldNotifyWinner(giveaway, userInfo).then(
+        ParticipationService.shouldNotifyWinner(giveaway, user).then(
           (notify) => {
             if (notify) {
               notifyWinner();
@@ -95,7 +78,7 @@ const ParticipationButton = ({
         );
       });
     },
-    [giveaway, userInfo, notifyRejection, notifyWinner, onStateChange]
+    [giveaway, user, notifyRejection, notifyWinner, onStateChange]
   );
 
   const ActionButton: React.ReactNode = useMemo(() => {
@@ -110,7 +93,7 @@ const ParticipationButton = ({
         return (
           <ParticipateButton
             giveaway={giveaway}
-            userInfo={userInfo}
+            userInfo={user}
             successCallback={() => {
               updateParticipationState(true);
             }}
@@ -139,7 +122,7 @@ const ParticipationButton = ({
           />
         );
     }
-  }, [participationState, giveaway, userInfo, updateParticipationState]);
+  }, [participationState, giveaway, user, updateParticipationState]);
 
   useEffect(() => {
     updateParticipationState();

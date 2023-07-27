@@ -1,20 +1,9 @@
-import { useNavigate } from 'react-router-dom';
-
-import {
-  Button,
-  Card,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { useContext } from 'react';
+import { Button, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import {
-  TokenResponse,
-  useGoogleLogin,
-} from '@react-oauth/google';
-
 import google from '../../assets/google.svg';
 import logo from '../../assets/Logo.svg';
-import AuthClient from '../../services/authclient';
+import { AuthenticationContext } from './AuthenticationProvider';
 
 const GoogleAuthButton = styled(Button)({
   color: '#171717',
@@ -27,40 +16,8 @@ const GoogleAuthButton = styled(Button)({
   borderWidth: '2px',
 });
 
-type LoginCardProps = {
-  handleAuthError: () => void;
-};
-
-const LoginCard = ({ handleAuthError }: LoginCardProps) => {
-  const navigate = useNavigate();
-
-  const handleSuccess = async (
-    res: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'>
-  ) => {
-    const tokenType = res.token_type;
-    const accessToken = res.access_token;
-    const apiToken = await AuthClient.login(tokenType, accessToken);
-
-    if (!apiToken) {
-      handleAuthError();
-      return;
-    }
-
-    AuthClient.saveTokens(apiToken);
-    navigate('/');
-  };
-
-  const handleError = (
-    error: Pick<TokenResponse, 'error' | 'error_description' | 'error_uri'>
-  ) => {
-    console.log(error);
-    handleAuthError();
-  };
-
-  const login = useGoogleLogin({
-    onSuccess: handleSuccess,
-    onError: handleError,
-  });
+const LoginCard = () => {
+  const { login } = useContext(AuthenticationContext);
 
   return (
     <Card
@@ -95,9 +52,7 @@ const LoginCard = ({ handleAuthError }: LoginCardProps) => {
           <GoogleAuthButton
             variant="outlined"
             startIcon={<img className="w-20" src={google} alt="google" />}
-            onClick={() => {
-              login();
-            }}
+            onClick={login}
           >
             Sign in with Google
           </GoogleAuthButton>
