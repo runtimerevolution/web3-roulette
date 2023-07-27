@@ -69,7 +69,12 @@ const getParticipationState = async (
   }
 
   const ableTo = await meetRequirements(giveaway, userInfo);
-  return ableTo ? ParticipationState.ALLOWED : ParticipationState.NOT_ALLOWED;
+  if (!ableTo) {
+    return ParticipationState.NOT_ALLOWED;
+  }
+  return giveaway.requirements.location
+    ? ParticipationState.ALLOWED
+    : ParticipationState.NOT_ALLOWED;
 };
 
 const meetRequirements = async (
@@ -90,15 +95,7 @@ const meetRequirements = async (
     if (!accepted) return true;
 
     const location = await FrontendApiClient.getLocation(locationId);
-    if (
-      !location ||
-      !(await GeolocationService.isWithinRadius(
-        location.latitude,
-        location.longitude,
-        location.radius
-      ))
-    )
-      return false;
+    if (!location) return false;
   }
 
   return true;
