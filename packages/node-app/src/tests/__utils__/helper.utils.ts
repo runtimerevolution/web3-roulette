@@ -10,6 +10,7 @@ const authenticated = (testFn) => {
       const user = await User.create({
         email: 'example@domain.com',
         name: 'name',
+        taId: 1111,
       });
       req.user = user;
       next();
@@ -40,6 +41,7 @@ const adminAuthenticated = (testFn) => {
         email: 'example@domain.com',
         name: 'name',
         role: UserRole.ADMIN,
+        taId: 1111,
       });
       req.user = user;
       next();
