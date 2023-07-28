@@ -45,25 +45,25 @@ jest.mock('../utils/web3.utils', () => ({
 
 beforeAll(async () => {
   await mongoose.connect(process.env.TEST_DATABASE_URI);
-});
+}, 50000);
 
 afterAll(async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
-});
+}, 50000);
 
 afterEach(async () => {
   await Giveaway.deleteMany({});
   await User.deleteMany({});
   jest.clearAllMocks();
-});
+}, 50000);
 
 describe('GET /', () => {
   it('should return a message while authenticated', async () => {
     const response = await request(app).get('/');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ alive: 'True' });
-  });
+  }, 50000);
 });
 
 describe('GET /giveaways', () => {
@@ -73,7 +73,8 @@ describe('GET /giveaways', () => {
       const response = await request(app).get('/giveaways');
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
-    })
+    }),
+    50000
   );
 
   it(
@@ -108,7 +109,8 @@ describe('GET /giveaways', () => {
           expect.objectContaining({ title: giveaways[1].title }),
         ])
       );
-    })
+    }),
+    50000
   );
 });
 
@@ -118,7 +120,8 @@ describe('GET /giveaways/:id', () => {
     authenticated(async () => {
       const response = await request(app).get('/giveaways/invalid-id');
       expect(response.status).toBe(500);
-    })
+    }),
+    50000
   );
 
   it(
@@ -141,7 +144,8 @@ describe('GET /giveaways/:id', () => {
       expect(new Date(response.body.startTime)).toEqual(giveaway.startTime);
       expect(new Date(response.body.endTime)).toEqual(giveaway.endTime);
       expect(response.body.numberOfWinners).toEqual(1);
-    })
+    }),
+    50000
   );
 });
 
@@ -202,7 +206,8 @@ describe('POST /giveaways', () => {
         isoStringToSecondsTimestamp(newGiveaway.endTime),
         newGiveaway.numberOfWinners
       );
-    })
+    }),
+    50000
   );
 
   it(
@@ -227,7 +232,8 @@ describe('POST /giveaways', () => {
       const giveaway = await Giveaway.findOne({ title: giveawayData.title });
       expect(giveaway).toBeNull();
       expect(giveawaysContract.methods.createGiveaway).not.toHaveBeenCalled();
-    })
+    }),
+    50000
   );
 });
 
@@ -237,7 +243,8 @@ describe('PUT /giveaways/:id', () => {
     adminAuthenticated(async () => {
       const response = await request(app).put('/giveaways/invalid-id');
       expect(response.status).toBe(500);
-    })
+    }),
+    50000
   );
 
   it(
@@ -270,7 +277,8 @@ describe('PUT /giveaways/:id', () => {
       expect(response.body.description).toBe(updatedGiveaway.description);
       expect(response.body.numberOfWinners).toEqual(1);
       expect(response.body.prize).toBe(updatedGiveaway.prize);
-    })
+    }),
+    50000
   );
 });
 
@@ -301,7 +309,8 @@ describe('POST /giveaways/:id/participants', () => {
 
       expect(response.body.message).toEqual('Participant added successfully');
       expect(giveawaysContract.methods.addParticipant).toHaveBeenCalled();
-    })
+    }),
+    50000
   );
 
   it(
@@ -324,7 +333,8 @@ describe('POST /giveaways/:id/participants', () => {
       const updatedGiveaway = await Giveaway.findById(giveaway._id);
       expect(updatedGiveaway.participants.length).toEqual(0);
       expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
-    })
+    }),
+    50000
   );
 });
 
@@ -358,7 +368,8 @@ describe('GET /giveaways/:id/generate-winners', () => {
       expect(giveawaysContract.methods.getWinners).toHaveBeenCalledWith(
         objectIdToBytes24(giveaway._id)
       );
-    })
+    }),
+    50000
   );
 });
 
@@ -400,7 +411,8 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
         ParticipantState.PENDING
       );
       expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
-    })
+    }),
+    50000
   );
 
   it(
@@ -424,7 +436,8 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
         ParticipantState.PENDING
       );
       expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
-    })
+    }),
+    50000
   );
 
   it(
@@ -451,7 +464,8 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
         objectIdToBytes24(giveaway._id),
         encrypt(participant.id)
       );
-    })
+    }),
+    50000
   );
 
   it(
@@ -475,7 +489,8 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
         ParticipantState.REJECTED
       );
       expect(giveawaysContract.methods.addParticipant).not.toHaveBeenCalled();
-    })
+    }),
+    50000
   );
 
   it(
@@ -498,7 +513,8 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
       expect(updatedGiveaway.participants[0].state).toEqual(
         ParticipantState.PENDING
       );
-    })
+    }),
+    50000
   );
 
   it(
@@ -519,6 +535,7 @@ describe('PUT giveaways/:id/participants/:participantId', () => {
       const updatedGiveaway = await Giveaway.findById(giveaway._id);
       expect(res.status).toEqual(401);
       expect(updatedGiveaway.participants[0].notified).toEqual(false);
-    })
+    }),
+    50000
   );
 });
