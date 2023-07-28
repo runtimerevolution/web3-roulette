@@ -97,7 +97,6 @@ const meetRequirements = async (
     const location = await FrontendApiClient.getLocation(locationId);
     const userLocation = await GeolocationService.getLocation();
 
-
     if (!userLocation) return true;
 
     if (
