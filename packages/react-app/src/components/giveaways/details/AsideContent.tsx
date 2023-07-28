@@ -5,7 +5,7 @@ import { Button, Stack, Typography } from '@mui/material';
 import LinkIcon from '../../../assets/Link.png';
 import { Giveaway, ParticipationState, UserRole } from '../../../lib/types';
 import { GiveawayContext } from '../../../pages/details';
-import Constants from '../../../utils/Constants';
+import { get } from '../../../utils/constants.util';
 import SvgHelper from '../../../utils/SvgHelper';
 import ParticipationButton from '../participation/ParticipationButton';
 import { DownloadButton } from './PDFDocument';
@@ -41,7 +41,7 @@ const GiveawayAsideContent = ({
   }, [isAdmin, qrDataURL]);
 
   const copyToClipboard = async () => {
-    const giveawayLink = `${Constants.FRONTEND_URI}/giveaways/${giveaway._id}`;
+    const giveawayLink = `${get(FRONTEND_URI)}/giveaways/${giveaway._id}`;
     await navigator.clipboard.writeText(giveawayLink);
 
     setCopyClipboardCheck(true);

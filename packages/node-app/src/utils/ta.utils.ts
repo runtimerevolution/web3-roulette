@@ -57,8 +57,6 @@ const getPersonById = async (
   id: number,
 ): Promise<TAPerson> => {
   const multiSite = session.siteUrl;
-  const queryParams = archived ? `?archived=${archived}` : '';
-
   const res = await TAInstance.get(`/v1/${multiSite}/people/${id}`, {
     headers: {
       'access-token': session.accessToken,

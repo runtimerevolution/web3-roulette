@@ -42,7 +42,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LoadingButton } from '@mui/lab';
 
 import uploadIcon from '../assets/CloudUpload.png';
-import WarningBox from '../components/WarningBox';
 import queryClient, {
   useGiveawayDetails,
   useLocations,

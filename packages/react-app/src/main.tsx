@@ -4,7 +4,6 @@ import { QueryClientProvider } from 'react-query';
 import { createTheme, ThemeProvider } from '@mui/material';
 import App from './app/app';
 import queryClient from './lib/queryClient';
-import Constants from './utils/Constants';
 
 const theme = createTheme({
   typography: {

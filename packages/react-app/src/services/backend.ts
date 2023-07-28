@@ -6,7 +6,7 @@ import axios, {
 } from 'axios';
 
 import { Giveaway, Location, Participant } from '../lib/types';
-import Constants from '../utils/Constants';
+import { get } from '../utils/constants.util';
 import GeolocationService, { Coordinates } from './geolocation';
 
 type ParticipantBody = {
@@ -44,7 +44,7 @@ class BackendService {
     const axiosRequestConfig: AxiosRequestConfig = {
       url: route,
       method,
-      baseURL: Constants.API_URI,
+      baseURL: get(API_URI),
       timeout: 1000 * 30, // 30s
     };
 
