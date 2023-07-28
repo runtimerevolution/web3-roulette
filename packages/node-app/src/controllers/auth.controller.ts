@@ -1,56 +1,41 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { pick } from 'lodash';
-
 import { User } from '../models/user.model';
-import { getUserInfo } from '../utils/auth.utils';
-import { handleError } from '../utils/model.utils';
+import { getTAInfo } from '../utils/auth.utils';
+import { getGoogleOauthToken, getGoogleUser } from '../services/googleAuth.service';
 
-const login = async (req: Request, res: Response) => {
-  try {
-    const { tokenType, accessToken } = req.body;
-    if (!tokenType || !accessToken) {
-      return res
-        .status(400)
-        .json({ error: 'Token type and access token are required' });
-    }
-
-    let userInfo = await getUserInfo(tokenType, accessToken);
-    if (!userInfo) {
-      return res.status(400).json({ error: 'Invalid user info' });
-    }
-
-    userInfo = pick(userInfo, ['email', 'name', 'picture', 'units']);
-    const user = await User.findOneAndUpdate(
-      { email: userInfo.email },
-      userInfo,
-      {
-        new: true,
-        upsert: true,
-      }
-    );
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-      },
-      process.env.ENCRYPTION_KEY,
-      {
-        expiresIn: '24h',
-      }
-    );
-
-    res.status(201).json({ token });
-  } catch (error) {
-    const { code, message } = handleError(error);
-    res.status(code).json({ error: message });
-  }
-};
-
-const me = (req: Request, res: Response) => {
+export const getCurrentUser = (req: Request, res: Response) => {
   const user = req.user;
   res.status(200).json(user);
 };
 
-export { login, me };
+export const googleOauth = async (req: Request, res: Response) => {
+  const swagger = !!req.query.swagger;
+  try {
+    const code = req.query.code as string;
+    if (!code) throw new Error("Authorization code not provided")
+
+    const { idToken, accessToken } = await getGoogleOauthToken(code, swagger);
+    const { name, verified, email, picture } = await getGoogleUser(idToken, accessToken);
+
+    if (!verified) throw new Error("Google account not verified")
+
+    const { units, taId } = await getTAInfo(email)
+    const user = await User.findOneAndUpdate(
+      { email }, { name, picture, units, taId }, { upsert: true, new: true, lean: true }
+    );
+    if (!user) throw new Error("User model failed")
+
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.ENCRYPTION_KEY,
+      { expiresIn: '24h' }
+    );
+
+    if (swagger) res.status(200).json({ token })
+    else res.redirect(`${process.env.APP_ORIGIN}?authToken=${token}`)
+  } catch (error) {
+    if (swagger) res.status(500).json({ error })
+    else res.redirect(`${process.env.APP_ORIGIN}?authError=true`)
+  }
+};

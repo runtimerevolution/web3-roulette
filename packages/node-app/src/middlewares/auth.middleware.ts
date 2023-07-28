@@ -3,17 +3,15 @@ import jwt from 'jsonwebtoken';
 import { User, UserRole } from '../models/user.model';
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
   try {
-    if (!authHeader)
-      throw new Error('Invalid headers');
+    const authHeader = req.headers.authorization;
+    if (!authHeader) throw new Error('Invalid headers');
 
     const token = authHeader.split(' ')[1];
-    const decodedJwt = jwt.verify(token, process.env.ENCRYPTION_KEY);
-    const user = await User.findOne({ email: decodedJwt.email });
+    const userId = jwt.verify(token, process.env.ENCRYPTION_KEY).id;
+    const user = await User.findById(userId);
 
-    if (!user)
-      throw new Error('Invalid user');
+    if (!user) throw new Error('Invalid user');
     
     req.user = user;
     return next();

@@ -1,33 +1,14 @@
-import {
-  useContext,
-  useState,
-} from 'react';
-
+import { useContext, useState } from 'react';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-
-import {
-  Box,
-  Card,
-  CardContent,
-  Skeleton,
-  Typography,
-} from '@mui/material';
-
+import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 import Trophy from '../../../assets/Trophy.png';
 import SadEmoji from '../../../assets/SadEmoji.png';
-import { useParticipants } from '../../../lib/queryClient';
-import {
-  Giveaway,
-  GiveawayStatus,
-  ParticipationState,
-  UserInfo,
-  UserRole,
-} from '../../../lib/types';
-import { UserContext } from '../../../routes/AuthRoute';
+import { Giveaway, ParticipationState, UserRole } from '../../../lib/types';
 import ParticipationService from '../../../services/giveawayparticipation';
 import ParticipationButton from '../participation/ParticipationButton';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
+import { AuthenticationContext } from '../../login/AuthenticationProvider';
 
 type GiveawayCardProps = {
   giveaway: Giveaway;
@@ -41,9 +22,9 @@ const GiveawayCard = ({
   onWinnersGeneration,
 }: GiveawayCardProps) => {
   const navigate = useNavigate();
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
   const [participation, setParticipation] = useState<ParticipationState>();
-  const isWinner = ParticipationService.wonGiveaway(giveaway, userInfo);
+  const isWinner = ParticipationService.wonGiveaway(giveaway, user);
   const nrConfirmedParticipants = giveaway.stats.nrConfirmedParticipants;
   const nrPendingParticipants = giveaway.stats.nrPendingParticipants;
 
@@ -88,7 +69,7 @@ const GiveawayCard = ({
       }}
       elevation={0}
     >
-      {userInfo.role === UserRole.ADMIN && nrPendingParticipants > 0 && !giveaway.isInvalid &&(
+      {user.role === UserRole.ADMIN && nrPendingParticipants > 0 && !giveaway.isInvalid &&(
         <div className="card-pending-approvals">
           <PendingApprovalBanner
             giveaway={giveaway}
@@ -153,7 +134,7 @@ const GiveawayCard = ({
             {giveaway.winners.length > 0 ? getWinnerStr() : giveaway.isInvalid ? 'No Winners' : 'pending'}
           </Typography>
         )}
-        {archived && giveaway.winners.length == 0 && (
+        {archived && giveaway.winners.length === 0 && (
           <Typography className="winners" gutterBottom>
             <span role="img" aria-label="party emoji">
               🥳

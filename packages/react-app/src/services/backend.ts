@@ -6,8 +6,7 @@ import axios, {
 } from 'axios';
 
 import { Giveaway, Location, Participant } from '../lib/types';
-import Constants from '../utils/Constants';
-import AuthClient from './authclient';
+import { get } from '../utils/constants.util';
 import GeolocationService, { Coordinates } from './geolocation';
 
 type ParticipantBody = {
@@ -45,7 +44,7 @@ class BackendService {
     const axiosRequestConfig: AxiosRequestConfig = {
       url: route,
       method,
-      baseURL: Constants.API_URI,
+      baseURL: get(API_URI),
       timeout: 1000 * 30, // 30s
     };
 
@@ -56,14 +55,10 @@ class BackendService {
       axiosRequestConfig.data = params;
     }
 
-    const tokens = AuthClient.readTokens();
-    if (!tokens) {
-      return new Promise((resolve, reject) => reject('Tokens not found'));
-    }
-
+    const authToken = localStorage.getItem('authToken');
     axiosRequestConfig.headers = {
       ...headers,
-      Authorization: `Bearer ${tokens.apiToken}`,
+      Authorization: `Bearer ${authToken}`,
       'Cache-Control': 'no-cache',
     };
     return instance.request(axiosRequestConfig);

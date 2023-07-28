@@ -1,51 +1,18 @@
 import 'leaflet/dist/leaflet.css';
-
-import {
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-
+import { useContext, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import MarkerIcon from 'leaflet/dist/images/marker-icon.png';
 import MarkerShadow from 'leaflet/dist/images/marker-shadow.png';
-import {
-  Controller,
-  ControllerRenderProps,
-  useForm,
-} from 'react-hook-form';
-import {
-  Circle,
-  MapContainer,
-  Marker,
-  TileLayer,
-} from 'react-leaflet';
-import {
-  Navigate,
-  useNavigate,
-} from 'react-router-dom';
-
-import {
-  Box,
-  Button,
-  Grid,
-  Slider,
-  Snackbar,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Controller, ControllerRenderProps, useForm } from 'react-hook-form';
+import { Circle, MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { Box, Button, Grid, Slider, Snackbar, TextField, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-
 import SubHeader from '../components/SubHeader';
 import queryClient from '../lib/queryClient';
-import {
-  Location,
-  UserInfo,
-  UserRole,
-} from '../lib/types';
-import { UserContext } from '../routes/AuthRoute';
+import { Location, UserRole } from '../lib/types';
 import FrontendApiClient from '../services/backend';
+import { AuthenticationContext } from '../components/login/AuthenticationProvider';
 
 const textInputStyle = {
   '& .MuiInputBase-root': {
@@ -73,7 +40,7 @@ L.Marker.prototype.options.icon = defaultIcon;
 
 const LocationEdit = () => {
   const navigate = useNavigate();
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
 
   const { handleSubmit, register, formState, setValue, control } =
     useForm<Location>({});
@@ -138,7 +105,7 @@ const LocationEdit = () => {
     }
   };
 
-  if (userInfo.role !== UserRole.ADMIN) {
+  if (user.role !== UserRole.ADMIN) {
     return <Navigate to={`/`} />;
   }
 

@@ -42,7 +42,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LoadingButton } from '@mui/lab';
 
 import uploadIcon from '../assets/CloudUpload.png';
-import WarningBox from '../components/WarningBox';
 import queryClient, {
   useGiveawayDetails,
   useLocations,
@@ -52,15 +51,14 @@ import {
   Giveaway,
   GiveawayCondition,
   Unit,
-  UserInfo,
   UserRole,
 } from '../lib/types';
-import { UserContext } from '../routes/AuthRoute';
+import { AuthenticationContext } from '../components/login/AuthenticationProvider';
 import API from '../services/backend';
 
 const EditGiveaway = () => {
   const navigate = useNavigate();
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
   const { giveawayId } = useParams();
   const { data } = useGiveawayDetails(giveawayId);
   const locations = useLocations();
@@ -224,7 +222,7 @@ const EditGiveaway = () => {
     undefined
   );
 
-  return userInfo.role === UserRole.ADMIN ? (
+  return user.role === UserRole.ADMIN ? (
     <Container maxWidth={false}>
       <Snackbar
         open={!!errorMessage}

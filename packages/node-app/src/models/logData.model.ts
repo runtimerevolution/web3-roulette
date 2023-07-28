@@ -1,6 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-
-import { Unit } from './user.model';
 import { Participant, ParticipantState } from './giveaway.model';
 
 enum Action {

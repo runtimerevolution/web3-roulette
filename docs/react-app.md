@@ -1,23 +1,22 @@
 # Front-end Application
 
-1. Install the needed dependencies \
-   `yarn install`
+1. Run `yarn install` to install the project dependencies
 
-2. Setup the environment variables \
-   `cd ./packages/react-app` \
-   `cp .env.example .env`
+2. Setup the environment variables
+```
+cd ./packages/react-app && cp .env.example .env
+```
 
-3. Fill `VITE_OAUTH_CLIENT_ID` value. Request to someone from the team. This value is a reference to cliend ID used for google authentication.
+3. To enable Google authentication, you need to fill the following environment variables in your `.env` file:
+   - `VITE_GOOGLE_OAUTH_CLIENT_ID`: your Google OAuth Client ID
+   - `VITE_GOOGLE_OAUTH_CLIENT_SECRET`: your Google OAuth Client Secret
+   - `VITE_GOOGLE_OAUTH_REDIRECT`: your Google OAuth Redirect URI
 
-4. Update `VITE_FRONTEND_URI` value. Replace `localhost` with the domain hosting the react application. This will make sure that features such as QR code will work, when scaning through the mobile device.
+4. Update the `VITE_FRONTEND_URI` value. Replace `localhost` with the domain hosting the React application
 
-5. Do the [backend api setup](./node-app.md).
+5. Setup and run the API, or update the `VITE_API_URI` variable to a publicly accessible address. Refer to the [documentation](./node-app.md) for instructions on local setup
 
-6. Start the backend api \
-   `yarn start-node-app`
-
-7. Start the app \
-   `yarn start-react-app`
+7. Run `yarn start-react-app` to start the APP
 
 ## Docker Setup
 

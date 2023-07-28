@@ -102,17 +102,6 @@ export const giveawayWinningChance = (email, stats, participants, giveaway) => {
   return Math.min(winningChance, 100);
 };
 
-const nextGiveaway = (giveaways) => {
-  const activeGiveaways = giveaways.filter(
-    (g) => g.startTime < new Date() && new Date() < g.endTime
-  );
-  if (activeGiveaways.length === 0) return;
-
-  return activeGiveaways.reduce((prev, curr) =>
-    prev.endTime < curr.endTime ? prev : curr
-  );
-};
-
 export const getActiveGiveaways = (giveaways, role) => {
   return giveaways?.filter((g) => {
     const isActive = !(

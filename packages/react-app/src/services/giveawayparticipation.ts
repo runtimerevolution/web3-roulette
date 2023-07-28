@@ -2,7 +2,7 @@ import {
   Giveaway,
   Participant,
   ParticipationState,
-  UserInfo,
+  User,
   UserRole,
 } from '../lib/types';
 import FrontendApiClient from './backend';
@@ -10,21 +10,21 @@ import GeolocationService from './geolocation';
 
 const submitParticipation = (
   giveaway: Giveaway,
-  userInfo: UserInfo,
+  user: User,
   successCallback?: () => void,
   errorCallback?: () => void
 ) => {
   FrontendApiClient.postParticipant(
     giveaway,
-    userInfo.email,
-    userInfo.name,
+    user.email,
+    user.name,
     successCallback,
     errorCallback
   ).catch((err) => console.log(`problems submitting participation`));
 };
 
-const wonGiveaway = (giveaway: Giveaway, userInfo: UserInfo) => {
-  return giveaway.winners.some((winner) => winner.id === userInfo.email);
+const wonGiveaway = (giveaway: Giveaway, user: User) => {
+  return giveaway.winners.some((winner) => winner.id === user.email);
 };
 
 const hasPendingWinners = (giveaway: Giveaway) => {
@@ -41,23 +41,23 @@ const hasPendingWinners = (giveaway: Giveaway) => {
 const getParticipationState = async (
   giveaway: Giveaway,
   participants?: Participant[],
-  userInfo?: UserInfo
+  user?: User
 ): Promise<ParticipationState> => {
-  if (!userInfo) return ParticipationState.NOT_ALLOWED;
+  if (!user) return ParticipationState.NOT_ALLOWED;
 
-  if (userInfo.role === UserRole.ADMIN && hasPendingWinners(giveaway))
+  if (user.role === UserRole.ADMIN && hasPendingWinners(giveaway))
     return ParticipationState.PENDING_WINNERS;
 
   if (new Date() > giveaway.endTime) return ParticipationState.NOT_ALLOWED;
-  if (userInfo.role === UserRole.ADMIN) return ParticipationState.MANAGE;
+  if (user.role === UserRole.ADMIN) return ParticipationState.MANAGE;
 
   if (!participants)
     participants = await FrontendApiClient.getParticipants(giveaway._id);
 
   let registeredUser;
 
-  if (userInfo.role === UserRole.ADMIN) {
-    registeredUser = participants.find((p) => p.id === userInfo.email);
+  if (user.role === UserRole.ADMIN) {
+    registeredUser = participants.find((p) => p.id === user.email);
   } else {
     registeredUser = participants.pop();
   }
@@ -75,20 +75,20 @@ const getParticipationState = async (
     }
   }
 
-  const ableTo = await meetRequirements(giveaway, userInfo);
+  const ableTo = await meetRequirements(giveaway, user);
   return ableTo ? ParticipationState.ALLOWED : ParticipationState.NOT_ALLOWED;
 };
 
 const meetRequirements = async (
   giveaway: Giveaway,
-  userInfo: UserInfo
+  user: User
 ): Promise<boolean> => {
   if (!giveaway.requirements) return true;
 
   const unit = giveaway.requirements.unit;
   const locationId = giveaway.requirements.location;
 
-  if (unit && !userInfo.units.includes(unit)) {
+  if (unit && !user.units.includes(unit)) {
     return false;
   }
 
@@ -128,14 +128,14 @@ const nextGiveaway = async (giveaways: Giveaway[]) => {
 
 const shouldNotifyWinner = async (
   giveaway: Giveaway,
-  userInfo: UserInfo
+  user: User
 ): Promise<boolean> => {
-  if (giveaway.winners.some((w) => w.id === userInfo.email)) {
+  if (giveaway.winners.some((w) => w.id === user.email)) {
     const participants = await FrontendApiClient.getParticipants(giveaway._id);
     let userObj;
 
-    if (userInfo.role === UserRole.ADMIN) {
-      userObj = participants.find((p) => p.id === userInfo.email);
+    if (user.role === UserRole.ADMIN) {
+      userObj = participants.find((p) => p.id === user.email);
     } else {
       userObj = participants.pop();
     }

@@ -7,9 +7,9 @@ import MuiAlert from '@mui/material/Alert';
 import ParticipantEntry from '../components/giveaways/participation/ParticipantEntry';
 import SubHeader from '../components/SubHeader';
 import queryClient from '../lib/queryClient';
-import { Giveaway, Participant, UserInfo, UserRole } from '../lib/types';
-import { UserContext } from '../routes/AuthRoute';
+import { Giveaway, Participant, UserRole } from '../lib/types';
 import FrontendApiClient from '../services/backend';
+import { AuthenticationContext } from '../components/login/AuthenticationProvider';
 
 const loader = async ({ params }: any) => {
   const participants = await FrontendApiClient.getParticipants(
@@ -22,7 +22,7 @@ const loader = async ({ params }: any) => {
 };
 
 const ParticipantsManagerPage = () => {
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
   const participantsData = useLoaderData() as Participant[];
   const { giveawayId } = useParams();
   const [giveaway, setGiveaway] = useState<Giveaway>();
@@ -69,7 +69,7 @@ const ParticipantsManagerPage = () => {
     setError(false);
   };
 
-  if (userInfo.role !== UserRole.ADMIN) {
+  if (user.role !== UserRole.ADMIN) {
     return <Navigate to={`/giveaways/${giveawayId}`} />;
   }
 

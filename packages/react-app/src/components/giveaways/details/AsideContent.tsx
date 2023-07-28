@@ -1,32 +1,15 @@
-import {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-
+import { useContext, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
-
 import CheckIcon from '@mui/icons-material/Check';
-import {
-  Button,
-  Stack,
-  Typography,
-} from '@mui/material';
-
+import { Button, Stack, Typography } from '@mui/material';
 import LinkIcon from '../../../assets/Link.png';
-import {
-  Giveaway,
-  ParticipationState,
-  UserInfo,
-  UserRole,
-} from '../../../lib/types';
+import { Giveaway, ParticipationState, UserRole } from '../../../lib/types';
 import { GiveawayContext } from '../../../pages/details';
-import { UserContext } from '../../../routes/AuthRoute';
-import Constants from '../../../utils/Constants';
+import { get } from '../../../utils/constants.util';
 import SvgHelper from '../../../utils/SvgHelper';
 import ParticipationButton from '../participation/ParticipationButton';
 import { DownloadButton } from './PDFDocument';
+import { AuthenticationContext } from '../../login/AuthenticationProvider';
 
 type GiveawayAsideContentProps = {
   onParticipationChange: (newState: ParticipationState) => void;
@@ -35,12 +18,12 @@ type GiveawayAsideContentProps = {
 const GiveawayAsideContent = ({
   onParticipationChange,
 }: GiveawayAsideContentProps) => {
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const qrContainerRef = useRef<HTMLDivElement>(null);
   const [qrDataURL, setQrDataURL] = useState<string>();
   const [copyClipboardCheck, setCopyClipboardCheck] = useState(false);
-  const isAdmin = userInfo.role === UserRole.ADMIN;
+  const isAdmin = user.role === UserRole.ADMIN;
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -58,7 +41,7 @@ const GiveawayAsideContent = ({
   }, [isAdmin, qrDataURL]);
 
   const copyToClipboard = async () => {
-    const giveawayLink = `${Constants.FRONTEND_URI}/giveaways/${giveaway._id}`;
+    const giveawayLink = `${get(FRONTEND_URI)}/giveaways/${giveaway._id}`;
     await navigator.clipboard.writeText(giveawayLink);
 
     setCopyClipboardCheck(true);

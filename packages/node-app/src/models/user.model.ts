@@ -11,17 +11,17 @@ export enum Unit {
   PYTHON = 'python',
 }
 
-export interface User extends mongoose.Document {
+interface User extends mongoose.Document {
   email: string;
   name: string;
-  picture: string;
+  picture?: string;
   role: UserRole;
   units: Unit[];
   taId: number;
 }
 
 const userSchema = new Schema<User>({
-  email: { type: String, required: true },
+  email: { type: String, unique: true, required: true },
   name: { type: String, required: true },
   role: {
     type: String,
@@ -35,7 +35,7 @@ const userSchema = new Schema<User>({
     required: true,
     default: [],
   },
-  picture: { type: String, required: false },
+  picture: { type: String },
   taId: { type: Number, required: true },
 });
 

@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
-import { omit } from 'lodash';
-
-import { isAfter, isBefore } from 'date-fns';
-
+import omit from 'lodash/omit';
 import { giveawaysContract } from '../contracts';
 import { Giveaway, ParticipantState } from '../models/giveaway.model';
-import { GiveawayLog } from '../models/log_data.model';
+import { GiveawayLog } from '../models/logData.model';
 import { Location } from '../models/location.model';
 import { UserRole } from '../models/user.model';
 import { hasEnded, isoStringToSecondsTimestamp } from '../utils/date.utils';
@@ -22,21 +19,15 @@ import {
   handleGenerateWinners,
   getChangedFields,
 } from '../utils/model.utils';
-import {
-  getParticipant,
-  validateParticipant,
-} from '../utils/validations.utils';
-import { decrypt, encrypt, objectIdToBytes24 } from '../utils/web3.utils';
-import { parse } from 'querystring';
-
-import { agenda, scheduleWinnerGeneration } from '../utils/agenda.utils';
+import { getParticipant, validateParticipant } from '../utils/validations.utils';
+import { encrypt, objectIdToBytes24 } from '../utils/web3.utils';
+import { scheduleWinnerGeneration } from '../utils/agenda.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
     let giveaways = await Giveaway.find()
-      .select(
-        'title description startTime endTime winners requirements prize image participants manual numberOfWinners'
-      )
+      .select(`title description startTime endTime winners requirements prize
+        image participants manual numberOfWinners`)
       .lean();
 
     if (req.query.active) {
@@ -261,7 +252,6 @@ export const addParticipant = async (req: Request, res: Response) => {
       giveaway.participants = giveaway.participants.filter(
         (p) => p.id !== participant.id
       );
-      const { id, title, description, prize, rules, image } = giveaway;
       await giveaway.save();
       throw error;
     }
@@ -356,7 +346,7 @@ export const updateParticipant = async (req: Request, res: Response) => {
     }
     await giveaway.save();
 
-    const { id, title, description, prize, rules, image } = giveaway;
+    const { id, title, description, rules } = giveaway;
     await GiveawayLog.create({
       action: 'update-giveaway-participant',
       author: req.user.email,
@@ -391,7 +381,7 @@ export const generateWinners = async (req: Request, res: Response) => {
 
     const { decryptedWinners } = await handleGenerateWinners(giveaway);
 
-    const { title, description, prize, rules, image } = giveaway;
+    const { title, description, prize, rules } = giveaway;
 
     await GiveawayLog.create({
       action: 'generate-giveaway-winners',

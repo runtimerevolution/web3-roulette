@@ -1,18 +1,15 @@
 import { useContext } from 'react';
-
 import { format } from 'date-fns';
-
 import { Stack, Typography } from '@mui/material';
-
-import { Giveaway, UserInfo, UserRole } from '../../../lib/types';
+import { Giveaway, UserRole } from '../../../lib/types';
 import { GiveawayContext } from '../../../pages/details';
-import { UserContext } from '../../../routes/AuthRoute';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
+import { AuthenticationContext } from '../../login/AuthenticationProvider';
 
 const GiveawayMainContent = () => {
-  const userInfo = useContext(UserContext) as UserInfo;
+  const { user } = useContext(AuthenticationContext);
   const giveaway = useContext(GiveawayContext) as Giveaway;
-  const isAdmin = userInfo.role === UserRole.ADMIN;
+  const isAdmin = user.role === UserRole.ADMIN;
   const {
     stats: {
       nrConfirmedParticipants,
