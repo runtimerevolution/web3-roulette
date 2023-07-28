@@ -1,19 +1,15 @@
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 
 import { format } from 'date-fns';
 
 import { Stack, Typography } from '@mui/material';
 
-import { Giveaway, Participant, UserInfo, UserRole } from '../../../lib/types';
+import { Giveaway, UserInfo, UserRole } from '../../../lib/types';
 import { GiveawayContext } from '../../../pages/details';
 import { UserContext } from '../../../routes/AuthRoute';
 import PendingApprovalBanner from '../participation/PendingApprovalBanner';
 
-type GiveawayMainContentProps = {
-  participants: Participant[];
-};
-
-const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
+const GiveawayMainContent = () => {
   const userInfo = useContext(UserContext) as UserInfo;
   const giveaway = useContext(GiveawayContext) as Giveaway;
   const isAdmin = userInfo.role === UserRole.ADMIN;
@@ -94,7 +90,7 @@ const GiveawayMainContent = ({ participants }: GiveawayMainContentProps) => {
               </span>{' '}
               {`${nrConfirmedParticipants} participants`}
             </Typography>
-            {!isAdmin && participants && (
+            {!isAdmin && nrConfirmedParticipants && (
               <span className="winning-chance">{`You have a ${winningChance}% chance of winning`}</span>
             )}
           </div>

@@ -276,9 +276,23 @@ export const addParticipant = async (req: Request, res: Response) => {
 export const getParticipants = async (req: Request, res: Response) => {
   try {
     const giveaway = await Giveaway.findById(req.params.id);
-    if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
+    if (!giveaway)
+      return res.status(404).json({ error: 'Giveaway not found' });
 
-    res.status(200).json(giveaway.participants);
+    if (req.user.role === UserRole.ADMIN) {
+      res.status(200).json(giveaway.participants);
+    } else {
+      const userParticipation = giveaway?.participants?.find(
+        (el) => el.id === req.user.id
+      );
+      if (userParticipation) {
+        res
+          .status(200)
+          .json([userParticipation]);
+      } else {
+        res.status(200).json([]);
+      }
+    }
   } catch (error) {
     const { code, message } = handleError(error);
     res.status(code).json({ error: message });

@@ -23,7 +23,6 @@ const loader = async ({ params }: any) => {
 const GiveawayDetailsPage = () => {
   const giveaway = useLoaderData() as Giveaway;
   const revalidator = useRevalidator();
-  const { data: participants, refetch } = useParticipants(giveaway._id);
   const participationState = useRef<ParticipationState>();
 
   const onParticipationChange = (newState: ParticipationState) => {
@@ -43,7 +42,7 @@ const GiveawayDetailsPage = () => {
         justifyContent="center"
         sx={{ flexDirection: { xs: 'column', md: 'row' } }}
       >
-        {participants && <GiveawayMainContent participants={participants} />}
+        <GiveawayMainContent />
         <GiveawayAsideContent onParticipationChange={onParticipationChange} />
       </Stack>
     </GiveawayContext.Provider>
