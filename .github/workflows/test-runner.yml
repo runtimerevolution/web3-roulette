@@ -1,0 +1,35 @@
+name: Automatic Test Runner
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env: 
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      TEST_DATABASE_URI: ${{ secrets.TEST_DATABASE_URI }}
+      WEB3_PROVIDER: ${{ secrets.WEB3_PROVIDER }}
+      GIVEAWAYS_CONTRACT_ADDRESS: ${{ secrets.GIVEAWAYS_CONTRACT_ADDRESS}}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
+    strategy:
+      matrix:
+        node-version: [18.16.0]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with: 
+          node-version: ${{ matrix.node-version }}
+      - name: GitHub Action for npx
+        uses: mikeal/npx@1.0.0 
+      - run: yarn
+      - name: Test Node App
+        run: npx nx test node-app --runInBand

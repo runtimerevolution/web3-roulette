@@ -22,6 +22,7 @@ describe('User model', () => {
       email: 'name@domain.com',
       name: 'name user',
       units: [Unit.NODE],
+      taId: 1111,
     };
 
     const user = await User.create(userData);
@@ -31,6 +32,7 @@ describe('User model', () => {
     expect(user.units).toEqual([Unit.NODE]);
     expect(user.picture).toBeUndefined();
     expect(user.role).toEqual(UserRole.USER);
+    expect(user.taId).toEqual(userData.taId);
   });
 
   it('should not create user invalid unit', async () => {
