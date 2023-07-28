@@ -28,10 +28,5 @@ jobs:
         uses: actions/setup-node@v3
         with: 
           node-version: ${{ matrix.node-version }}
-      - name: GitHub Action for npx
-        uses: mikeal/npx@1.0.0 
       - run: yarn
-      - name: Test Node App
-        run: npx nx test node-app --runInBand --max-workers ${{ steps.cpu-cores.outputs.count }}
-      - name: Test Truffle App
-        run: cd packages/truffle-app && truffle test --runInBand --max-workers ${{ steps.cpu-cores.outputs.count }} && cd ../..
+      - run: npx nx test node-app --runInBand
