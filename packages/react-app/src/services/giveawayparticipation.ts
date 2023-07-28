@@ -95,7 +95,20 @@ const meetRequirements = async (
     if (!accepted) return true;
 
     const location = await FrontendApiClient.getLocation(locationId);
-    if (!location) return false;
+    const userLocation = await GeolocationService.getLocation();
+
+
+    if (!userLocation) return true;
+
+    if (
+      !location ||
+      !(await GeolocationService.isWithinRadius(
+        location.latitude,
+        location.longitude,
+        location.radius
+      ))
+    )
+      return false;
   }
 
   return true;
