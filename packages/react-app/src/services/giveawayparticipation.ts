@@ -69,12 +69,7 @@ const getParticipationState = async (
   }
 
   const ableTo = await meetRequirements(giveaway, userInfo);
-  if (!ableTo) {
-    return ParticipationState.NOT_ALLOWED;
-  }
-  return giveaway.requirements.location
-    ? ParticipationState.ALLOWED
-    : ParticipationState.NOT_ALLOWED;
+  return ableTo ? ParticipationState.ALLOWED : ParticipationState.NOT_ALLOWED;
 };
 
 const meetRequirements = async (
