@@ -44,7 +44,7 @@ class BackendService {
     const axiosRequestConfig: AxiosRequestConfig = {
       url: route,
       method,
-      baseURL: get(API_URI),
+      baseURL: get('API_URI'),
       timeout: 1000 * 30, // 30s
     };
 
