@@ -4,7 +4,9 @@ import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import CreateNewButton from '../components/CreateNewButton';
-import GiveawayCard, { GiveawayCardSkeleton } from '../components/giveaways/cards/Card';
+import GiveawayCard, {
+  GiveawayCardSkeleton,
+} from '../components/giveaways/cards/Card';
 import GiveawayCountdownCard from '../components/giveaways/cards/CountdownCard';
 import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
 import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
@@ -28,7 +30,7 @@ const Manage = () => {
     data: giveaways,
     isLoading,
     refetch,
-  } = useGiveaways({ active: isTabActive(activeTab)});
+  } = useGiveaways({ active: isTabActive(activeTab) });
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
@@ -80,7 +82,8 @@ const Manage = () => {
   if (
     !isLoading &&
     user.role === UserRole.USER &&
-    !giveaways?.some((g) => g.startTime < new Date())
+    !giveaways?.some((g) => g.startTime < new Date()) &&
+    activeTab !== Tabs.Archived
   ) {
     return <UserEmptyState />;
   }
@@ -181,20 +184,22 @@ const Manage = () => {
                 There are no giveaways to present.
               </Typography>
             ) : (
-              giveaways?.filter(g => g._id !== countdownGiveaway?._id).map((g) => (
-                <Grid
-                  item
-                  xs={3}
-                  sx={{ minWidth: { xs: '100%', sm: '300px' } }}
-                  key={g._id}
-                >
-                  <GiveawayCard
-                    giveaway={g}
-                    archived={activeTab === Tabs.Archived}
-                    onWinnersGeneration={handleWinners}
-                  />
-                </Grid>
-              ))
+              giveaways
+                ?.filter((g) => g._id !== countdownGiveaway?._id)
+                .map((g) => (
+                  <Grid
+                    item
+                    xs={3}
+                    sx={{ minWidth: { xs: '100%', sm: '300px' } }}
+                    key={g._id}
+                  >
+                    <GiveawayCard
+                      giveaway={g}
+                      archived={activeTab === Tabs.Archived}
+                      onWinnersGeneration={handleWinners}
+                    />
+                  </Grid>
+                ))
             )}
           </Grid>
         </div>
