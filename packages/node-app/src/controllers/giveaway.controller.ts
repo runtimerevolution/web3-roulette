@@ -19,15 +19,20 @@ import {
   handleGenerateWinners,
   getChangedFields,
 } from '../utils/model.utils';
-import { getParticipant, validateParticipant } from '../utils/validations.utils';
+import {
+  getParticipant,
+  validateParticipant,
+} from '../utils/validations.utils';
 import { encrypt, objectIdToBytes24 } from '../utils/web3.utils';
 import { scheduleWinnerGeneration } from '../utils/agenda.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
     let giveaways = await Giveaway.find()
-      .select(`title description startTime endTime winners requirements prize
-        image participants manual numberOfWinners`)
+      .select(
+        `title description startTime endTime winners requirements prize
+        image participants manual numberOfWinners`
+      )
       .lean();
 
     if (req.query.active) {
@@ -37,7 +42,11 @@ export const listGiveaways = async (req: Request, res: Response) => {
       if (active) {
         giveaways = activeGiveaways;
       } else {
-        giveaways = giveaways.filter((g) => !activeGiveaways.includes(g));
+        giveaways = giveaways.filter((g) => {
+          if (req.user.role === UserRole.USER && g.startTime > new Date())
+            return false;
+          return !activeGiveaways.includes(g);
+        });
       }
     }
     giveaways = giveaways.map((giveaway) => ({
@@ -266,19 +275,17 @@ export const addParticipant = async (req: Request, res: Response) => {
 export const getParticipants = async (req: Request, res: Response) => {
   try {
     const giveaway = await Giveaway.findById(req.params.id);
-    if (!giveaway)
-      return res.status(404).json({ error: 'Giveaway not found' });
+    if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
     if (req.user.role === UserRole.ADMIN) {
       res.status(200).json(giveaway.participants);
     } else {
       const userParticipation = giveaway?.participants?.find(
-        (el) => el.id === req.user.id
+        (el) => el.id === req.user.email
       );
+
       if (userParticipation) {
-        res
-          .status(200)
-          .json([userParticipation]);
+        res.status(200).json([userParticipation]);
       } else {
         res.status(200).json([]);
       }
