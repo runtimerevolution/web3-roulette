@@ -152,7 +152,7 @@ export const createGiveaway = async (req: Request, res: Response) => {
       )
       .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
 
-    if (!manual) {
+    if (manual === 'false') {
       await scheduleWinnerGeneration(giveaway);
     }
 

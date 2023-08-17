@@ -110,8 +110,7 @@ export const getActiveGiveaways = (giveaways, role) => {
 
     if (isGiveawayInvalid(g)) return false;
 
-    const hasPendingWinners =
-      g.manual && new Date() > g.endTime && g.winners.length === 0;
+    const hasPendingWinners = new Date() > g.endTime && g.winners.length === 0;
 
     if (role === UserRole.ADMIN && hasPendingWinners) return true;
 
