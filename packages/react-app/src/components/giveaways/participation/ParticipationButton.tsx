@@ -124,7 +124,7 @@ const ParticipationButton = ({
 
   useEffect(() => {
     updateParticipationState();
-  }, [updateParticipationState]);
+  }, []);
 
   return (
     <div>
