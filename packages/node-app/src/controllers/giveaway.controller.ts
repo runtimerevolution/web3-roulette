@@ -18,6 +18,7 @@ import {
   getActiveGiveaways,
   handleGenerateWinners,
   getChangedFields,
+  getTotalGiveaways,
 } from '../utils/model.utils';
 import {
   getParticipant,
@@ -34,6 +35,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
         image participants manual numberOfWinners`
       )
       .lean();
+    const totalGiveaways = getTotalGiveaways(giveaways, req.user.role);
 
     if (req.query.active) {
       const active = req.query.active === 'true';
@@ -49,6 +51,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
         });
       }
     }
+
     giveaways = giveaways.map((giveaway) => ({
       ...omit(giveaway, ['participants', 'numberOfWinners']),
       winners: giveawayWinners(giveaway),
@@ -56,7 +59,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
       isInvalid: isGiveawayInvalid(giveaway),
     }));
 
-    res.status(200).json(giveaways);
+    res.status(200).json({ giveaways, totalGiveaways });
   } catch (error) {
     const { code, message } = handleError(error);
     res.status(code).json({ error: message });

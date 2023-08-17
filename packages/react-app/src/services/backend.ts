@@ -15,6 +15,11 @@ type ParticipantBody = {
   location?: Coordinates;
 };
 
+type GiveawaysRes = {
+  totalGiveaways: number;
+  giveaways: Giveaway[];
+};
+
 class BackendService {
   makeRequest<T>(
     route: string,
@@ -44,7 +49,7 @@ class BackendService {
     const axiosRequestConfig: AxiosRequestConfig = {
       url: route,
       method,
-      baseURL: get('API_URI'),
+      baseURL: String(get('API_URI')),
       timeout: 1000 * 30, // 30s
     };
 
@@ -64,18 +69,18 @@ class BackendService {
     return instance.request(axiosRequestConfig);
   }
 
-  getGiveaways = async ({ active }) => {
-    const giveaways = await this.makeRequest<Giveaway[]>(
+  getGiveaways = async (active: boolean) => {
+    const res = await this.makeRequest<GiveawaysRes>(
       `/giveaways${active !== undefined ? `?active=${active}` : ''}`,
       'GET'
     );
-    if (giveaways) {
-      giveaways.forEach((g) => {
+    if (res) {
+      res.giveaways.forEach((g) => {
         g.startTime = new Date(g.startTime);
         g.endTime = new Date(g.endTime);
       });
     }
-    return giveaways;
+    return res;
   };
 
   saveGiveaway = (data: FormData) => {

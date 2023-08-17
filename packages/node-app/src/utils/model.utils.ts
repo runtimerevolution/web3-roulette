@@ -121,6 +121,13 @@ export const getActiveGiveaways = (giveaways, role) => {
   });
 };
 
+export const getTotalGiveaways = (giveaways, role) => {
+  if (role === UserRole.USER) {
+    return giveaways.filter((g) => new Date() > g.startTime).length;
+  }
+  return giveaways.length;
+};
+
 export const handleGenerateWinners = async (g) => {
   const giveaway = await Giveaway.findById(g._id);
 
