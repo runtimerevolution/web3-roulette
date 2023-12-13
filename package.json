@@ -16,7 +16,7 @@
     "start-react-app": "npx nx serve react-app",
     "test-node-app": "npx nx test node-app",
     "test-truffle-app": "cd packages/truffle-app && truffle test && cd ../..",
-    "start": "npx nx serve react-app & npx nx serve node-app"
+    "start": "npm run start-node-app & npm run start-react-app"
   },
   "private": true,
   "dependencies": {
