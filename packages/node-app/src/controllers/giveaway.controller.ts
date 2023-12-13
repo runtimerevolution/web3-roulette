@@ -18,17 +18,24 @@ import {
   getActiveGiveaways,
   handleGenerateWinners,
   getChangedFields,
+  getTotalGiveaways,
 } from '../utils/model.utils';
-import { getParticipant, validateParticipant } from '../utils/validations.utils';
+import {
+  getParticipant,
+  validateParticipant,
+} from '../utils/validations.utils';
 import { encrypt, objectIdToBytes24 } from '../utils/web3.utils';
 import { scheduleWinnerGeneration } from '../utils/agenda.utils';
 
 export const listGiveaways = async (req: Request, res: Response) => {
   try {
     let giveaways = await Giveaway.find()
-      .select(`title description startTime endTime winners requirements prize
-        image participants manual numberOfWinners`)
+      .select(
+        `title description startTime endTime winners requirements prize
+        image participants manual numberOfWinners`
+      )
       .lean();
+    const totalGiveaways = getTotalGiveaways(giveaways, req.user.role);
 
     if (req.query.active) {
       const active = req.query.active === 'true';
@@ -37,9 +44,14 @@ export const listGiveaways = async (req: Request, res: Response) => {
       if (active) {
         giveaways = activeGiveaways;
       } else {
-        giveaways = giveaways.filter((g) => !activeGiveaways.includes(g));
+        giveaways = giveaways.filter((g) => {
+          if (req.user.role === UserRole.USER && g.startTime > new Date())
+            return false;
+          return !activeGiveaways.includes(g);
+        });
       }
     }
+
     giveaways = giveaways.map((giveaway) => ({
       ...omit(giveaway, ['participants', 'numberOfWinners']),
       winners: giveawayWinners(giveaway),
@@ -47,7 +59,7 @@ export const listGiveaways = async (req: Request, res: Response) => {
       isInvalid: isGiveawayInvalid(giveaway),
     }));
 
-    res.status(200).json(giveaways);
+    res.status(200).json({ giveaways, totalGiveaways });
   } catch (error) {
     const { code, message } = handleError(error);
     res.status(code).json({ error: message });
@@ -140,7 +152,7 @@ export const createGiveaway = async (req: Request, res: Response) => {
       )
       .send({ from: process.env.OWNER_ACCOUNT_ADDRESS, gas: '1000000' });
 
-    if (!manual) {
+    if (manual === 'false') {
       await scheduleWinnerGeneration(giveaway);
     }
 
@@ -266,19 +278,17 @@ export const addParticipant = async (req: Request, res: Response) => {
 export const getParticipants = async (req: Request, res: Response) => {
   try {
     const giveaway = await Giveaway.findById(req.params.id);
-    if (!giveaway)
-      return res.status(404).json({ error: 'Giveaway not found' });
+    if (!giveaway) return res.status(404).json({ error: 'Giveaway not found' });
 
     if (req.user.role === UserRole.ADMIN) {
       res.status(200).json(giveaway.participants);
     } else {
       const userParticipation = giveaway?.participants?.find(
-        (el) => el.id === req.user.id
+        (el) => el.id === req.user.email
       );
+
       if (userParticipation) {
-        res
-          .status(200)
-          .json([userParticipation]);
+        res.status(200).json([userParticipation]);
       } else {
         res.status(200).json([]);
       }

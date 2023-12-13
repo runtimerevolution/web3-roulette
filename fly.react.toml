@@ -9,6 +9,8 @@ primary_region = "lhr"
 [env]
   VITE_FRONTEND_URI = "https://luckydart.fly.dev"
   VITE_API_URI = "https://luckydart-api.fly.dev"
+  VITE_GOOGLE_OAUTH_CLIENT_ID = "809481459022-fa1tg0p48935b99skbj0ljdq469hemo4.apps.googleusercontent.com"
+  VITE_GOOGLE_OAUTH_REDIRECT = "https://luckydart-api.fly.dev/authentication/google"
 
 [[services]]
   internal_port = 80

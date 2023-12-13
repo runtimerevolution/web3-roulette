@@ -110,8 +110,7 @@ export const getActiveGiveaways = (giveaways, role) => {
 
     if (isGiveawayInvalid(g)) return false;
 
-    const hasPendingWinners =
-      g.manual && new Date() > g.endTime && g.winners.length === 0;
+    const hasPendingWinners = new Date() > g.endTime && g.winners.length === 0;
 
     if (role === UserRole.ADMIN && hasPendingWinners) return true;
 
@@ -119,6 +118,13 @@ export const getActiveGiveaways = (giveaways, role) => {
 
     return isActive;
   });
+};
+
+export const getTotalGiveaways = (giveaways, role) => {
+  if (role === UserRole.USER) {
+    return giveaways.filter((g) => new Date() > g.startTime).length;
+  }
+  return giveaways.length;
 };
 
 export const handleGenerateWinners = async (g) => {

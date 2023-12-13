@@ -4,7 +4,9 @@ import { Box, Container, Grid, Snackbar, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import CreateNewButton from '../components/CreateNewButton';
-import GiveawayCard, { GiveawayCardSkeleton } from '../components/giveaways/cards/Card';
+import GiveawayCard, {
+  GiveawayCardSkeleton,
+} from '../components/giveaways/cards/Card';
 import GiveawayCountdownCard from '../components/giveaways/cards/CountdownCard';
 import AdminEmptyState from '../components/giveaways/empty/AdminEmptyState';
 import UserEmptyState from '../components/giveaways/empty/UserEmptyState';
@@ -19,16 +21,12 @@ const Tabs = {
   Archived: 1,
 };
 
-const isTabActive = (tab) => tab === Tabs.Active;
+const isTabActive = (tab: number) => tab === Tabs.Active;
 
 const Manage = () => {
   const { user } = useContext(AuthenticationContext);
   const [activeTab, setActiveTab] = useState(Tabs.Active);
-  const {
-    data: giveaways,
-    isLoading,
-    refetch,
-  } = useGiveaways({ active: isTabActive(activeTab)});
+  const { data, isLoading, refetch } = useGiveaways(isTabActive(activeTab));
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
@@ -38,26 +36,30 @@ const Manage = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    if (giveaways === undefined && !isLoading) {
+    if (data?.giveaways === undefined && !isLoading) {
       setError(true);
     }
 
-    if (giveaways) {
-      if (user.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
-        ParticipationService.nextGiveaway(giveaways).then((nextGiveaway) => {
-          if (nextGiveaway) {
-            const giveawayTime = nextGiveaway.endTime.getTime();
-            const timeLeft = splitTimeLeft(giveawayTime - new Date().getTime());
-            setCountdownGiveaway(timeLeft[0] >= 100 ? null : nextGiveaway);
-          } else {
-            setCountdownGiveaway(null);
+    if (data?.giveaways) {
+      if (user?.role !== UserRole.ADMIN && countdownGiveaway === undefined) {
+        ParticipationService.nextGiveaway(data.giveaways).then(
+          (nextGiveaway) => {
+            if (nextGiveaway) {
+              const giveawayTime = nextGiveaway.endTime.getTime();
+              const timeLeft = splitTimeLeft(
+                giveawayTime - new Date().getTime()
+              );
+              setCountdownGiveaway(timeLeft[0] >= 100 ? null : nextGiveaway);
+            } else {
+              setCountdownGiveaway(null);
+            }
           }
-        });
-      } else if (user.role === UserRole.ADMIN) {
+        );
+      } else if (user?.role === UserRole.ADMIN) {
         setCountdownGiveaway(null);
       }
     }
-  }, [giveaways, isLoading]);
+  }, [data?.giveaways, isLoading]);
 
   const handleWinners = () => {
     animateConfettis();
@@ -79,17 +81,16 @@ const Manage = () => {
 
   if (
     !isLoading &&
-    user.role === UserRole.USER &&
-    !giveaways?.some((g) => g.startTime < new Date())
+    data?.totalGiveaways === 0 &&
+    user?.role === UserRole.USER
   ) {
     return <UserEmptyState />;
   }
 
   if (
     !isLoading &&
-    user.role === UserRole.ADMIN &&
-    giveaways?.length === 0 &&
-    activeTab !== Tabs.Archived
+    data?.totalGiveaways === 0 &&
+    user?.role === UserRole.ADMIN
   ) {
     return <AdminEmptyState />;
   }
@@ -107,7 +108,7 @@ const Manage = () => {
           <Typography className="giveaways-title" noWrap>
             GIVEAWAYS
           </Typography>
-          {user.role === UserRole.ADMIN && <CreateNewButton />}
+          {user?.role === UserRole.ADMIN && <CreateNewButton />}
         </Box>
 
         <Button
@@ -169,8 +170,8 @@ const Manage = () => {
                   <GiveawayCardSkeleton />
                 </Grid>
               </>
-            ) : giveaways === undefined ||
-              (giveaways?.length === 0 &&
+            ) : data?.giveaways === undefined ||
+              (data.giveaways?.length === 0 &&
                 ((!countdownGiveaway && activeTab === Tabs.Active) ||
                   activeTab === Tabs.Archived)) ? (
               <Typography
@@ -181,20 +182,22 @@ const Manage = () => {
                 There are no giveaways to present.
               </Typography>
             ) : (
-              giveaways?.filter(g => g._id !== countdownGiveaway?._id).map((g) => (
-                <Grid
-                  item
-                  xs={3}
-                  sx={{ minWidth: { xs: '100%', sm: '300px' } }}
-                  key={g._id}
-                >
-                  <GiveawayCard
-                    giveaway={g}
-                    archived={activeTab === Tabs.Archived}
-                    onWinnersGeneration={handleWinners}
-                  />
-                </Grid>
-              ))
+              data.giveaways
+                ?.filter((g) => g._id !== countdownGiveaway?._id)
+                .map((g) => (
+                  <Grid
+                    item
+                    xs={3}
+                    sx={{ minWidth: { xs: '100%', sm: '300px' } }}
+                    key={g._id}
+                  >
+                    <GiveawayCard
+                      giveaway={g}
+                      archived={activeTab === Tabs.Archived}
+                      onWinnersGeneration={handleWinners}
+                    />
+                  </Grid>
+                ))
             )}
           </Grid>
         </div>

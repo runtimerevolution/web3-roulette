@@ -22,8 +22,11 @@ const getLocation = () => {
   return new Promise<GeolocationCoordinates | null>((resolve, _) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve(pos.coords),
-      (_) => resolve(null),
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      (error) => {
+        console.log(error);
+        resolve(null);
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: Infinity }
     );
   });
 };

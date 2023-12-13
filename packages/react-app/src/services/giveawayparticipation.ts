@@ -28,11 +28,7 @@ const wonGiveaway = (giveaway: Giveaway, user: User) => {
 };
 
 const hasPendingWinners = (giveaway: Giveaway) => {
-  if (
-    giveaway.manual &&
-    new Date() > giveaway.endTime &&
-    giveaway.winners.length === 0
-  ) {
+  if (new Date() > giveaway.endTime && giveaway.winners.length === 0) {
     return true;
   }
   return false;

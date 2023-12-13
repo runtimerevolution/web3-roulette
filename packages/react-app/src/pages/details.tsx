@@ -25,7 +25,6 @@ const GiveawayDetailsPage = () => {
   const onParticipationChange = (newState: ParticipationState) => {
     if (newState !== participationState.current) {
       if (participationState.current) {
-        refetch();
         revalidator.revalidate();
       }
       participationState.current = newState;

@@ -69,14 +69,16 @@ const GiveawayCard = ({
       }}
       elevation={0}
     >
-      {user.role === UserRole.ADMIN && nrPendingParticipants > 0 && !giveaway.isInvalid &&(
-        <div className="card-pending-approvals">
-          <PendingApprovalBanner
-            giveaway={giveaway}
-            nrPending={nrPendingParticipants}
-          />
-        </div>
-      )}
+      {user.role === UserRole.ADMIN &&
+        nrPendingParticipants > 0 &&
+        !giveaway.isInvalid && (
+          <div className="card-pending-approvals">
+            <PendingApprovalBanner
+              giveaway={giveaway}
+              nrPending={nrPendingParticipants}
+            />
+          </div>
+        )}
       <div className="card-media clickable" onClick={navigateDetails}>
         <img
           className="thumbnail-img"
@@ -97,7 +99,9 @@ const GiveawayCard = ({
           <div className="invalid">
             <div style={{ textAlign: 'center' }}>
               <img className="icon" src={SadEmoji} alt="SadEmoji" />
-              <Typography className="message">Not enough participants</Typography>
+              <Typography className="message">
+                Not enough participants
+              </Typography>
             </div>
           </div>
         )}
@@ -131,15 +135,11 @@ const GiveawayCard = ({
             <span role="img" aria-label="party emoji">
               🥳
             </span>{' '}
-            {giveaway.winners.length > 0 ? getWinnerStr() : giveaway.isInvalid ? 'No Winners' : 'pending'}
-          </Typography>
-        )}
-        {archived && giveaway.winners.length === 0 && (
-          <Typography className="winners" gutterBottom>
-            <span role="img" aria-label="party emoji">
-              🥳
-            </span>{' '}
-            {'No winners'}
+            {giveaway.winners.length > 0
+              ? getWinnerStr()
+              : giveaway.isInvalid
+              ? 'No Winners'
+              : 'Pending'}
           </Typography>
         )}
         {archived && (

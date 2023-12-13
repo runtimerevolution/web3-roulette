@@ -13,7 +13,11 @@ import {
   ParticipateButton,
   ParticipatingButton,
 } from './ActionButtons';
-import { PendingLocationModal, RejectionModal, WinnerModal } from './StatusModals';
+import {
+  PendingLocationModal,
+  RejectionModal,
+  WinnerModal,
+} from './StatusModals';
 import { AuthenticationContext } from '../../login/AuthenticationProvider';
 
 type ParticipationButtonProps = {
@@ -34,18 +38,12 @@ const ParticipationButton = ({
   const [showWinnerModal, setShowWinnerModal] = useState(false);
 
   const notifyRejection = useCallback(async () => {
-    await FrontendApiClient.setNotifiedParticipant(
-      giveaway._id,
-      user.email
-    );
+    await FrontendApiClient.setNotifiedParticipant(giveaway._id, user.email);
     setShowRejectedModal(true);
-  }, [giveaway, userInfo]);
+  }, [giveaway, user]);
 
   const notifyWinner = useCallback(async () => {
-    await FrontendApiClient.setNotifiedParticipant(
-      giveaway._id,
-      user.email
-    );
+    await FrontendApiClient.setNotifiedParticipant(giveaway._id, user.email);
     setShowWinnerModal(true);
   }, [giveaway, user]);
 
@@ -126,7 +124,7 @@ const ParticipationButton = ({
 
   useEffect(() => {
     updateParticipationState();
-  }, [updateParticipationState]);
+  }, []);
 
   return (
     <div>
