@@ -27,7 +27,7 @@ app.use('/authentication', AuthRoutes);
 app.use('/giveaways', verifyToken, GiveawayRoutes);
 app.use('/locations', verifyToken, LocationRoutes);
 
-app.use(express.static(join(__dirname, '../react-app')));
+app.use(express.static(join(__dirname, '../../react-app')));
 app.get('*', (req, res) => {
-  res.sendFile(join(__dirname, '../react-app', 'index.html'));
+  res.sendFile(join(__dirname, '../../react-app', 'index.html'));
 });
