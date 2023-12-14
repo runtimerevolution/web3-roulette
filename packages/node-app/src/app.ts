@@ -23,10 +23,6 @@ app.use(cors({ origin: [process.env.APP_ORIGIN] }));
 app.use(express.json());
 app.disable('x-powered-by');
 
-app.get('/', (req, res) => {
-  res.status(200).json({ alive: 'True' });
-});
-
 app.use('/authentication', AuthRoutes);
 app.use('/giveaways', verifyToken, GiveawayRoutes);
 app.use('/locations', verifyToken, LocationRoutes);
