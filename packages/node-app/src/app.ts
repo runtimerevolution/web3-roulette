@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import { join } from 'path';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json';
 import { verifyToken } from './middlewares/auth.middleware';
@@ -29,3 +30,8 @@ app.get('/', (req, res) => {
 app.use('/authentication', AuthRoutes);
 app.use('/giveaways', verifyToken, GiveawayRoutes);
 app.use('/locations', verifyToken, LocationRoutes);
+
+app.use(express.static(join(__dirname, '../react-app')));
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, '../react-app', 'index.html'));
+});
