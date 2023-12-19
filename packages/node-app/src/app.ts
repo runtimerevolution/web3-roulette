@@ -11,7 +11,7 @@ import { router as LocationRoutes } from './routes/location.routes';
 export const app = express();
 
 const host = process.env.SERVER_HOST;
-const port = Number(process.env.SERVER_PORT);
+const port = Number(process.env.PORT);
 const swaggerOptions = {
   swaggerOptions: {
     oauth2RedirectUrl: `http://${host}:${port}/authentication/google?swagger=true`
