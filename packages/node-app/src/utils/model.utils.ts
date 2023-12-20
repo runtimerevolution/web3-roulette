@@ -104,9 +104,7 @@ export const giveawayWinningChance = (email, stats, participants, giveaway) => {
 
 export const getActiveGiveaways = (giveaways, role) => {
   return giveaways?.filter((g) => {
-    const isActive = !(
-      g.endTime < new Date() && g.numberOfWinners >= g.participants.length
-    );
+    const isActive = !(g.endTime < new Date());
 
     if (isGiveawayInvalid(g)) return false;
 

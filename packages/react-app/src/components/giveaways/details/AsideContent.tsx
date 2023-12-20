@@ -84,7 +84,7 @@ const GiveawayAsideContent = ({
             </div>
             <div className="qr-container" ref={qrContainerRef}>
               <QRCode
-                value={`${get('FRONTEND_URI')}/giveaways/${giveaway._id}`}
+                value={`${get('FRONTEND_URI')}/login`}
               />
             </div>
             <Stack className="qr-share-container">
