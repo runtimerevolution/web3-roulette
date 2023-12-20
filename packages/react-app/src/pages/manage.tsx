@@ -94,7 +94,7 @@ const Manage = () => {
   ) {
     return <AdminEmptyState />;
   }
-  console.log(isFetching);
+
 
   return (
     <Container maxWidth={false}>
@@ -128,6 +128,7 @@ const Manage = () => {
             setActiveTab(Tabs.Active);
           }}
           disableElevation
+          disabled={isFetching}
         >
           Active
         </Button>
@@ -148,6 +149,7 @@ const Manage = () => {
             setActiveTab(Tabs.Archived);
           }}
           disableElevation
+          disabled={isFetching}
         >
           Archived
         </Button>

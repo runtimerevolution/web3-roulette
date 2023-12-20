@@ -23,7 +23,7 @@ const GiveawayAsideContent = ({
   const qrContainerRef = useRef<HTMLDivElement>(null);
   const [qrDataURL, setQrDataURL] = useState<string>();
   const [copyClipboardCheck, setCopyClipboardCheck] = useState(false);
-  const isAdmin = user.role === UserRole.ADMIN;
+  const isAdmin = user && user.role === UserRole.ADMIN;
 
   useEffect(() => {
     if (!isAdmin) return;
