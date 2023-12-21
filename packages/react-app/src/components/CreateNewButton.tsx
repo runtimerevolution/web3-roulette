@@ -19,7 +19,7 @@ const CreateNewButton = () => {
   };
 
   const handleCreateLocation = () => {
-    navigate('/locations/new');
+    navigate('/locationsFront/new');
   };
 
   return (

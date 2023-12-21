@@ -42,7 +42,7 @@ const router = createBrowserRouter(
           element={<ParticipantsManagerPage />}
           loader={participantsLoader}
         />
-        <Route path="locations/new" element={<LocationEdit />} />
+        <Route path="locationsFront/new" element={<LocationEdit />} />
       </Route>
       <Route
         path="/login"
