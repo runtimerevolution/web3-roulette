@@ -17,7 +17,7 @@ const PendingApprovalBanner = ({
   const navigate = useNavigate();
 
   const manageParticipants = () => {
-    navigate(`/giveaways/${giveaway._id}/participants`);
+    navigate(`/giveawaysFront/${giveaway._id}/participants`);
   };
 
   return (

@@ -44,7 +44,7 @@ const GiveawayCard = ({
   };
 
   const navigateDetails = () => {
-    navigate(`/giveaways/${giveaway._id}`);
+    navigate(`/giveawaysFront/${giveaway._id}`);
   };
 
   const onStateChange = (newState: ParticipationState) => {
@@ -69,7 +69,7 @@ const GiveawayCard = ({
       }}
       elevation={0}
     >
-      {user.role === UserRole.ADMIN &&
+      {user && user.role === UserRole.ADMIN &&
         nrPendingParticipants > 0 &&
         !giveaway.isInvalid && (
           <div className="card-pending-approvals">

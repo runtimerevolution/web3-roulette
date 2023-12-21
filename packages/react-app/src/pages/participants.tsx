@@ -70,7 +70,7 @@ const ParticipantsManagerPage = () => {
   };
 
   if (user.role !== UserRole.ADMIN) {
-    return <Navigate to={`/giveaways/${giveawayId}`} />;
+    return <Navigate to={`/giveawaysFront/${giveawayId}`} />;
   }
 
   return (

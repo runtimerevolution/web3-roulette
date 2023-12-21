@@ -42,7 +42,7 @@ const ManageButton = ({ giveaway }: ManageProps) => {
   const navigate = useNavigate();
 
   const manageGiveaway = () => {
-    navigate(`giveaways/${giveaway._id}/edit`);
+    navigate(`giveawaysFront/${giveaway._id}/edit`);
   };
 
   return (

@@ -30,15 +30,15 @@ const router = createBrowserRouter(
         }
       >
         <Route index element={<Manage />} />
-        <Route path="giveaways/new" element={<EditGiveaway />} />
+        <Route path="giveawaysFront/new" element={<EditGiveaway />} />
         <Route
-          path="giveaways/:giveawayId"
+          path="giveawaysFront/:giveawayId"
           element={<GiveawayDetailsPage />}
           loader={giveawayLoader}
         />
-        <Route path="giveaways/:giveawayId/edit" element={<EditGiveaway />} />
+        <Route path="giveawaysFront/:giveawayId/edit" element={<EditGiveaway />} />
         <Route
-          path="giveaways/:giveawayId/participants"
+          path="giveawaysFront/:giveawayId/participants"
           element={<ParticipantsManagerPage />}
           loader={participantsLoader}
         />
