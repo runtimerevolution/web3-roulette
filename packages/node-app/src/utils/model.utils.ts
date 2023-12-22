@@ -95,9 +95,9 @@ export const giveawayWinningChance = (email, stats, participants, giveaway) => {
   const totalParticipants = isRegistered
     ? nrConfirmedParticipants
     : nrConfirmedParticipants + 1;
-  const winningChance = Math.floor(
-    (giveaway.numberOfWinners / totalParticipants) * 100
-  );
+  const winningChance = Number(
+    ((giveaway.numberOfWinners / totalParticipants) * 100
+  ).toFixed(2));
 
   return Math.min(winningChance, 100);
 };
