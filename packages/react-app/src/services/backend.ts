@@ -104,6 +104,8 @@ class BackendService {
       giveaway.startTime = new Date(giveaway.startTime);
       giveaway.endTime = new Date(giveaway.endTime);
       return giveaway;
+    }else{
+      window.location.replace("/");
     }
   };
 
