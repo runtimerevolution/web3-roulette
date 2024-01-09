@@ -10,7 +10,7 @@ const GiveawayCountdownCard = (giveaway: Giveaway) => {
   const navigate = useNavigate();
 
   const navigateDetails = () => {
-    navigate(`/giveaways/${giveaway._id}`);
+    navigate(`/giveawaysFront/${giveaway._id}`);
   };
 
   return (

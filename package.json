@@ -15,7 +15,9 @@
     "start-node-app": "npx nx serve node-app",
     "start-react-app": "npx nx serve react-app",
     "test-node-app": "npx nx test node-app",
-    "test-truffle-app": "cd packages/truffle-app && truffle test && cd ../.."
+    "test-truffle-app": "cd packages/truffle-app && truffle test && cd ../..",
+    "start": "npm run start-node-app & npm run start-react-app",
+    "build": "nx run-many -t build"
   },
   "private": true,
   "dependencies": {
@@ -26,6 +28,8 @@
     "@mui/lab": "^5.0.0-alpha.133",
     "@mui/material": "^5.12.3",
     "@mui/x-date-pickers": "^6.3.0",
+    "@nestjs/common": "^10.2.10",
+    "@nestjs/serve-static": "^4.0.0",
     "@openzeppelin/contracts": "^4.8.3",
     "@react-pdf/renderer": "^3.1.9",
     "@truffle/hdwallet-provider": "^2.1.11",

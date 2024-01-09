@@ -17,6 +17,7 @@ import LocationEdit from '../pages/location';
 import AuthenticationProvider from '../components/login/AuthenticationProvider';
 import AuthRoute from '../routes/AuthRoute';
 import './app.module.scss';
+import RootBoundary from '../routes/RootBoundary';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,21 +29,23 @@ const router = createBrowserRouter(
             <AuthRoute />
           </AuthenticationProvider>
         }
+        errorElement={<RootBoundary />}
       >
         <Route index element={<Manage />} />
-        <Route path="giveaways/new" element={<EditGiveaway />} />
+        <Route path="giveawaysFront/new" element={<EditGiveaway />} />
         <Route
-          path="giveaways/:giveawayId"
+          path="giveawaysFront/:giveawayId"
           element={<GiveawayDetailsPage />}
           loader={giveawayLoader}
+          
         />
-        <Route path="giveaways/:giveawayId/edit" element={<EditGiveaway />} />
+        <Route path="giveawaysFront/:giveawayId/edit" element={<EditGiveaway />} />
         <Route
-          path="giveaways/:giveawayId/participants"
+          path="giveawaysFront/:giveawayId/participants"
           element={<ParticipantsManagerPage />}
           loader={participantsLoader}
         />
-        <Route path="locations/new" element={<LocationEdit />} />
+        <Route path="locationsFront/new" element={<LocationEdit />} />
       </Route>
       <Route
         path="/login"

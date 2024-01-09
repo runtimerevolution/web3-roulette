@@ -26,7 +26,7 @@ const isTabActive = (tab: number) => tab === Tabs.Active;
 const Manage = () => {
   const { user } = useContext(AuthenticationContext);
   const [activeTab, setActiveTab] = useState(Tabs.Active);
-  const { data, isLoading, refetch } = useGiveaways(isTabActive(activeTab));
+  const { data, isLoading, refetch, isFetching } = useGiveaways(isTabActive(activeTab));
   const [countdownGiveaway, setCountdownGiveaway] = useState<Giveaway | null>();
   const [showConfettis, setShowConfettis] = useState(false);
   const [error, setError] = useState(false);
@@ -80,7 +80,7 @@ const Manage = () => {
   };
 
   if (
-    !isLoading &&
+    !isFetching &&
     data?.totalGiveaways === 0 &&
     user?.role === UserRole.USER
   ) {
@@ -88,12 +88,13 @@ const Manage = () => {
   }
 
   if (
-    !isLoading &&
+    !isFetching &&
     data?.totalGiveaways === 0 &&
     user?.role === UserRole.ADMIN
   ) {
     return <AdminEmptyState />;
   }
+
 
   return (
     <Container maxWidth={false}>
@@ -127,6 +128,7 @@ const Manage = () => {
             setActiveTab(Tabs.Active);
           }}
           disableElevation
+          disabled={isFetching}
         >
           Active
         </Button>
@@ -147,6 +149,7 @@ const Manage = () => {
             setActiveTab(Tabs.Archived);
           }}
           disableElevation
+          disabled={isFetching}
         >
           Archived
         </Button>
@@ -155,7 +158,7 @@ const Manage = () => {
             <GiveawayCountdownCard {...countdownGiveaway} />
           )}
           <Grid container spacing={3} sx={{ mt: '0rem', mb: '2rem' }}>
-            {isLoading || countdownGiveaway === undefined ? (
+            {isFetching || countdownGiveaway === undefined ? (
               <>
                 <Grid item xs={3} sx={{ minWidth: '300px' }}>
                   <GiveawayCardSkeleton />

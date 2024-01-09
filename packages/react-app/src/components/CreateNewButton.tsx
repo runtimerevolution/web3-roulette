@@ -15,11 +15,11 @@ const CreateNewButton = () => {
   const navigate = useNavigate();
 
   const handleCreateGiveaway = () => {
-    navigate('/giveaways/new');
+    navigate('/giveawaysFront/new');
   };
 
   const handleCreateLocation = () => {
-    navigate('/locations/new');
+    navigate('/locationsFront/new');
   };
 
   return (

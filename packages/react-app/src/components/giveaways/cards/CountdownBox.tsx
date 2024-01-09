@@ -12,7 +12,7 @@ const GiveawayCountdownBox = (giveaway: Giveaway) => {
   const [hours, minutes, seconds] = useTimer(giveaway.endTime);
 
   const navigateDetails = () => {
-    navigate(`/giveaways/${giveaway._id}`);
+    navigate(`/giveawaysFront/${giveaway._id}`);
   };
 
   return (

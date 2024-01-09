@@ -23,7 +23,7 @@ const GiveawayAsideContent = ({
   const qrContainerRef = useRef<HTMLDivElement>(null);
   const [qrDataURL, setQrDataURL] = useState<string>();
   const [copyClipboardCheck, setCopyClipboardCheck] = useState(false);
-  const isAdmin = user.role === UserRole.ADMIN;
+  const isAdmin = user && user.role === UserRole.ADMIN;
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -41,7 +41,7 @@ const GiveawayAsideContent = ({
   }, [isAdmin, qrDataURL]);
 
   const copyToClipboard = async () => {
-    const giveawayLink = `${get('FRONTEND_URI')}/giveaways/${giveaway._id}`;
+    const giveawayLink = `${get('FRONTEND_URI')}/giveawaysFront/${giveaway._id}`;
     await navigator.clipboard.writeText(giveawayLink);
 
     setCopyClipboardCheck(true);
@@ -84,7 +84,7 @@ const GiveawayAsideContent = ({
             </div>
             <div className="qr-container" ref={qrContainerRef}>
               <QRCode
-                value={`${get('FRONTEND_URI')}/giveaways/${giveaway._id}`}
+                value={`${get('FRONTEND_URI')}/giveawaysFront/${giveaway._id}`}
               />
             </div>
             <Stack className="qr-share-container">
